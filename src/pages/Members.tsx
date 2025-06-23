@@ -11,7 +11,7 @@ import { useToast } from '@/hooks/use-toast';
 
 // Set axios defaults
 axios.defaults.withCredentials = true;
-axios.defaults.baseURL =  'https://og-backend-mwwi.onrender.com';
+axios.defaults.baseURL =  'https://og-backend-mwwi.onrender.com/api';
 
 
 interface Member {
@@ -41,8 +41,8 @@ const Members = () => {
   useEffect(() => {
     const fetchMembers = async () => {
       try {
-        console.log('Fetching members from /api/members...');
-        const response = await axios.get('/api/members', {
+        console.log('Fetching members from /members...');
+        const response = await axios.get('/members', {
           withCredentials: true,
           headers: {
             'Accept': 'application/json',
