@@ -123,7 +123,7 @@ const Chat = () => {
 
     const fetchRecipient = async () => {
       try {
-        const response = await axios.get(`/api/users/${id}`, {
+        const response = await axios.get(`/users/${id}`, {
           withCredentials: true,
           headers: {
             'Accept': 'application/json',
@@ -137,7 +137,7 @@ const Chat = () => {
           avatar: response.data.avatar || ''
         });
         // Fetch existing messages for this user (placeholder)
-        const messagesResponse = await axios.get(`/api/messages/${id}`, {
+        const messagesResponse = await axios.get(`/messages/${id}`, {
           withCredentials: true,
           headers: {
             'Accept': 'application/json',
@@ -195,7 +195,7 @@ const Chat = () => {
       if (id && recipient) {
         // Send direct message to backend
         await axios.post(
-          `/api/messages/${id}`,
+          `/messages/${id}`,
           { content: message },
           {
             withCredentials: true,
