@@ -3,7 +3,7 @@
   "private": true,
   "version": "0.0.0",
   "type": "module",
-  "proxy": 'https://og-backend-mwwi.onrender.com/api',
+  "proxy": "https://og-backend-mwwi.onrender.com/api",
   "scripts": {
     "dev": "vite",
     "build": "vite build",
