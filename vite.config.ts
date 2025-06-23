@@ -11,7 +11,7 @@ export default defineConfig(({ mode }) => ({
     port: 8080,
     proxy: {
      '/api': {
-        target: 'http://localhost:5000',
+        target: 'https://og-backend-mwwi.onrender.com/api',
         changeOrigin: true,
         secure: false,
         ws: false,
