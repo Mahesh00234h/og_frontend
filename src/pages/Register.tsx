@@ -8,9 +8,9 @@ import { Code, Mail, Lock, User, Phone, GraduationCap, Loader2 } from 'lucide-re
 import { useToast } from '@/hooks/use-toast';
 
 // Environment-based API URL
-const API_BASE_URL = process.env.NODE_ENV === 'production' 
-  ? window.location.origin 
-  : 'https://og-backend-mwwi.onrender.com/api';
+const API_BASE_URL =
+  import.meta.env.VITE_API_BASE_URL || 'https://og-backend-mwwi.onrender.com/api';
+
 
 
 const Register = () => {
