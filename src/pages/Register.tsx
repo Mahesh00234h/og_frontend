@@ -140,10 +140,10 @@ const Register = () => {
 
     setLoading(true);
     try {
-      console.log("Sending OTP request to:", `${API_BASE_URL}/api/send-otp`);
+      console.log("Sending OTP request to:", `${API_BASE_URL}/send-otp`);
       console.log("Form data:", formData);
 
-      const res = await fetch(`${API_BASE_URL}/api/send-otp`, {
+      const res = await fetch(`${API_BASE_URL}/send-otp`, {
         method: "POST",
         headers: { 
           "Content-Type": "application/json",
@@ -194,7 +194,7 @@ const Register = () => {
 
     setLoading(true);
     try {
-      const res = await fetch(`${API_BASE_URL}/api/resend-otp`, {
+      const res = await fetch(`${API_BASE_URL}/resend-otp`, {
         method: "POST",
         headers: { 
           "Content-Type": "application/json",
@@ -260,7 +260,7 @@ const Register = () => {
     try {
       console.log("Verifying OTP:", otp);
       
-      const res = await fetch(`${API_BASE_URL}/api/verify-otp`, {
+      const res = await fetch(`${API_BASE_URL}/verify-otp`, {
         method: "POST",
         headers: { 
           "Content-Type": "application/json",
