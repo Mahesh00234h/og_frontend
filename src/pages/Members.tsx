@@ -11,7 +11,7 @@ import { useToast } from '@/hooks/use-toast';
 
 // Set axios defaults
 axios.defaults.withCredentials = true;
-axios.defaults.baseURL =  'https://og-backend-mwwi.onrender.com/';
+axios.defaults.baseURL =  'https://og-backend-mwwi.onrender.com';
 
 
 interface Member {
