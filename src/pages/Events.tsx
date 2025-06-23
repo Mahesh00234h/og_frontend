@@ -7,7 +7,8 @@ import { Input } from '@/components/ui/input';
 import { useToast } from '@/hooks/use-toast';
 import { useNavigate } from 'react-router-dom';
 
-const API_BASE_URL = 'http://localhost:5000/api';
+const API_BASE_URL = 'https://og-backend-mwwi.onrender.com/api';
+
 
 interface Event {
   id: string;

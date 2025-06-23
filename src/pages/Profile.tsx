@@ -8,7 +8,8 @@ import { Textarea } from '@/components/ui/textarea';
 import { useToast } from '@/hooks/use-toast';
 import { User, Github, Link, MapPin, Briefcase } from 'lucide-react';
 
-const API_BASE_URL = 'http://localhost:5000/api';
+const API_BASE_URL = 'https://og-backend-mwwi.onrender.com/api';
+
 
 interface Profile {
   id: string;

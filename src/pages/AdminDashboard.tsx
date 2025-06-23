@@ -14,7 +14,8 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@
 import { Label } from '@/components/ui/label';
 import { Checkbox } from '@/components/ui/checkbox';
 
-const API_BASE_URL = 'http://localhost:5000/api';
+const API_BASE_URL = 'https://og-backend-mwwi.onrender.com/api';
+
 
 interface Member {
   id: string;

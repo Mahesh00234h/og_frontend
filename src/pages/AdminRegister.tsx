@@ -7,7 +7,8 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Mail, Lock, User, Shield } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 
-const API_BASE_URL = 'http://localhost:5000/api';
+const API_BASE_URL = 'https://og-backend-mwwi.onrender.com/api';
+
 
 const AdminRegister = () => {
   const [email, setEmail] = useState('');

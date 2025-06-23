@@ -23,7 +23,8 @@ import AdminRegister from "./pages/AdminRegister";
 import Announcements from "./pages/Announcements";
 
 const queryClient = new QueryClient();
-const API_BASE_URL = 'http://localhost:5000/api';
+const API_BASE_URL = 'https://og-backend-mwwi.onrender.com/api';
+
 
 interface SessionData {
   message: string;

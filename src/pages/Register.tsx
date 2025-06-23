@@ -10,7 +10,8 @@ import { useToast } from '@/hooks/use-toast';
 // Environment-based API URL
 const API_BASE_URL = process.env.NODE_ENV === 'production' 
   ? window.location.origin 
-  : 'http://localhost:5000';
+  : 'https://og-backend-mwwi.onrender.com/api';
+
 
 const Register = () => {
   const [formData, setFormData] = useState({

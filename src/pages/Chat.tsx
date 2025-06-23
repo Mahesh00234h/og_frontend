@@ -21,7 +21,8 @@ import {
 
 // Set axios defaults
 axios.defaults.withCredentials = true;
-axios.defaults.baseURL = 'http://localhost:5000';
+axios.defaults.baseURL = 'https://og-backend-mwwi.onrender.com/api';
+;
 
 interface Message {
   id: number;
