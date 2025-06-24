@@ -154,7 +154,7 @@ const Members = () => {
                 className="pl-10 bg-black/20 border-purple-500/20 text-white placeholder:text-gray-400 w-64"
               />
             </div>
-            <Button variant="outline" className="text-white border-purple-400">
+            <Button variant="outline" className="bg-purple-600 hover:bg-purple-700 text-white">
               <Filter className="h-4 w-4 mr-2" />
               Filter
             </Button>
