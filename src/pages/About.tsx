@@ -31,7 +31,7 @@ const About = () => {
       bio: 'Leading the club towards new heights of technical innovation and collaboration.'
     },
     {
-      name: 'TSSM'''S',
+      name: 'TSSMS',
       role: 'President',
       department: 'Information Technology',
       year: '3rd Year',
