@@ -293,16 +293,16 @@ const About = () => {
             Let's build the future together!
           </p>
           <div className="space-x-4">
-            <a href="/register" className="inline-block">
-              <button className="bg-purple-600 hover:bg-purple-700 text-white px-8 py-3 rounded-lg font-semibold transition-colors">
-                Join Now
-              </button>
-            </a>
-            <a href="/contact" className="inline-block">
-              <button className="border border-purple-400 text-purple-400 hover:bg-purple-400/10 px-8 py-3 rounded-lg font-semibold transition-colors">
-                Contact Us
-              </button>
-            </a>
+            <Link to="/register">
+                    <Button className="bg-gradient-to-r from-cyan-600 to-purple-600 hover:from-cyan-700 hover:to-purple-700 text-white shadow-lg shadow-cyan-500/25">
+                      Join Now
+                    </Button>
+                  </Link>
+              <Link to="/contact">
+                    <Button className="bg-gradient-to-r from-cyan-600 to-purple-600 hover:from-cyan-700 hover:to-purple-700 text-white shadow-lg shadow-cyan-500/25">
+                      Contact Us
+                    </Button>
+                  </Link>
           </div>
         </section>
       </div>
