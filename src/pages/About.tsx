@@ -16,31 +16,31 @@ import {
 const About = () => {
   const teamMembers = [
     {
-      name: 'Dr. Sarah Johnson',
-      role: 'Faculty Advisor',
+      name: 'Gaurav Pandit',
+      role: 'Founder',
       department: 'Computer Science',
       image: '',
       bio: 'Passionate about fostering innovation and technical excellence in students.'
     },
     {
-      name: 'Rahul Sharma',
-      role: 'Club President',
+      name: 'Prajwal Nivangune',
+      role: 'co-founder',
       department: 'Computer Science',
       year: '4th Year',
       image: '',
       bio: 'Leading the club towards new heights of technical innovation and collaboration.'
     },
     {
-      name: 'Priya Patel',
-      role: 'Vice President',
+      name: 'TSSM'''S',
+      role: 'President',
       department: 'Information Technology',
       year: '3rd Year',
       image: '',
       bio: 'Organizing events and workshops to enhance learning experiences for all members.'
     },
     {
-      name: 'Amit Kumar',
-      role: 'Technical Lead',
+      name: 'JSPM',
+      role: 'president',
       department: 'Electronics',
       year: '3rd Year',
       image: '',
