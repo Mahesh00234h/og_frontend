@@ -291,7 +291,7 @@ const Chat = () => {
             )}
             <Button
               variant="outline"
-              className="text-white border-purple-400"
+              className="bg-purple-600 hover:bg-purple-700 text-white"
               onClick={() => navigate('/members')}
             >
               Back to Members
@@ -389,18 +389,18 @@ const Chat = () => {
             <div className="flex items-center space-x-2">
               {recipient && (
                 <>
-                  <Button variant="outline" size="sm" className="text-white border-purple-400">
+                  <Button variant="outline" size="sm" className="text-black border-purple-400">
                     <Phone className="h-4 w-4" />
                   </Button>
-                  <Button variant="outline" size="sm" className="text-white border-purple-400">
+                  <Button variant="outline" size="sm" className="text-black border-purple-400">
                     <Video className="h-4 w-4" />
                   </Button>
                 </>
               )}
-              <Button variant="outline" size="sm" className="text-white border-purple-400">
+              <Button variant="outline" size="sm" className="text-black border-purple-400">
                 <Search className="h-4 w-4" />
               </Button>
-              <Button variant="outline" size="sm" className="text-white border-purple-400">
+              <Button variant="outline" size="sm" className="text-black border-purple-400">
                 <MoreVertical className="h-4 w-4" />
               </Button>
             </div>
