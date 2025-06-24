@@ -425,7 +425,7 @@ const Register = () => {
                 <Button 
                   type="button" 
                   variant="outline" 
-                  className="flex-1 text-white border-purple-400 hover:bg-purple-400/10" 
+                  className="flex-1 bg-purple-600 hover:bg-purple-700 text-white" 
                   onClick={handleBackToRegistration}
                   disabled={loading}
                 >
@@ -435,7 +435,7 @@ const Register = () => {
                 <Button 
                   type="button" 
                   variant="outline" 
-                  className="flex-1 text-white border-purple-400 hover:bg-purple-400/10" 
+                  className="flex-1 bg-purple-600 hover:bg-purple-700 text-white" 
                   onClick={handleResendOTP}
                   disabled={loading || resendCooldown > 0}
                 >
