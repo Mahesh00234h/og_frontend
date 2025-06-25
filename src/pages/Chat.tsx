@@ -6,6 +6,7 @@ import { Input } from '@/components/ui/input';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Badge } from '@/components/ui/badge';
 import { useToast } from '@/hooks/use-toast';
+import OGLoader from '@/components/ui/OGLoader';
 import axios from 'axios';
 import { 
   MessageCircle, 
@@ -242,8 +243,8 @@ const Chat = () => {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-slate-900 via-purple-900 to-slate-900 flex items-center justify-center">
-        <p className="text-white text-lg animate-pulse">Loading chat...</p>
+      <div className="min-h-screen bg-black flex justify-center items-center">
+        <OGLoader />
       </div>
     );
   }
