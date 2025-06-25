@@ -111,17 +111,14 @@ const Members = () => {
     );
   });
 
-  if (loading) {
-    return (
-      function App() {
+ if (loading) {
   return (
-    <div className="App">
+    <div className="min-h-screen flex justify-center items-center bg-gradient-to-br from-slate-900 via-purple-900 to-slate-900">
       <OGLoader />
     </div>
   );
 }
-    );
-  }
+
 
   if (error) {
     return (
