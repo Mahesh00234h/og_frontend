@@ -16,7 +16,8 @@
   left: 0;
 }
 
-.loader::before, .loader::after {
+.loader::before,
+.loader::after {
   content: '';
   width: 120px;
   height: 120px;
