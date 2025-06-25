@@ -6,6 +6,7 @@ import { Calendar, Clock, MapPin, Users, Plus, Filter, Search } from 'lucide-rea
 import { Input } from '@/components/ui/input';
 import { useToast } from '@/hooks/use-toast';
 import { useNavigate } from 'react-router-dom';
+import OGLoader from '@/components/ui/OGLoader';
 
 const API_BASE_URL = 'https://og-backend-mwwi.onrender.com/api';
 
@@ -87,8 +88,8 @@ const Events = () => {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-slate-900 via-purple-900 to-slate-900 flex items-center justify-center">
-        <div className="text-white text-xl">Loading...</div>
+      <div className="min-h-screen bg-black flex justify-center items-center">
+        <OGLoader />
       </div>
     );
   }
