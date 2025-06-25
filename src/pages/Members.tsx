@@ -8,7 +8,7 @@ import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Users, Search, Filter } from 'lucide-react';
 import axios from 'axios';
 import { useToast } from '@/hooks/use-toast';
-import OGLoader from '@/components/OGLoader';
+import OGLoader from '@/components/ui/OGLoader';
 // Set axios defaults
 axios.defaults.withCredentials = true;
 axios.defaults.baseURL =  'https://og-backend-mwwi.onrender.com/api';
