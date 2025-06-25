@@ -9,7 +9,7 @@ import { useToast } from '@/hooks/use-toast';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from '@/components/ui/dialog';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-
+import OGLoader from '@/components/ui/OGLoader';
 const API_BASE_URL = 'https://og-backend-mwwi.onrender.com/api';
 
 
@@ -265,12 +265,11 @@ const Dashboard = () => {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-slate-900 via-purple-900 to-slate-900 flex items-center justify-center">
-        <div className="text-white text-xl">Loading...</div>
+      <div className="min-h-screen bg-black flex justify-center items-center">
+        <OGLoader />
       </div>
     );
   }
-
   if (!user) return null;
 
   return (
