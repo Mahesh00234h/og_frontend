@@ -8,7 +8,7 @@ import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Users, Search, Filter } from 'lucide-react';
 import axios from 'axios';
 import { useToast } from '@/hooks/use-toast';
-
+import OGLoader from './components/OGLoader';
 // Set axios defaults
 axios.defaults.withCredentials = true;
 axios.defaults.baseURL =  'https://og-backend-mwwi.onrender.com/api';
@@ -113,9 +113,13 @@ const Members = () => {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-slate-900 via-purple-900 to-slate-900 flex items-center justify-center">
-        <p className="text-white text-lg animate-pulse">Loading members...</p>
-      </div>
+      function App() {
+  return (
+    <div className="App">
+      <OGLoader />
+    </div>
+  );
+}
     );
   }
 
