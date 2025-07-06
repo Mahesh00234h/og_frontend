@@ -12,8 +12,6 @@ import { GoogleLogin } from '@react-oauth/google';
 const API_BASE_URL =
   import.meta.env.VITE_API_BASE_URL || 'https://og-backend-mwwi.onrender.com/api';
 
-
-
 const Register = () => {
   const [formData, setFormData] = useState({
     fullName: '',
@@ -235,35 +233,35 @@ const Register = () => {
       setLoading(false);
     }
   };
+
   const handleGoogleSuccess = async (credentialResponse: any) => {
-  if (credentialResponse.credential) {
-    try {
-      const res = await fetch(`${API_BASE_URL}/google-login`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        credentials: "include",
-        body: JSON.stringify({ token: credentialResponse.credential }),
-      });
+    if (credentialResponse.credential) {
+      try {
+        const res = await fetch(`${API_BASE_URL}/google-login`, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          credentials: "include",
+          body: JSON.stringify({ token: credentialResponse.credential }),
+        });
 
-      const data = await res.json();
-      if (!res.ok) throw new Error(data.error || "Google login failed");
+        const data = await res.json();
+        if (!res.ok) throw new Error(data.error || "Google login failed");
 
-      toast({
-        title: "Google Login Successful!",
-        description: `Welcome ${data.name || ""}`
-      });
+        toast({
+          title: "Google Login Successful!",
+          description: `Welcome ${data.name || ""}`
+        });
 
-      navigate("/dashboard"); // or wherever you want
-
-    } catch (err: any) {
-      toast({
-        title: "Google Login Failed",
-        description: err.message,
-        variant: "destructive"
-      });
+        navigate("/dashboard"); // or wherever you want
+      } catch (err: any) {
+        toast({
+          title: "Google Login Failed",
+          description: err.message,
+          variant: "destructive"
+        });
+      }
     }
-  }
-};
+  };
 
   const handleVerifyOTP = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -397,22 +395,18 @@ const Register = () => {
                   </div>
                 ))}
               </div>
-
-              </Button>
-            </div>
-      <div className="mt-6 flex justify-center">
-  <GoogleLogin
-    onSuccess={handleGoogleSuccess}
-    onError={() =>
-      toast({
-        title: "Google Login Failed",
-        description: "Please try again.",
-        variant: "destructive"
-      })
-    }
-  />
-</div>
-              
+              <div className="mt-6 flex justify-center">
+                <GoogleLogin
+                  onSuccess={handleGoogleSuccess}
+                  onError={() =>
+                    toast({
+                      title: "Google Login Failed",
+                      description: "Please try again.",
+                      variant: "destructive"
+                    })
+                  }
+                />
+              </div>
               <Button 
                 onClick={handleSendOTP} 
                 className="w-full bg-purple-600 hover:bg-purple-700 text-white" 
@@ -426,8 +420,8 @@ const Register = () => {
                 ) : (
                   'Send OTP'
                 )}
-              
-
+              </Button>
+            </div>
           ) : (
             <form onSubmit={handleVerifyOTP} className="space-y-6">
               <div className="space-y-2">
@@ -475,7 +469,7 @@ const Register = () => {
                   disabled={loading}
                 >
                   Back to Registration
-                </Button>
+au                  </Button>
                 
                 <Button 
                   type="button" 
