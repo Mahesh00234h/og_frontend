@@ -1,12 +1,12 @@
 import { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import { Button } from '@/components/ui/button';
+import { Button } from '@/，其中components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Code, Mail, Lock, User, Phone, GraduationCap, Loader2 } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
-import { GoogleLogin } from '@react-oauth/google';
+import { GoogleLogin, CredentialResponse } from '@react-oauth/google';
 
 // Environment-based API URL
 const API_BASE_URL =
@@ -72,6 +72,16 @@ const Register = () => {
       toast({
         title: "Validation Error",
         description: "Phone number is required",
+        variant: "destructive"
+      });
+      return false;
+    }
+
+    const phoneRegex = /^\+?\d{10,15}$/;
+    if (!phoneRegex.test(phone)) {
+      toast({
+        title: "Validation Error",
+        description: "Please enter a valid phone number (10-15 digits, optional + prefix)",
         variant: "destructive"
       });
       return false;
@@ -234,32 +244,35 @@ const Register = () => {
     }
   };
 
-  const handleGoogleSuccess = async (credentialResponse: any) => {
-    if (credentialResponse.credential) {
-      try {
-        const res = await fetch(`${API_BASE_URL}/google-login`, {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          credentials: "include",
-          body: JSON.stringify({ token: credentialResponse.credential }),
-        });
-
-        const data = await res.json();
-        if (!res.ok) throw new Error(data.error || "Google login failed");
-
-        toast({
-          title: "Google Login Successful!",
-          description: `Welcome ${data.name || ""}`
-        });
-
-        navigate("/dashboard"); // or wherever you want
-      } catch (err: any) {
-        toast({
-          title: "Google Login Failed",
-          description: err.message,
-          variant: "destructive"
-        });
-      }
+  const handleGoogleSuccess = async (credentialResponse: CredentialResponse) => {
+    if (!credentialResponse?.credential) {
+      toast({
+        title: "Google Login Failed",
+        description: "Invalid Google response. Please try again.",
+        variant: "destructive",
+      });
+      return;
+    }
+    try {
+      const res = await fetch(`${API_BASE_URL}/google-login`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        credentials: "include",
+        body: JSON.stringify({ token: credentialResponse.credential }),
+      });
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.error || "Google login failed");
+      toast({
+        title: "Google Login Successful!",
+        description: `Welcome ${data.name || ""}`,
+      });
+      navigate("/dashboard");
+    } catch (err: any) {
+      toast({
+        title: "Google Login Failed",
+        description: err.message || "An error occurred during Google login.",
+        variant: "destructive",
+      });
     }
   };
 
@@ -469,7 +482,7 @@ const Register = () => {
                   disabled={loading}
                 >
                   Back to Registration
-au                  </Button>
+                </Button>
                 
                 <Button 
                   type="button" 
