@@ -1,16 +1,14 @@
+import { defineConfig } from 'vite';
+import react from '@vitejs/plugin-react-swc';
+import path from 'path';
+import { componentTagger } from 'lovable-tagger';
 
-import { defineConfig } from "vite";
-import react from "@vitejs/plugin-react-swc";
-import path from "path";
-import { componentTagger } from "lovable-tagger";
-
-// Enhanced proxy configuration for Flask
 export default defineConfig(({ mode }) => ({
   server: {
-    host: "::",
+    host: '::',
     port: 8080,
     proxy: {
-     '/api': {
+      '/api': {
         target: 'https://og-backend-mwwi.onrender.com/api',
         changeOrigin: true,
         secure: false,
@@ -24,18 +22,27 @@ export default defineConfig(({ mode }) => ({
             console.log(`[Vite Proxy] Response headers: ${JSON.stringify(proxyRes.headers)}`);
           });
           proxy.on('error', (err, req, res) => {
-            console.log(`[Vite Proxy] Error for ${req.method} ${req.url}: ${err.message}`); });
-        }
-      }
-    }
+            console.log(`[Vite Proxy] Error for ${req.method} ${req.url}: ${err.message}`);
+          });
+        },
+      },
+    },
   },
-  plugins: [
-    react(),
-    mode === 'development' && componentTagger(),
-  ].filter(Boolean),
+  plugins: [react(), mode === 'development' && componentTagger()].filter(Boolean),
   resolve: {
     alias: {
-      "@": path.resolve(__dirname, "./src"),
+      '@': path.resolve(__dirname, './src'),
+    },
+  },
+  build: {
+    commonjsOptions: {
+      include: [/node_modules/],
+      transformMixedEsModules: true,
+    },
+    minify: 'esbuild',
+    sourcemap: true,
+    rollupOptions: {
+      external: [], // Ensure @react-oauth/google is bundled
     },
   },
 }));
