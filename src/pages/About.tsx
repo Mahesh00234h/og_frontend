@@ -300,7 +300,7 @@ const About = () => {
                       Join Now
                     </Button>
                   </Link>
-              <Link to="/contact">
+              <Link to="/contactus">
                     <Button className="bg-gradient-to-r from-cyan-600 to-purple-600 hover:from-cyan-700 hover:to-purple-700 text-white shadow-lg shadow-cyan-500/25">
                       Contact Us
                     </Button>
