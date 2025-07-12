@@ -21,6 +21,7 @@ import About from "./pages/About";
 import NotFound from "./pages/NotFound";
 import AdminRegister from "./pages/AdminRegister";
 import Announcements from "./pages/Announcements";
+import ContactUs from "./pages/ContactUs";
 
 const queryClient = new QueryClient();
 const API_BASE_URL = 'https://og-backend-mwwi.onrender.com/api';
@@ -89,6 +90,7 @@ const App = () => (
           <Route path="/admin-login" element={<AdminLogin />} />
           <Route path="/admin-register" element={<AdminRegister />} />
           <Route path="announcements" element={<Announcements />} />
+          <Route path="contactus" element={<ContactUs />} />
           <Route
             path="/dashboard"
             element={
