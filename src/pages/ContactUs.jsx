@@ -39,7 +39,7 @@ const ContactUs = () => {
 
       toast({
         title: 'Message Sent',
-        description: 'Thank you for contacting OG Techminds! We'll get back to you soon.',
+        description: 'Thank you for contacting OG Techminds! We\'ll get back to you soon.',
       });
 
       setName('');
