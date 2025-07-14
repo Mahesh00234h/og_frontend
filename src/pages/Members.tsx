@@ -9,10 +9,10 @@ import { Users, Search, Filter } from 'lucide-react';
 import axios from 'axios';
 import { useToast } from '@/hooks/use-toast';
 import OGLoader from '@/components/ui/OGLoader';
+
 // Set axios defaults
 axios.defaults.withCredentials = true;
-axios.defaults.baseURL =  'https://og-backend-mwwi.onrender.com/api';
-
+axios.defaults.baseURL = 'https://og-backend-mwwi.onrender.com/api';
 
 interface Member {
   id: string;
@@ -33,6 +33,10 @@ interface Member {
 const Members = () => {
   const [searchTerm, setSearchTerm] = useState('');
   const [members, setMembers] = useState<Member[]>([]);
+  const [page, setPage] = useState(1);
+  const [pageSize] = useState(10); // Fixed page size, adjustable
+  const [totalPages, setTotalPages] = useState(1);
+  const [totalMembers, setTotalMembers] = useState(0);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const navigate = useNavigate();
@@ -41,8 +45,8 @@ const Members = () => {
   useEffect(() => {
     const fetchMembers = async () => {
       try {
-        console.log('Fetching members from /members...');
-        const response = await axios.get('/members', {
+        console.log(`Fetching members from /members?page=${page}&page_size=${pageSize}...`);
+        const response = await axios.get(`/members?page=${page}&page_size=${pageSize}`, {
           withCredentials: true,
           headers: {
             'Accept': 'application/json',
@@ -50,6 +54,7 @@ const Members = () => {
           },
         });
         console.log('Members response:', response.data);
+
         // Validate and normalize response
         const membersData = Array.isArray(response.data.members)
           ? response.data.members.map((member: any) => ({
@@ -69,6 +74,8 @@ const Members = () => {
             }))
           : [];
         setMembers(membersData);
+        setTotalPages(response.data.total_pages || 1);
+        setTotalMembers(response.data.total_members || 0);
         setLoading(false);
       } catch (err: any) {
         console.error('Fetch members error:', err);
@@ -90,7 +97,7 @@ const Members = () => {
     };
 
     fetchMembers();
-  }, [navigate, toast]);
+  }, [navigate, toast, page, pageSize]);
 
   const handleViewProfile = (memberId: string) => {
     navigate(`/profile/${memberId}`);
@@ -98,6 +105,14 @@ const Members = () => {
 
   const handleMessage = (memberId: string) => {
     navigate(`/chat/${memberId}`);
+  };
+
+  const handlePrevious = () => {
+    if (page > 1) setPage(page - 1);
+  };
+
+  const handleNext = () => {
+    if (page < totalPages) setPage(page + 1);
   };
 
   const filteredMembers = members.filter((member) => {
@@ -170,7 +185,7 @@ const Members = () => {
               <div className="flex items-center justify-between">
                 <div>
                   <p className="text-gray-400 text-sm">Total Members</p>
-                  <p className="text-2xl font-bold text-white">{members.length}</p>
+                  <p className="text-2xl font-bold text-white">{totalMembers}</p>
                 </div>
                 <Users className="h-8 w-8 text-purple-400" />
               </div>
@@ -218,6 +233,14 @@ const Members = () => {
               </div>
             </CardContent>
           </Card>
+        </div>
+
+        {/* Pagination Info */}
+        <div className="mb-6 text-gray-300">
+          <p>
+            Showing {(page - 1) * pageSize + 1} to{' '}
+            {Math.min(page * pageSize, totalMembers)} of {totalMembers} members
+          </p>
         </div>
 
         {/* Members Grid */}
@@ -315,6 +338,27 @@ const Members = () => {
             <p className="text-gray-400 text-lg">No members found matching your search.</p>
           </div>
         )}
+
+        {/* Pagination Controls */}
+        <div className="flex justify-between items-center mt-6">
+          <Button
+            onClick={handlePrevious}
+            disabled={page === 1}
+            className="bg-purple-600 hover:bg-purple-700 disabled:opacity-50"
+          >
+            Previous
+          </Button>
+          <span className="text-gray-300">
+            Page {page} of {totalPages}
+          </span>
+          <Button
+            onClick={handleNext}
+            disabled={page === totalPages}
+            className="bg-purple-600 hover:bg-purple-700 disabled:opacity-50"
+          >
+            Next
+          </Button>
+        </div>
       </div>
     </div>
   );
