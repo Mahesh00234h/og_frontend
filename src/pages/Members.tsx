@@ -34,7 +34,7 @@ const Members = () => {
   const [searchTerm, setSearchTerm] = useState('');
   const [members, setMembers] = useState<Member[]>([]);
   const [page, setPage] = useState(1);
-  const [pageSize] = useState(10); // Fixed page size, adjustable
+  const [pageSize, setPageSize] = useState(10);
   const [totalPages, setTotalPages] = useState(1);
   const [totalMembers, setTotalMembers] = useState(0);
   const [loading, setLoading] = useState(true);
@@ -46,6 +46,7 @@ const Members = () => {
     const fetchMembers = async () => {
       try {
         console.log(`Fetching members from /members?page=${page}&page_size=${pageSize}...`);
+        setLoading(true);
         const response = await axios.get(`/members?page=${page}&page_size=${pageSize}`, {
           withCredentials: true,
           headers: {
@@ -113,6 +114,15 @@ const Members = () => {
 
   const handleNext = () => {
     if (page < totalPages) setPage(page + 1);
+  };
+
+  const handlePageChange = (newPage: number) => {
+    if (newPage >= 1 && newPage <= totalPages) setPage(newPage);
+  };
+
+  const handlePageSizeChange = (newSize: number) => {
+    setPageSize(newSize);
+    setPage(1); // Reset to first page on size change
   };
 
   const filteredMembers = members.filter((member) => {
@@ -236,11 +246,23 @@ const Members = () => {
         </div>
 
         {/* Pagination Info */}
-        <div className="mb-6 text-gray-300">
+        <div className="mb-6 text-gray-300 flex justify-between items-center">
           <p>
             Showing {(page - 1) * pageSize + 1} to{' '}
             {Math.min(page * pageSize, totalMembers)} of {totalMembers} members
           </p>
+          <div className="flex items-center gap-4">
+            <label className="text-gray-300">Members per page:</label>
+            <select
+              value={pageSize}
+              onChange={(e) => handlePageSizeChange(Number(e.target.value))}
+              className="bg-black/20 border-purple-500/20 text-white p-2 rounded"
+            >
+              <option value={10}>10</option>
+              <option value={20}>20</option>
+              <option value={50}>50</option>
+            </select>
+          </div>
         </div>
 
         {/* Members Grid */}
@@ -311,16 +333,16 @@ const Members = () => {
                 </div>
 
                 <div className="flex space-x-2 pt-2">
-                  <Button 
-                    size="sm" 
+                  <Button
+                    size="sm"
                     className="flex-1 bg-purple-600 hover:bg-purple-700"
                     onClick={() => handleMessage(member.id)}
                   >
                     Message
                   </Button>
-                  <Button 
-                    size="sm" 
-                    variant="outline" 
+                  <Button
+                    size="sm"
+                    variant="outline"
                     className="border-purple-500 text-purple-400"
                     onClick={() => handleViewProfile(member.id)}
                   >
@@ -348,9 +370,18 @@ const Members = () => {
           >
             Previous
           </Button>
-          <span className="text-gray-300">
-            Page {page} of {totalPages}
-          </span>
+          <div className="flex gap-2">
+            {Array.from({ length: totalPages }, (_, i) => i + 1).map((p) => (
+              <Button
+                key={p}
+                onClick={() => handlePageChange(p)}
+                disabled={p === page}
+                className={`bg-purple-600 hover:bg-purple-700 ${p === page ? 'opacity-50' : ''}`}
+              >
+                {p}
+              </Button>
+            ))}
+          </div>
           <Button
             onClick={handleNext}
             disabled={page === totalPages}
