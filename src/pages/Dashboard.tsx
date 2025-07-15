@@ -285,7 +285,7 @@ const Dashboard = () => {
               onClick={() => navigate('/notifications')}
             >
               <Bell className="h-4 w-4 mr-2" />
-              Notifications
+              
             </Button>
             <Button
               variant="outline"
