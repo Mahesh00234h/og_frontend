@@ -553,13 +553,7 @@ const Dashboard = () => {
               </div>
             </div>
             <DialogFooter>
-              <Button
-                variant="outline"
-                className="text-white border-purple-400"
-                onClick={() => setIsProjectModalOpen(false)}
-              >
-                Cancel
-              </Button>
+              
               <Button
                 className="bg-purple-600 hover:bg-purple-700"
                 onClick={handleCreateProject}
