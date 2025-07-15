@@ -433,7 +433,7 @@ const AdminDashboard = () => {
                 <DialogTrigger asChild>
                   <Button className="bg-red-600 hover:bg-red-700">
                     <Mail className="h-4 w-4 mr-2" />
-                    Send Announcement
+                    Announcement
                   </Button>
                 </DialogTrigger>
                 <DialogContent className="bg-black/80 border-red-500/20">
@@ -505,7 +505,7 @@ const AdminDashboard = () => {
                 onClick={() => navigate('/members')}
               >
                 <Users className="h-4 w-4 mr-2" />
-                View Members
+                
               </Button>
               <Button
                 variant="outline"
