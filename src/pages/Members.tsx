@@ -169,15 +169,17 @@ const Members = () => {
             <Users className="h-8 w-8 text-purple-400" />
             <h1 className="text-2xl font-bold text-white">Members</h1>
           </div>
-          <div className="flex items-center space-x-4">
+          <div className="flex flex-col sm:flex-row gap-4 w-full">
+
             <div className="relative">
               <Search className="absolute left-3 top-3 h-4 w-4 text-gray-400" />
               <Input
-                placeholder="Search members..."
-                value={searchTerm}
-                onChange={(e) => setSearchTerm(e.target.value)}
-                className="pl-10 bg-black/20 border-purple-500/20 text-white placeholder:text-gray-400 w-64"
-              />
+  placeholder="Search members..."
+  value={searchTerm}
+  onChange={(e) => setSearchTerm(e.target.value)}
+  className="pl-10 bg-black/20 border-purple-500/20 text-white placeholder:text-gray-400 w-full sm:w-64"
+/>
+
             </div>
             <Button variant="outline" className="bg-purple-600 hover:bg-purple-700 text-white">
               <Filter className="h-4 w-4 mr-2" />
