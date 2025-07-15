@@ -294,7 +294,7 @@ const Dashboard = () => {
               onClick={() => navigate('/members')}
             >
               <Users className="h-4 w-4 mr-2" />
-              Members
+              
             </Button>
             <Button
               variant="outline"
@@ -303,7 +303,7 @@ const Dashboard = () => {
               onClick={() => navigate('/settings')}
             >
               <Settings className="h-4 w-4 mr-2" />
-              Settings
+              
             </Button>
             <Avatar className="cursor-pointer" onClick={() => navigate('/profile')}>
               <AvatarImage src={user.avatar || ''} />
