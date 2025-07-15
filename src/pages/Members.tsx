@@ -181,10 +181,7 @@ const Members = () => {
 />
 
             </div>
-            <Button variant="outline" className="bg-purple-600 hover:bg-purple-700 text-white">
-              <Filter className="h-4 w-4 mr-2" />
-              Filter
-            </Button>
+           
           </div>
         </div>
       </header>
