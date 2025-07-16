@@ -1,110 +1,167 @@
-
-import { useState } from 'react';
+import { useState, useEffect, memo } from 'react';
 import { Link } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
-import { Users, Calendar, Code, Star, MessageCircle, Trophy, Brain, Atom, Zap, Database, Terminal, Rocket, CircuitBoard, Monitor, Menu, X } from 'lucide-react';
+import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
+import { Users, Calendar, Code, Brain, Atom, Zap, Database, Terminal, Rocket, CircuitBoard, Monitor, Menu, X } from 'lucide-react';
 
 const Index = () => {
-  const [isLoggedIn, setIsLoggedIn] = useState(false);
+  const [isLoggedIn, setIsLoggedIn] = useState(false); // Simulate auth state
+  const [isAdmin, setIsAdmin] = useState(false); // Simulate admin status
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const [activeMembers, setActiveMembers] = useState(500); // Fallback
+  const [activeProjects, setActiveProjects] = useState(150); // Fallback
+  const [upcomingEvents, setUpcomingEvents] = useState([]);
+  const [newEvent, setNewEvent] = useState({
+    title: '',
+    date: '',
+    time: '',
+    type: '',
+    location: '',
+    description: '',
+    attendees: ''
+  });
+  const [error, setError] = useState(null);
+
+  // Fetch live data on mount
+  useEffect(() => {
+    // Fetch active members
+    fetch('/api/active-members')
+      .then((res) => res.json())
+      .then((data) => data.activeMembers && setActiveMembers(data.activeMembers))
+      .catch((err) => console.error('Failed to fetch active members:', err));
+
+    // Fetch active projects
+    fetch('/api/active-projects')
+      .then((res) => res.json())
+      .then((data) => data.activeProjects && setActiveProjects(data.activeProjects))
+      .catch((err) => console.error('Failed to fetch active projects:', err));
+
+    // Fetch upcoming events
+    fetch('/api/events')
+      .then((res) => res.json())
+      .then((data) => data.events && setUpcomingEvents(data.events))
+      .catch((err) => console.error('Failed to fetch events:', err));
+  }, []);
+
+  // Handle admin event form submission
+  const handleEventSubmit = async (e) => {
+    e.preventDefault();
+    try {
+      const eventDateTime = new Date(`${newEvent.date}T${newEvent.time}`);
+      const response = await fetch('/api/events', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          title: newEvent.title,
+          date: eventDateTime.toISOString(),
+          location: newEvent.location,
+          description: newEvent.description,
+          type: newEvent.type,
+          attendees: parseInt(newEvent.attendees, 10)
+        })
+      });
+      const data = await response.json();
+      if (response.ok) {
+        setUpcomingEvents([...upcomingEvents, {
+          id: data.eventId,
+          title: newEvent.title,
+          date: newEvent.date,
+          time: newEvent.time,
+          type: newEvent.type,
+          attendees: parseInt(newEvent.attendees, 10)
+        }]);
+        setNewEvent({ title: '', date: '', time: '', type: '', location: '', description: '', attendees: '' });
+        setError(null);
+      } else {
+        setError(data.error || 'Failed to create event');
+      }
+    } catch (err) {
+      setError('Failed to create event');
+      console.error('Event creation error:', err);
+    }
+  };
 
   const features = [
-    {
-      icon: Brain,
-      title: "AI & Machine Learning",
-      description: "Explore cutting-edge AI algorithms and neural networks through collaborative projects"
-    },
-    {
-      icon: Code,
-      title: "Software Development",
-      description: "Build innovative applications and contribute to open-source projects"
-    },
-    {
-      icon: CircuitBoard,
-      title: "Hardware Innovation",
-      description: "Design and prototype electronic systems and IoT solutions"
-    },
-    {
-      icon: Database,
-      title: "Data Science Hub",
-      description: "Analyze datasets and build predictive models for real-world applications"
-    },
-    {
-      icon: Terminal,
-      title: "Programming Community",
-      description: "Collaborate on coding projects and master new programming languages"
-    },
-    {
-      icon: Rocket,
-      title: "Tech Innovation",
-      description: "Work on cutting-edge technology projects and startup ideas"
-    }
+    { icon: Brain, title: "AI & Machine Learning", description: "Explore cutting-edge AI algorithms and neural networks through collaborative projects" },
+    { icon: Code, title: "Software Development", description: "Build innovative applications and contribute to open-source projects" },
+    { icon: CircuitBoard, title: "Hardware Innovation", description: "Design and prototype electronic systems and IoT solutions" },
+    { icon: Database, title: "Data Science Hub", description: "Analyze datasets and build predictive models for real-world applications" },
+    { icon: Terminal, title: "Programming Community", description: "Collaborate on coding projects and master new programming languages" },
+    { icon: Rocket, title: "Tech Innovation", description: "Work on cutting-edge technology projects and startup ideas" }
   ];
 
   const researchAreas = [
-    {
-      icon: Zap,
-      title: "Neural Networks",
-      projects: 12,
-      members: 24
-    },
-    {
-      icon: Atom,
-      title: "Quantum Computing",
-      projects: 8,
-      members: 16
-    },
-    {
-      icon: Monitor,
-      title: "Computer Vision",
-      projects: 15,
-      members: 32
-    },
-    {
-      icon: Database,
-      title: "Big Data Analytics",
-      projects: 20,
-      members: 28
-    }
+    { icon: Zap, title: "Neural Networks", projects: 12, members: 24 },
+    { icon: Atom, title: "Quantum Computing", projects: 8, members: 16 },
+    { icon: Monitor, title: "Computer Vision", projects: 15, members: 32 },
+    { icon: Database, title: "Big Data Analytics", projects: 20, members: 28 }
   ];
 
-  const upcomingEvents = [
-    {
-      id: 1,
-      title: "Quantum Computing Workshop",
-      date: "2024-01-15",
-      time: "2:00 PM",
-      type: "Workshop",
-      attendees: 45
-    },
-    {
-      id: 2,
-      title: "AI Ethics Symposium",
-      date: "2024-01-22",
-      time: "9:00 AM",
-      type: "Conference",
-      attendees: 120
-    },
-    {
-      id: 3,
-      title: "Neural Network Hackathon",
-      date: "2024-01-28",
-      time: "4:00 PM",
-      type: "Competition",
-      attendees: 80
-    }
-  ];
+  // Memoized components for performance
+  const FeatureCard = memo(({ feature }) => (
+    <Card className="bg-black/40 border-cyan-500/20 backdrop-blur-sm hover:border-cyan-400/40 transition-all duration-300 group">
+      <CardHeader>
+        <div className="mb-4 relative">
+          <feature.icon className="h-10 w-10 sm:h-12 sm:w-12 text-cyan-400 group-hover:text-cyan-300 transition-colors" />
+          <div className="absolute inset-0 h-10 w-10 sm:h-12 sm:w-12 border border-cyan-400/30 rounded-full group-hover:border-cyan-400/50 transition-all"></div>
+        </div>
+        <CardTitle className="text-white group-hover:text-cyan-100 transition-colors text-lg sm:text-xl">{feature.title}</CardTitle>
+      </CardHeader>
+      <CardContent>
+        <CardDescription className="text-gray-300 text-sm sm:text-base">{feature.description}</CardDescription>
+      </CardContent>
+    </Card>
+  ));
+
+  const ResearchCard = memo(({ area }) => (
+    <Card className="bg-gradient-to-br from-black/60 to-black/40 border-purple-500/20 backdrop-blur-sm hover:border-purple-400/40 transition-all">
+      <CardHeader className="text-center">
+        <area.icon className="h-8 w-8 sm:h-10 sm:w-10 text-purple-400 mx-auto mb-3" />
+        <CardTitle className="text-white text-base sm:text-lg">{area.title}</CardTitle>
+      </CardHeader>
+      <CardContent className="text-center">
+        <div className="space-y-2">
+          <div className="text-cyan-400 font-semibold text-sm sm:text-base">{area.projects} Projects</div>
+          <div className="text-gray-400 text-sm">{area.members} Members</div>
+        </div>
+      </CardContent>
+    </Card>
+  ));
+
+  const EventCard = memo(({ event }) => (
+    <Card className="bg-black/40 border-cyan-500/20 backdrop-blur-sm hover:border-cyan-400/40 transition-all">
+      <CardHeader>
+        <div className="flex flex-col sm:flex-row sm:justify-between sm:items-start space-y-2 sm:space-y-0">
+          <CardTitle className="text-white text-base sm:text-lg">{event.title}</CardTitle>
+          <Badge className="bg-gradient-to-r from-cyan-600 to-purple-600 text-white self-start">{event.type}</Badge>
+        </div>
+      </CardHeader>
+      <CardContent>
+        <div className="space-y-3">
+          <div className="flex items-center space-x-2 text-gray-300 text-sm sm:text-base">
+            <Calendar className="h-4 w-4 text-cyan-400 flex-shrink-0" />
+            <span>{event.date} at {event.time}</span>
+          </div>
+          <div className="flex items-center space-x-2 text-gray-300 text-sm sm:text-base">
+            <Users className="h-4 w-4 text-purple-400 flex-shrink-0" />
+            <span>{event.attendees} Expected Attendees</span>
+          </div>
+        </div>
+      </CardContent>
+    </Card>
+  ));
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-950 via-blue-950 to-slate-950">
       {/* Animated Background Elements */}
       <div className="fixed inset-0 overflow-hidden pointer-events-none">
-        <div className="absolute top-10 left-10 w-2 h-2 bg-cyan-400 rounded-full animate-pulse"></div>
-        <div className="absolute top-1/4 right-20 w-1 h-1 bg-purple-400 rounded-full animate-pulse delay-1000"></div>
-        <div className="absolute bottom-1/3 left-1/4 w-1.5 h-1.5 bg-green-400 rounded-full animate-pulse delay-500"></div>
-        <div className="absolute top-1/2 right-1/3 w-1 h-1 bg-yellow-400 rounded-full animate-pulse delay-700"></div>
+        <div className="absolute top-[10%] left-[5vw] w-2 h-2 bg-cyan-400 rounded-full animate-pulse"></div>
+        <div className="absolute top-[25%] right-[5vw] w-1 h-1 bg-purple-400 rounded-full animate-pulse delay-1000"></div>
+        <div className="absolute bottom-[33%] left-[25%] w-1.5 h-1.5 bg-green-400 rounded-full animate-pulse delay-500"></div>
+        <div className="absolute top-[50%] right-[33%] w-1 h-1 bg-yellow-400 rounded-full animate-pulse delay-700"></div>
       </div>
 
       {/* Navigation */}
@@ -120,8 +177,6 @@ const Index = () => {
                 OG Techminds
               </span>
             </div>
-            
-            {/* Desktop Navigation */}
             <div className="hidden md:flex space-x-4">
               {!isLoggedIn ? (
                 <>
@@ -144,21 +199,19 @@ const Index = () => {
                 </Link>
               )}
             </div>
-
-            {/* Mobile menu button */}
             <div className="md:hidden">
               <Button
                 variant="ghost"
                 size="icon"
                 onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
                 className="text-cyan-400"
+                aria-label={mobileMenuOpen ? "Close menu" : "Open menu"}
+                aria-expanded={mobileMenuOpen}
               >
                 {mobileMenuOpen ? <X className="h-6 w-6" /> : <Menu className="h-6 w-6" />}
               </Button>
             </div>
           </div>
-          
-          {/* Mobile Navigation Menu */}
           {mobileMenuOpen && (
             <div className="md:hidden py-4 space-y-2">
               {!isLoggedIn ? (
@@ -202,13 +255,11 @@ const Index = () => {
               </div>
             </div>
           </div>
-          
           <p className="text-lg sm:text-xl text-gray-300 mb-8 sm:mb-12 max-w-3xl mx-auto leading-relaxed px-4">
             Join our vibrant community of developers, innovators, and tech enthusiasts. 
             Collaborate on exciting projects, learn cutting-edge technologies, 
             and shape the future of technology together.
           </p>
-          
           <div className="flex flex-col sm:flex-row justify-center space-y-4 sm:space-y-0 sm:space-x-6 mb-12 sm:mb-16 px-4">
             <Link to="/register">
               <Button size="lg" className="w-full sm:w-auto bg-gradient-to-r from-cyan-600 to-purple-600 hover:from-cyan-700 hover:to-purple-700 text-white px-8 sm:px-10 py-4 text-lg shadow-lg shadow-cyan-500/25">
@@ -221,28 +272,124 @@ const Index = () => {
               </Button>
             </Link>
           </div>
-
           {/* Tech Stats Grid */}
           <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4 max-w-4xl mx-auto">
             <div className="bg-black/40 border border-cyan-500/20 rounded-lg p-3 sm:p-4 backdrop-blur-sm">
-              <div className="text-xl sm:text-2xl font-bold text-cyan-400">500+</div>
-              <div className="text-xs sm:text-sm text-gray-400">Active Members</div>
+              <div className="text-xl sm:text-2xl font-bold text-cyan-400">{activeMembers}+</div>
+              <div className="text-xs sm:text-sm text-gray-300">Active Members</div>
             </div>
             <div className="bg-black/40 border border-purple-500/20 rounded-lg p-3 sm:p-4 backdrop-blur-sm">
-              <div className="text-xl sm:text-2xl font-bold text-purple-400">150+</div>
-              <div className="text-xs sm:text-sm text-gray-400">Tech Projects</div>
+              <div className="text-xl sm:text-2xl font-bold text-purple-400">{activeProjects}+</div>
+              <div className="text-xs sm:text-sm text-gray-300">Tech Projects</div>
             </div>
             <div className="bg-black/40 border border-green-500/20 rounded-lg p-3 sm:p-4 backdrop-blur-sm">
               <div className="text-xl sm:text-2xl font-bold text-green-400">50+</div>
-              <div className="text-xs sm:text-sm text-gray-400">Workshops</div>
+              <div className="text-xs sm:text-sm text-gray-300">Workshops</div>
             </div>
             <div className="bg-black/40 border border-yellow-500/20 rounded-lg p-3 sm:p-4 backdrop-blur-sm">
               <div className="text-xl sm:text-2xl font-bold text-yellow-400">25+</div>
-              <div className="text-xs sm:text-sm text-gray-400">Tech Partners</div>
+              <div className="text-xs sm:text-sm text-gray-300">Tech Partners</div>
             </div>
           </div>
         </div>
       </section>
+
+      {/* Admin Event Creation Form (visible only to admins) */}
+      {isLoggedIn && isAdmin && (
+        <section className="px-4 py-12 sm:py-20 bg-gradient-to-r from-purple-900/10 to-cyan-900/10">
+          <div className="max-w-7xl mx-auto">
+            <h2 className="text-3xl sm:text-4xl font-bold text-white text-center mb-12 sm:mb-16">
+              Create New Event
+            </h2>
+            <Card className="bg-black/40 border-cyan-500/20 backdrop-blur-sm">
+              <CardContent className="pt-6">
+                <form onSubmit={handleEventSubmit} className="space-y-4">
+                  <div>
+                    <Label htmlFor="title" className="text-white">Event Title</Label>
+                    <Input
+                      id="title"
+                      value={newEvent.title}
+                      onChange={(e) => setNewEvent({ ...newEvent, title: e.target.value })}
+                      className="bg-black/60 text-white border-cyan-400/50"
+                      required
+                    />
+                  </div>
+                  <div className="flex space-x-4">
+                    <div className="flex-1">
+                      <Label htmlFor="date" className="text-white">Date</Label>
+                      <Input
+                        id="date"
+                        type="date"
+                        value={newEvent.date}
+                        onChange={(e) => setNewEvent({ ...newEvent, date: e.target.value })}
+                        className="bg-black/60 text-white border-cyan-400/50"
+                        required
+                      />
+                    </div>
+                    <div className="flex-1">
+                      <Label htmlFor="time" className="text-white">Time</Label>
+                      <Input
+                        id="time"
+                        type="time"
+                        value={newEvent.time}
+                        onChange={(e) => setNewEvent({ ...newEvent, time: e.target.value })}
+                        className="bg-black/60 text-white border-cyan-400/50"
+                        required
+                      />
+                    </div>
+                  </div>
+                  <div>
+                    <Label htmlFor="type" className="text-white">Event Type</Label>
+                    <Input
+                      id="type"
+                      value={newEvent.type}
+                      onChange={(e) => setNewEvent({ ...newEvent, type: e.target.value })}
+                      className="bg-black/60 text-white border-cyan-400/50"
+                      placeholder="e.g., Workshop, Conference"
+                      required
+                    />
+                  </div>
+                  <div>
+                    <Label htmlFor="location" className="text-white">Location</Label>
+                    <Input
+                      id="location"
+                      value={newEvent.location}
+                      onChange={(e) => setNewEvent({ ...newEvent, location: e.target.value })}
+                      className="bg-black/60 text-white border-cyan-400/50"
+                      required
+                    />
+                  </div>
+                  <div>
+                    <Label htmlFor="description" className="text-white">Description</Label>
+                    <Input
+                      id="description"
+                      value={newEvent.description}
+                      onChange={(e) => setNewEvent({ ...newEvent, description: e.target.value })}
+                      className="bg-black/60 text-white border-cyan-400/50"
+                      required
+                    />
+                  </div>
+                  <div>
+                    <Label htmlFor="attendees" className="text-white">Expected Attendees</Label>
+                    <Input
+                      id="attendees"
+                      type="number"
+                      value={newEvent.attendees}
+                      onChange={(e) => setNewEvent({ ...newEvent, attendees: e.target.value })}
+                      className="bg-black/60 text-white border-cyan-400/50"
+                      required
+                    />
+                  </div>
+                  {error && <p className="text-red-400 text-sm">{error}</p>}
+                  <Button type="submit" className="bg-gradient-to-r from-cyan-600 to-purple-600 hover:from-cyan-700 hover:to-purple-700 text-white">
+                    Create Event
+                  </Button>
+                </form>
+              </CardContent>
+            </Card>
+          </div>
+        </section>
+      )}
 
       {/* Tech Focus Areas */}
       <section className="px-4 py-12 sm:py-20 bg-gradient-to-r from-cyan-900/10 to-purple-900/10">
@@ -252,24 +399,10 @@ const Index = () => {
               Technology Focus Areas
             </span>
           </h2>
-          <p className="text-center text-gray-400 mb-12 sm:mb-16 text-lg px-4">Explore our specialized technology domains</p>
-          
+          <p className="text-center text-gray-300 mb-12 sm:mb-16 text-lg px-4">Explore our specialized technology domains</p>
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 sm:gap-8">
             {features.map((feature, index) => (
-              <Card key={index} className="bg-black/40 border-cyan-500/20 backdrop-blur-sm hover:border-cyan-400/40 transition-all duration-300 group">
-                <CardHeader>
-                  <div className="mb-4 relative">
-                    <feature.icon className="h-10 w-10 sm:h-12 sm:w-12 text-cyan-400 group-hover:text-cyan-300 transition-colors" />
-                    <div className="absolute inset-0 h-10 w-10 sm:h-12 sm:w-12 border border-cyan-400/30 rounded-full group-hover:border-cyan-400/50 transition-all"></div>
-                  </div>
-                  <CardTitle className="text-white group-hover:text-cyan-100 transition-colors text-lg sm:text-xl">{feature.title}</CardTitle>
-                </CardHeader>
-                <CardContent>
-                  <CardDescription className="text-gray-300 text-sm sm:text-base">
-                    {feature.description}
-                  </CardDescription>
-                </CardContent>
-              </Card>
+              <FeatureCard key={index} feature={feature} />
             ))}
           </div>
         </div>
@@ -283,18 +416,7 @@ const Index = () => {
           </h2>
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6">
             {researchAreas.map((area, index) => (
-              <Card key={index} className="bg-gradient-to-br from-black/60 to-black/40 border-purple-500/20 backdrop-blur-sm hover:border-purple-400/40 transition-all">
-                <CardHeader className="text-center">
-                  <area.icon className="h-8 w-8 sm:h-10 sm:w-10 text-purple-400 mx-auto mb-3" />
-                  <CardTitle className="text-white text-base sm:text-lg">{area.title}</CardTitle>
-                </CardHeader>
-                <CardContent className="text-center">
-                  <div className="space-y-2">
-                    <div className="text-cyan-400 font-semibold text-sm sm:text-base">{area.projects} Projects</div>
-                    <div className="text-gray-400 text-sm">{area.members} Members</div>
-                  </div>
-                </CardContent>
-              </Card>
+              <ResearchCard key={index} area={area} />
             ))}
           </div>
         </div>
@@ -307,28 +429,13 @@ const Index = () => {
             Upcoming Tech Events
           </h2>
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 sm:gap-8">
-            {upcomingEvents.map((event) => (
-              <Card key={event.id} className="bg-black/40 border-cyan-500/20 backdrop-blur-sm hover:border-cyan-400/40 transition-all">
-                <CardHeader>
-                  <div className="flex flex-col sm:flex-row sm:justify-between sm:items-start space-y-2 sm:space-y-0">
-                    <CardTitle className="text-white text-base sm:text-lg">{event.title}</CardTitle>
-                    <Badge className="bg-gradient-to-r from-cyan-600 to-purple-600 text-white self-start">{event.type}</Badge>
-                  </div>
-                </CardHeader>
-                <CardContent>
-                  <div className="space-y-3">
-                    <div className="flex items-center space-x-2 text-gray-300 text-sm sm:text-base">
-                      <Calendar className="h-4 w-4 text-cyan-400 flex-shrink-0" />
-                      <span>{event.date} at {event.time}</span>
-                    </div>
-                    <div className="flex items-center space-x-2 text-gray-300 text-sm sm:text-base">
-                      <Users className="h-4 w-4 text-purple-400 flex-shrink-0" />
-                      <span>{event.attendees} Expected Attendees</span>
-                    </div>
-                  </div>
-                </CardContent>
-              </Card>
-            ))}
+            {upcomingEvents.length > 0 ? (
+              upcomingEvents.map((event) => (
+                <EventCard key={event.id} event={event} />
+              ))
+            ) : (
+              <p className="text-gray-300 text-center col-span-full">No upcoming events.</p>
+            )}
           </div>
         </div>
       </section>
@@ -343,29 +450,27 @@ const Index = () => {
                 OG Techminds
               </span>
             </div>
-            <p className="text-gray-400 text-base sm:text-lg px-4">
+            <p className="text-gray-300 text-base sm:text-lg px-4">
               Advancing technology through collaborative innovation and community learning
             </p>
           </div>
-          
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6 sm:gap-8 text-center">
             <div>
               <h3 className="text-cyan-400 font-semibold mb-2">Tech Focus</h3>
-              <p className="text-gray-500 text-sm">AI • Software Development • Data Science</p>
+              <p className="text-gray-400 text-sm">AI • Software Development • Data Science</p>
             </div>
             <div>
               <h3 className="text-purple-400 font-semibold mb-2">Innovation Areas</h3>
-              <p className="text-gray-500 text-sm">Hardware • Software • Digital Solutions</p>
+              <p className="text-gray-400 text-sm">Hardware • Software • Digital Solutions</p>
             </div>
             <div>
               <h3 className="text-green-400 font-semibold mb-2">Global Network</h3>
-              <p className="text-gray-500 text-sm">500+ Members • 25+ Countries</p>
+              <p className="text-gray-400 text-sm">{activeMembers}+ Members • 25+ Countries</p>
             </div>
           </div>
-          
           <div className="text-center mt-6 sm:mt-8 pt-6 sm:pt-8 border-t border-cyan-500/10">
-            <p className="text-gray-500 text-sm px-4">
-              © 2024 OG Techminds Technology Community. Building tomorrow's technology today.
+            <p className="text-gray-400 text-sm px-4">
+              © 2025 OG Techminds Technology Community. Building tomorrow's technology today.
             </p>
           </div>
         </div>
