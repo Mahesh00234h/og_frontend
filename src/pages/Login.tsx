@@ -6,9 +6,9 @@ import { Label } from '@/components/ui/label';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Code, Mail, Lock, Loader2 } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
+import { GoogleLogin, CredentialResponse } from '@react-oauth/google';
 
 const API_BASE_URL = 'https://og-backend-mwwi.onrender.com/api';
-
 
 const Login = () => {
   const [email, setEmail] = useState('');
@@ -69,6 +69,41 @@ const Login = () => {
     }
   };
 
+  const handleGoogleSuccess = async (credentialResponse: CredentialResponse) => {
+    if (!credentialResponse?.credential) {
+      toast({
+        title: "Google Login Failed",
+        description: "Invalid Google response. Please try again.",
+        variant: "destructive",
+      });
+      return;
+    }
+    try {
+      setLoading(true);
+      const res = await fetch(`${API_BASE_URL}/google-login`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        credentials: "include",
+        body: JSON.stringify({ token: credentialResponse.credential }),
+      });
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.error || "Google login failed");
+      toast({
+        title: "Google Login Successful!",
+        description: `Welcome ${data.name || ""}`,
+      });
+      navigate("/dashboard");
+    } catch (err: any) {
+      toast({
+        title: "Google Login Failed",
+        description: err.message || "An error occurred during Google login.",
+        variant: "destructive",
+      });
+    } finally {
+      setLoading(false);
+    }
+  };
+
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-900 via-purple-900 to-slate-900 flex items-center justify-center p-4">
       <Card className="w-full max-w-md bg-black/40 border-purple-500/20 backdrop-blur-md">
@@ -124,6 +159,18 @@ const Login = () => {
                 'Sign In'
               )}
             </Button>
+            <div className="mt-6 flex justify-center">
+              <GoogleLogin
+                onSuccess={handleGoogleSuccess}
+                onError={() =>
+                  toast({
+                    title: "Google Login Failed",
+                    description: "Please try again.",
+                    variant: "destructive"
+                  })
+                }
+              />
+            </div>
           </form>
           <div className="mt-6 text-center">
             <p className="text-gray-300">
