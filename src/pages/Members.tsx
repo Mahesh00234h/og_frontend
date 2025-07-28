@@ -5,7 +5,7 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Badge } from '@/components/ui/badge';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
-import { Users, Search, Filter } from 'lucide-react';
+import { Users, Search, Filter, Star, Project, Globe } from 'lucide-react';
 import axios from 'axios';
 import { useToast } from '@/hooks/use-toast';
 import OGLoader from '@/components/ui/OGLoader';
@@ -146,12 +146,12 @@ const Members = () => {
 
   if (error) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-slate-900 via-purple-900 to-slate-900 flex items-center justify-center">
-        <div className="text-center text-red-400 p-6 bg-black/40 rounded-lg">
-          <p className="text-lg mb-4">{error}</p>
+      <div className="min-h-screen bg-gradient-to-br from-slate-900 via-purple-900 to-slate-900 flex items-center justify-center p-4">
+        <div className="text-center text-red-400 p-6 bg-black/40 rounded-lg max-w-sm w-full">
+          <p className="text-base mb-4">{error}</p>
           <Button
             onClick={() => window.location.reload()}
-            className="bg-purple-600 hover:bg-purple-700"
+            className="bg-purple-600 hover:bg-purple-700 w-full"
           >
             Retry
           </Button>
@@ -162,100 +162,93 @@ const Members = () => {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-900 via-purple-900 to-slate-900">
-      {/* Header */}
-      <header className="bg-black/20 backdrop-blur-md border-b border-purple-500/20 p-4">
-        <div className="max-w-7xl mx-auto flex justify-between items-center">
-          <div className="flex items-center space-x-2">
-            <Users className="h-8 w-8 text-purple-400" />
-            <h1 className="text-2xl font-bold text-white">Members</h1>
-          </div>
-          <div className="flex flex-col sm:flex-row gap-4 w-full">
-
-            <div className="relative">
-              <Search className="absolute left-3 top-3 h-4 w-4 text-gray-400" />
-              <Input
-  placeholder="Search members..."
-  value={searchTerm}
-  onChange={(e) => setSearchTerm(e.target.value)}
-  className="pl-10 bg-black/20 border-purple-500/20 text-white placeholder:text-gray-400 w-full sm:w-64"
-/>
-
+      {/* Compact Header */}
+      <header className="bg-black/20 backdrop-blur-md border-b border-purple-500/20 p-3">
+        <div className="max-w-6xl mx-auto">
+          <div className="flex items-center justify-between mb-3">
+            <div className="flex items-center space-x-2">
+              <Users className="h-6 w-6 text-purple-400" />
+              <h1 className="text-xl font-bold text-white">Members</h1>
             </div>
-           
+            <Badge className="bg-purple-600 text-white text-xs px-2 py-1">
+              {totalMembers} Total
+            </Badge>
+          </div>
+          
+          {/* Mobile-optimized search */}
+          <div className="relative">
+            <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400" />
+            <Input
+              placeholder="Search members..."
+              value={searchTerm}
+              onChange={(e) => setSearchTerm(e.target.value)}
+              className="pl-10 bg-black/20 border-purple-500/20 text-white placeholder:text-gray-400 w-full text-sm h-10"
+            />
           </div>
         </div>
       </header>
 
-      <div className="max-w-7xl mx-auto p-6">
-        {/* Stats */}
-        <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
+      <div className="max-w-6xl mx-auto p-3">
+        {/* Compact Stats Grid */}
+        <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 mb-6">
           <Card className="bg-black/40 border-purple-500/20 backdrop-blur-md">
-            <CardContent className="p-6">
-              <div className="flex items-center justify-between">
-                <div>
-                  <p className="text-gray-400 text-sm">Total Members</p>
-                  <p className="text-2xl font-bold text-white">{totalMembers}</p>
-                </div>
-                <Users className="h-8 w-8 text-purple-400" />
+            <CardContent className="p-3">
+              <div className="text-center">
+                <Users className="h-5 w-5 text-purple-400 mx-auto mb-1" />
+                <p className="text-gray-400 text-xs">Total</p>
+                <p className="text-lg font-bold text-white">{totalMembers}</p>
               </div>
             </CardContent>
           </Card>
 
           <Card className="bg-black/40 border-purple-500/20 backdrop-blur-md">
-            <CardContent className="p-6">
-              <div className="flex items-center justify-between">
-                <div>
-                  <p className="text-gray-400 text-sm">Online Now</p>
-                  <p className="text-2xl font-bold text-white">
-                    {members.filter((m) => m.isOnline).length}
-                  </p>
-                </div>
-                <div className="h-3 w-3 bg-green-400 rounded-full animate-pulse" />
+            <CardContent className="p-3">
+              <div className="text-center">
+                <div className="h-5 w-5 bg-green-400 rounded-full animate-pulse mx-auto mb-1" />
+                <p className="text-gray-400 text-xs">Online</p>
+                <p className="text-lg font-bold text-white">
+                  {members.filter((m) => m.isOnline).length}
+                </p>
               </div>
             </CardContent>
           </Card>
 
           <Card className="bg-black/40 border-purple-500/20 backdrop-blur-md">
-            <CardContent className="p-6">
-              <div className="flex items-center justify-between">
-                <div>
-                  <p className="text-gray-400 text-sm">Total Projects</p>
-                  <p className="text-2xl font-bold text-white">
-                    {members.reduce((sum, member) => sum + member.projects, 0)}
-                  </p>
-                </div>
-                <Users className="h-8 w-8 text-purple-400" />
+            <CardContent className="p-3">
+              <div className="text-center">
+                <Project className="h-5 w-5 text-cyan-400 mx-auto mb-1" />
+                <p className="text-gray-400 text-xs">Projects</p>
+                <p className="text-lg font-bold text-white">
+                  {members.reduce((sum, member) => sum + member.projects, 0)}
+                </p>
               </div>
             </CardContent>
           </Card>
 
           <Card className="bg-black/40 border-purple-500/20 backdrop-blur-md">
-            <CardContent className="p-6">
-              <div className="flex items-center justify-between">
-                <div>
-                  <p className="text-gray-400 text-sm">Total Stars</p>
-                  <p className="text-2xl font-bold text-white">
-                    {members.reduce((sum, member) => sum + member.stars, 0)}
-                  </p>
-                </div>
-                <Users className="h-8 w-8 text-purple-400" />
+            <CardContent className="p-3">
+              <div className="text-center">
+                <Star className="h-5 w-5 text-yellow-400 mx-auto mb-1" />
+                <p className="text-gray-400 text-xs">Stars</p>
+                <p className="text-lg font-bold text-white">
+                  {members.reduce((sum, member) => sum + member.stars, 0)}
+                </p>
               </div>
             </CardContent>
           </Card>
         </div>
 
-        {/* Pagination Info */}
-        <div className="mb-6 text-gray-300 flex justify-between items-center">
-          <p>
-            Showing {(page - 1) * pageSize + 1} to{' '}
-            {Math.min(page * pageSize, totalMembers)} of {totalMembers} members
+        {/* Compact Pagination Info */}
+        <div className="mb-4 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3">
+          <p className="text-gray-300 text-sm">
+            {(page - 1) * pageSize + 1}-{Math.min(page * pageSize, totalMembers)} of {totalMembers}
           </p>
-          <div className="flex items-center gap-4">
-            <label className="text-gray-300">Members per page:</label>
+          <div className="flex items-center gap-2">
+            <label className="text-gray-300 text-sm">Per page:</label>
             <select
               value={pageSize}
               onChange={(e) => handlePageSizeChange(Number(e.target.value))}
-              className="bg-black/20 border-purple-500/20 text-white p-2 rounded"
+              className="bg-black/20 border-purple-500/20 text-white p-1 rounded text-sm"
             >
               <option value={10}>10</option>
               <option value={20}>20</option>
@@ -264,77 +257,98 @@ const Members = () => {
           </div>
         </div>
 
-        {/* Members Grid */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+        {/* Mobile-optimized Members Grid */}
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
           {filteredMembers.map((member) => (
             <Card
               key={member.id}
               className="bg-black/40 border-purple-500/20 backdrop-blur-md hover:border-purple-400/40 transition-colors"
             >
-              <CardHeader>
-                <div className="flex items-center space-x-4">
-                  <div className="relative">
-                    <Avatar className="h-16 w-16">
+              <CardHeader className="pb-3">
+                <div className="flex items-start space-x-3">
+                  <div className="relative flex-shrink-0">
+                    <Avatar className="h-12 w-12">
                       <AvatarImage src={member.avatar} />
-                      <AvatarFallback className="bg-purple-600 text-white text-lg">
+                      <AvatarFallback className="bg-purple-600 text-white text-sm">
                         {member.name.split(' ').map((n) => n[0]).join('')}
                       </AvatarFallback>
                     </Avatar>
                     {member.isOnline && (
-                      <div className="absolute -bottom-1 -right-1 h-4 w-4 bg-green-400 rounded-full border-2 border-black" />
+                      <div className="absolute -bottom-0.5 -right-0.5 h-3 w-3 bg-green-400 rounded-full border-2 border-black" />
                     )}
                   </div>
-                  <div className="flex-1">
-                    <CardTitle className="text-white text-lg">{member.name}</CardTitle>
-                    <CardDescription className="text-gray-300">
-                      {member.rollNumber} • {member.department}
+                  <div className="flex-1 min-w-0">
+                    <CardTitle className="text-white text-base leading-tight truncate">
+                      {member.name}
+                    </CardTitle>
+                    <CardDescription className="text-gray-300 text-xs">
+                      {member.rollNumber}
                     </CardDescription>
-                    <Badge className="bg-purple-600 text-white mt-1">{member.year}</Badge>
-                    {!member.isActive && (
-                      <Badge className="bg-yellow-600 text-white mt-1 ml-2">Pending Approval</Badge>
-                    )}
+                    <CardDescription className="text-gray-300 text-xs truncate">
+                      {member.department}
+                    </CardDescription>
+                    <div className="flex gap-1 mt-1">
+                      <Badge className="bg-purple-600 text-white text-xs px-1 py-0">
+                        {member.year}
+                      </Badge>
+                      {!member.isActive && (
+                        <Badge className="bg-yellow-600 text-white text-xs px-1 py-0">
+                          Pending
+                        </Badge>
+                      )}
+                    </div>
                   </div>
                 </div>
               </CardHeader>
-              <CardContent className="space-y-4">
-                <div className="flex items-center justify-between">
-                  <div className="flex items-center space-x-2">
-                    <span className="text-white font-semibold">{member.stars}</span>
-                    <span className="text-gray-300 text-sm">Stars</span>
+              
+              <CardContent className="pt-0 space-y-3">
+                {/* Stats Row */}
+                <div className="flex justify-between items-center">
+                  <div className="flex items-center space-x-1">
+                    <Star className="h-3 w-3 text-yellow-400" />
+                    <span className="text-white font-semibold text-sm">{member.stars}</span>
                   </div>
-                  <div className="text-white">
-                    <span className="font-semibold">{member.projects}</span> projects
-                  </div>
-                </div>
-
-                <div className="space-y-2">
-                  <div className="flex items-center space-x-2 text-gray-300">
-                    <span className="text-sm">{member.email}</span>
-                  </div>
-                  <div className="flex items-center space-x-2 text-gray-300">
-                    <span className="text-sm">{member.phone}</span>
+                  <div className="flex items-center space-x-1">
+                    <Project className="h-3 w-3 text-cyan-400" />
+                    <span className="text-white text-sm">{member.projects}</span>
                   </div>
                 </div>
 
+                {/* Contact Info */}
+                <div className="space-y-1">
+                  <div className="text-gray-300 text-xs truncate">{member.email}</div>
+                  <div className="text-gray-300 text-xs truncate">{member.phone}</div>
+                </div>
+
+                {/* Skills */}
                 <div>
-                  <p className="text-gray-400 text-sm mb-2">Skills:</p>
+                  <p className="text-gray-400 text-xs mb-1">Skills:</p>
                   <div className="flex flex-wrap gap-1">
-                    {member.skills.map((skill, index) => (
+                    {member.skills.slice(0, 3).map((skill, index) => (
                       <Badge
                         key={index}
                         variant="outline"
-                        className="text-xs border-purple-500/30 text-purple-300"
+                        className="text-xs border-purple-500/30 text-purple-300 px-1 py-0"
                       >
                         {skill}
                       </Badge>
                     ))}
+                    {member.skills.length > 3 && (
+                      <Badge
+                        variant="outline"
+                        className="text-xs border-purple-500/30 text-purple-300 px-1 py-0"
+                      >
+                        +{member.skills.length - 3}
+                      </Badge>
+                    )}
                   </div>
                 </div>
 
+                {/* Action Buttons */}
                 <div className="flex space-x-2 pt-2">
                   <Button
                     size="sm"
-                    className="flex-1 bg-purple-600 hover:bg-purple-700"
+                    className="flex-1 bg-purple-600 hover:bg-purple-700 text-xs py-2"
                     onClick={() => handleMessage(member.id)}
                   >
                     Message
@@ -342,10 +356,10 @@ const Members = () => {
                   <Button
                     size="sm"
                     variant="outline"
-                    className="border-purple-500 text-purple-400"
+                    className="border-purple-500 text-purple-400 text-xs py-2 px-3"
                     onClick={() => handleViewProfile(member.id)}
                   >
-                    View Profile
+                    View
                   </Button>
                 </div>
               </CardContent>
@@ -353,41 +367,83 @@ const Members = () => {
           ))}
         </div>
 
+        {/* Empty State */}
         {filteredMembers.length === 0 && (
           <div className="text-center py-12">
-            <Users className="h-16 w-16 text-gray-400 mx-auto mb-4" />
-            <p className="text-gray-400 text-lg">No members found matching your search.</p>
+            <Users className="h-12 w-12 text-gray-400 mx-auto mb-3" />
+            <p className="text-gray-400 text-base">No members found</p>
+            <p className="text-gray-500 text-sm mt-1">Try adjusting your search terms</p>
           </div>
         )}
 
-        {/* Pagination Controls */}
-        <div className="flex justify-between items-center mt-6">
-          <Button
-            onClick={handlePrevious}
-            disabled={page === 1}
-            className="bg-purple-600 hover:bg-purple-700 disabled:opacity-50"
-          >
-            Previous
-          </Button>
-          <div className="flex gap-2">
-            {Array.from({ length: totalPages }, (_, i) => i + 1).map((p) => (
-              <Button
-                key={p}
-                onClick={() => handlePageChange(p)}
-                disabled={p === page}
-                className={`bg-purple-600 hover:bg-purple-700 ${p === page ? 'opacity-50' : ''}`}
-              >
-                {p}
-              </Button>
-            ))}
+        {/* Mobile-optimized Pagination */}
+        <div className="mt-6">
+          {/* Mobile Pagination - Show only current page and arrows */}
+          <div className="flex justify-between items-center sm:hidden mb-4">
+            <Button
+              onClick={handlePrevious}
+              disabled={page === 1}
+              size="sm"
+              className="bg-purple-600 hover:bg-purple-700 disabled:opacity-50 text-sm px-3 py-2"
+            >
+              Previous
+            </Button>
+            <span className="text-gray-300 text-sm">
+              Page {page} of {totalPages}
+            </span>
+            <Button
+              onClick={handleNext}
+              disabled={page === totalPages}
+              size="sm"
+              className="bg-purple-600 hover:bg-purple-700 disabled:opacity-50 text-sm px-3 py-2"
+            >
+              Next
+            </Button>
           </div>
-          <Button
-            onClick={handleNext}
-            disabled={page === totalPages}
-            className="bg-purple-600 hover:bg-purple-700 disabled:opacity-50"
-          >
-            Next
-          </Button>
+
+          {/* Desktop Pagination - Show all page numbers */}
+          <div className="hidden sm:flex justify-between items-center">
+            <Button
+              onClick={handlePrevious}
+              disabled={page === 1}
+              className="bg-purple-600 hover:bg-purple-700 disabled:opacity-50"
+            >
+              Previous
+            </Button>
+            <div className="flex gap-2 overflow-x-auto">
+              {Array.from({ length: Math.min(totalPages, 7) }, (_, i) => {
+                let pageNum;
+                if (totalPages <= 7) {
+                  pageNum = i + 1;
+                } else if (page <= 4) {
+                  pageNum = i + 1;
+                } else if (page >= totalPages - 3) {
+                  pageNum = totalPages - 6 + i;
+                } else {
+                  pageNum = page - 3 + i;
+                }
+                return (
+                  <Button
+                    key={pageNum}
+                    onClick={() => handlePageChange(pageNum)}
+                    disabled={pageNum === page}
+                    className={`bg-purple-600 hover:bg-purple-700 min-w-[40px] ${
+                      pageNum === page ? 'opacity-50' : ''
+                    }`}
+                  >
+                    {pageNum}
+                  </Button>
+                );
+              })}
+            </div>
+            <Button
+              onClick={handleNext}
+              disabled={page === totalPages}
+              className="bg-purple-600 hover:bg-purple-700 disabled:opacity-50"
+            >
+              Next
+            </Button>
+          </div>
         </div>
       </div>
     </div>
