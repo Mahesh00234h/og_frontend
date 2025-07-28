@@ -5,7 +5,7 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Badge } from '@/components/ui/badge';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
-import { Users, Search, Filter, Star, Project, Globe } from 'lucide-react';
+import { Users, Search, Filter, Star, FolderOpen, Globe2 } from 'lucide-react';
 import axios from 'axios';
 import { useToast } from '@/hooks/use-toast';
 import OGLoader from '@/components/ui/OGLoader';
@@ -216,7 +216,7 @@ const Members = () => {
           <Card className="bg-black/40 border-purple-500/20 backdrop-blur-md">
             <CardContent className="p-3">
               <div className="text-center">
-                <Project className="h-5 w-5 text-cyan-400 mx-auto mb-1" />
+                <FolderOpen className="h-5 w-5 text-cyan-400 mx-auto mb-1" />
                 <p className="text-gray-400 text-xs">Projects</p>
                 <p className="text-lg font-bold text-white">
                   {members.reduce((sum, member) => sum + member.projects, 0)}
@@ -309,7 +309,7 @@ const Members = () => {
                     <span className="text-white font-semibold text-sm">{member.stars}</span>
                   </div>
                   <div className="flex items-center space-x-1">
-                    <Project className="h-3 w-3 text-cyan-400" />
+                    <FolderOpen className="h-3 w-3 text-cyan-400" />
                     <span className="text-white text-sm">{member.projects}</span>
                   </div>
                 </div>
