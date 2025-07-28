@@ -37,8 +37,8 @@ const About = () => {
     {
       name: 'Mahesh Rakte',
       role: 'President',
-      department: 'Information Technology',
-      year: '3rd Year',
+      department: 'Computer Science',
+      year: '2rd Year',
       image: '',
       linkedin: 'https://www.linkedin.com/in/maheshrakte0',
       bio: 'Organizing events and workshops to enhance learning experiences for all members.'
@@ -46,7 +46,7 @@ const About = () => {
     {
       name: 'Sanmati Tighare',
       role: 'President',
-      department: 'Electronics',
+      department: 'Computer Science',
       year: '3rd Year',
       image: '',
       linkedin: 'https://www.linkedin.com/in/sanmati-tighare-17323129a',
