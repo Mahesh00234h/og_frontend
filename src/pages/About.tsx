@@ -1,12 +1,11 @@
-
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Button } from '@/components/ui/button';
-import { Link } from 'react-router-dom'; // Assuming you're using react-router-dom for navigation
-import { 
-  Code, 
-  Users, 
+import { Link } from 'react-router-dom';
+import {
+  Code,
+  Users,
   Target,
   Heart,
   Award,
@@ -21,55 +20,37 @@ const About = () => {
       name: 'Gaurav Pandit',
       role: 'Founder',
       department: 'Computer Science',
+      year: '4th Year',
       image: '',
+      linkedin: 'https://www.linkedin.com/in/gauravpandit07',
       bio: 'Passionate about fostering innovation and technical excellence in students.'
     },
     {
       name: 'Prajwal Nivangune',
-      role: 'co-founder',
+      role: 'Co-Founder',
       department: 'Computer Science',
       year: '4th Year',
       image: '',
+      linkedin: 'https://www.linkedin.com/in/prajwal-nivangune',
       bio: 'Leading the club towards new heights of technical innovation and collaboration.'
     },
     {
-      name: 'TSSMS',
+      name: 'Mahesh Rakte',
       role: 'President',
       department: 'Information Technology',
       year: '3rd Year',
       image: '',
+      linkedin: 'https://www.linkedin.com/in/maheshrakte0',
       bio: 'Organizing events and workshops to enhance learning experiences for all members.'
     },
     {
-      name: 'JSPM',
-      role: 'president',
+      name: 'Sanmati Tighare',
+      role: 'President',
       department: 'Electronics',
       year: '3rd Year',
       image: '',
+      linkedin: 'https://www.linkedin.com/in/sanmati-tighare-17323129a',
       bio: 'Driving technical projects and mentoring junior members in latest technologies.'
-    }
-  ];
-
-  const achievements = [
-    {
-      title: 'Best Technical Club 2023',
-      description: 'Awarded by the University for outstanding technical contributions',
-      icon: '🏆'
-    },
-    {
-      title: '500+ Active Members',
-      description: 'Growing community of passionate tech enthusiasts',
-      icon: '👥'
-    },
-    {
-      title: '50+ Successful Events',
-      description: 'Workshops, hackathons, and technical seminars conducted',
-      icon: '📅'
-    },
-    {
-      title: '100+ Projects Completed',
-      description: 'Innovative solutions developed by our members',
-      icon: '💻'
     }
   ];
 
@@ -118,24 +99,6 @@ const About = () => {
               We're dedicated to fostering technical excellence, encouraging collaboration, and creating 
               meaningful impact through technology.
             </p>
-            <div className="flex justify-center space-x-8 text-center">
-              <div>
-                <h3 className="text-3xl font-bold text-purple-400">500+</h3>
-                <p className="text-gray-300">Members</p>
-              </div>
-              <div>
-                <h3 className="text-3xl font-bold text-purple-400">100+</h3>
-                <p className="text-gray-300">Projects</p>
-              </div>
-              <div>
-                <h3 className="text-3xl font-bold text-purple-400">50+</h3>
-                <p className="text-gray-300">Events</p>
-              </div>
-              <div>
-                <h3 className="text-3xl font-bold text-purple-400">5+</h3>
-                <p className="text-gray-300">Years</p>
-              </div>
-            </div>
           </div>
         </section>
 
@@ -192,22 +155,6 @@ const About = () => {
           </div>
         </section>
 
-        {/* Achievements */}
-        <section>
-          <h2 className="text-3xl font-bold text-white text-center mb-8">Our Achievements</h2>
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-            {achievements.map((achievement, index) => (
-              <Card key={index} className="bg-black/40 border-purple-500/20 backdrop-blur-md">
-                <CardContent className="p-6 text-center">
-                  <div className="text-4xl mb-4">{achievement.icon}</div>
-                  <h3 className="text-white font-semibold mb-2">{achievement.title}</h3>
-                  <p className="text-gray-300 text-sm">{achievement.description}</p>
-                </CardContent>
-              </Card>
-            ))}
-          </div>
-        </section>
-
         {/* Team Members */}
         <section>
           <h2 className="text-3xl font-bold text-white text-center mb-8">Meet Our Team</h2>
@@ -234,8 +181,16 @@ const About = () => {
                     )}
                   </div>
                 </CardHeader>
-                <CardContent>
-                  <p className="text-gray-300 text-sm text-center">{member.bio}</p>
+                <CardContent className="text-center space-y-2">
+                  <p className="text-gray-300 text-sm">{member.bio}</p>
+                  <a
+                    href={member.linkedin}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="text-sm text-purple-400 hover:underline"
+                  >
+                    View LinkedIn
+                  </a>
                 </CardContent>
               </Card>
             ))}
@@ -296,15 +251,15 @@ const About = () => {
           </p>
           <div className="space-x-4">
             <Link to="/register">
-                    <Button className="bg-gradient-to-r from-cyan-600 to-purple-600 hover:from-cyan-700 hover:to-purple-700 text-white shadow-lg shadow-cyan-500/25">
-                      Join Now
-                    </Button>
-                  </Link>
-              <Link to="/contactus">
-                    <Button className="bg-gradient-to-r from-cyan-600 to-purple-600 hover:from-cyan-700 hover:to-purple-700 text-white shadow-lg shadow-cyan-500/25">
-                      Contact Us
-                    </Button>
-                  </Link>
+              <Button className="bg-gradient-to-r from-cyan-600 to-purple-600 hover:from-cyan-700 hover:to-purple-700 text-white shadow-lg shadow-cyan-500/25">
+                Join Now
+              </Button>
+            </Link>
+            <Link to="/contactus">
+              <Button className="bg-gradient-to-r from-cyan-600 to-purple-600 hover:from-cyan-700 hover:to-purple-700 text-white shadow-lg shadow-cyan-500/25">
+                Contact Us
+              </Button>
+            </Link>
           </div>
         </section>
       </div>
