@@ -13,11 +13,11 @@ const API_BASE_URL = process.env.REACT_APP_API_URL || 'https://og-backend-mwwi.o
 
 const Index = () => {
   const { toast } = useToast();
-  const [isLoggedIn, setIsLoggedIn] = useState(false);
-  const [isAdmin, setIsAdmin] = useState(false);
+  const [isLoggedIn, setIsLoggedIn] = useState(false); // Still needed for UI logic (e.g., showing Login/Join buttons)
+  const [isAdmin, setIsAdmin] = useState(false); // Still needed for conditional event creation form
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
-  const [activeMembers, setActiveMembers] = useState(500);
-  const [activeProjects, setActiveProjects] = useState(150);
+  const [activeMembers, setActiveMembers] = useState(0); // Changed default to 0 for clarity
+  const [activeProjects, setActiveProjects] = useState(0); // Changed default to 0 for clarity
   const [upcomingEvents, setUpcomingEvents] = useState([]);
   const [newEvent, setNewEvent] = useState({
     title: '',
@@ -42,7 +42,7 @@ const Index = () => {
         const res = await fetch(url, {
           method: 'GET',
           headers: { 'Accept': 'application/json' },
-          credentials: 'include',
+          credentials: 'include', // Keep for potential session-based features
         });
         if (!res.ok) {
           throw new Error(`HTTP error! Status: ${res.status}`);
@@ -52,10 +52,13 @@ const Index = () => {
           throw new Error('Response is not JSON');
         }
         const data = await res.json();
+        console.log(`Fetched ${type} data:`, data); // Debug log
         if (type === 'events') {
-          setter(data);
-        } else {
-          setter(data.length);
+          setter(Array.isArray(data.events) ? data.events : []);
+        } else if (type === 'members') {
+          setter(typeof data.activeMembers === 'number' ? data.activeMembers : 0);
+        } else if (type === 'projects') {
+          setter(typeof data.activeProjects === 'number' ? data.activeProjects : 0);
         }
       } catch (error) {
         console.error(`Failed to fetch ${type}:`, error);
@@ -65,6 +68,11 @@ const Index = () => {
           variant: 'destructive',
         });
         setError(`Failed to load ${type}.`);
+        if (type === 'events') {
+          setter([]);
+        } else {
+          setter(0);
+        }
       } finally {
         setIsLoading((prev) => ({ ...prev, [type]: false }));
       }
@@ -97,10 +105,11 @@ const Index = () => {
         throw new Error(data.error || 'Failed to create event');
       }
       setUpcomingEvents([...upcomingEvents, {
-        id: data.eventId,
+        _id: data.eventId,
         title: newEvent.title,
-        date: newEvent.date,
-        time: newEvent.time,
+        date: eventDateTime.toISOString(),
+        location: newEvent.location,
+        description: newEvent.description,
         type: newEvent.type,
         attendees: parseInt(newEvent.attendees, 10)
       }]);
@@ -189,7 +198,9 @@ const Index = () => {
         <div className="space-y-2">
           <div className="flex items-center space-x-2 text-gray-300 text-xs">
             <Calendar className="h-3 w-3 text-cyan-400 flex-shrink-0" />
-            <span className="truncate">{event.date} at {event.time}</span>
+            <span className="truncate">
+              {new Date(event.date).toLocaleDateString()} at {new Date(event.date).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
+            </span>
           </div>
           <div className="flex items-center space-x-2 text-gray-300 text-xs">
             <Users className="h-3 w-3 text-purple-400 flex-shrink-0" />
@@ -321,7 +332,7 @@ const Index = () => {
                 <OGLoader />
               ) : (
                 <>
-                  <div className="text-lg font-bold text-cyan-400">{activeMembers}+</div>
+                  <div className="text-lg font-bold text-cyan-400">{activeMembers !== null && activeMembers !== undefined ? `${activeMembers}+` : '0+'}</div>
                   <div className="text-xs text-gray-300">Members</div>
                 </>
               )}
@@ -331,7 +342,7 @@ const Index = () => {
                 <OGLoader />
               ) : (
                 <>
-                  <div className="text-lg font-bold text-purple-400">{activeProjects}+</div>
+                  <div className="text-lg font-bold text-purple-400">{activeProjects !== null && activeProjects !== undefined ? `${activeProjects}+` : '0+'}</div>
                   <div className="text-xs text-gray-300">Projects</div>
                 </>
               )}
@@ -488,7 +499,7 @@ const Index = () => {
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
               {upcomingEvents.length > 0 ? (
                 upcomingEvents.map((event) => (
-                  <EventCard key={event.id} event={event} />
+                  <EventCard key={event._id} event={event} />
                 ))
               ) : (
                 <div className="col-span-full text-center">
@@ -528,7 +539,7 @@ const Index = () => {
             </div>
             <div>
               <h3 className="text-green-400 font-semibold mb-1">Community</h3>
-              <p className="text-gray-400">{activeMembers}+ Members • Global</p>
+              <p className="text-gray-400">{activeMembers !== null && activeMembers !== undefined ? `${activeMembers}+` : '0+'} Members • Global</p>
             </div>
           </div>
           <div className="text-center mt-4 pt-4 border-t border-cyan-500/10">
