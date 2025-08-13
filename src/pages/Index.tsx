@@ -6,8 +6,13 @@ import { Badge } from '@/components/ui/badge';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Users, Calendar, Code, Brain, Atom, Zap, Database, Terminal, Rocket, CircuitBoard, Monitor, Menu, X } from 'lucide-react';
+import { useToast } from '@/hooks/use-toast';
+import OGLoader from '@/components/ui/OGLoader';
+
+const API_BASE_URL = process.env.REACT_APP_API_URL || 'https://og-backend-mwwi.onrender.com/api';
 
 const Index = () => {
+  const { toast } = useToast();
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [isAdmin, setIsAdmin] = useState(false);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
@@ -24,55 +29,95 @@ const Index = () => {
     attendees: ''
   });
   const [error, setError] = useState(null);
+  const [isLoading, setIsLoading] = useState({
+    members: true,
+    projects: true,
+    events: true,
+  });
 
-  // Fetch live data on mount
- useEffect(() => {
-  fetch('https://og-backend-mwwi.onrender.com/api/active-members')
-    .then((res) => res.json())
-    .then((data) => setActiveMembers(data.length))
-    .catch((err) => console.error('Failed to fetch active members:', err));
+  useEffect(() => {
+    const fetchData = async (url, setter, type) => {
+      try {
+        setIsLoading((prev) => ({ ...prev, [type]: true }));
+        const res = await fetch(url, {
+          method: 'GET',
+          headers: { 'Accept': 'application/json' },
+          credentials: 'include',
+        });
+        if (!res.ok) {
+          throw new Error(`HTTP error! Status: ${res.status}`);
+        }
+        const contentType = res.headers.get('content-type');
+        if (!contentType || !contentType.includes('application/json')) {
+          throw new Error('Response is not JSON');
+        }
+        const data = await res.json();
+        if (type === 'events') {
+          setter(data);
+        } else {
+          setter(data.length);
+        }
+      } catch (error) {
+        console.error(`Failed to fetch ${type}:`, error);
+        toast({
+          title: 'Error',
+          description: `Failed to fetch ${type}. Please try again later.`,
+          variant: 'destructive',
+        });
+        setError(`Failed to load ${type}.`);
+      } finally {
+        setIsLoading((prev) => ({ ...prev, [type]: false }));
+      }
+    };
 
-  fetch('https://og-backend-mwwi.onrender.com/api/active-projects')
-    .then((res) => res.json())
-    .then((data) => setActiveProjects(data.length))
-    .catch((err) => console.error('Failed to fetch active projects:', err));
+    fetchData(`${API_BASE_URL}/active-members`, setActiveMembers, 'members');
+    fetchData(`${API_BASE_URL}/active-projects`, setActiveProjects, 'projects');
+    fetchData(`${API_BASE_URL}/events`, setUpcomingEvents, 'events');
+  }, [toast]);
 
-  fetch('https://og-backend-mwwi.onrender.com/api/events')
-    .then((res) => res.json())
-    .then((data) => setUpcomingEvents(data))
-    .catch((err) => console.error('Failed to fetch events:', err));
-}, []);
-  // Handle admin event form submission
-  const response = await fetch('https://og-backend-mwwi.onrender.com/api/events', {
-  method: 'POST',
-  headers: { 'Content-Type': 'application/json' },
-  body: JSON.stringify({
-    title: newEvent.title,
-    date: eventDateTime.toISOString(),
-    location: newEvent.location,
-    description: newEvent.description,
-    type: newEvent.type,
-    attendees: parseInt(newEvent.attendees, 10)
-  })
-});
-      const data = await response.json();
-      if (response.ok) {
-        setUpcomingEvents([...upcomingEvents, {
-          id: data.eventId,
+  const handleEventSubmit = async (e) => {
+    e.preventDefault();
+    try {
+      const eventDateTime = new Date(`${newEvent.date}T${newEvent.time}`);
+      const response = await fetch(`${API_BASE_URL}/events`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
+        credentials: 'include',
+        body: JSON.stringify({
           title: newEvent.title,
-          date: newEvent.date,
-          time: newEvent.time,
+          date: eventDateTime.toISOString(),
+          location: newEvent.location,
+          description: newEvent.description,
           type: newEvent.type,
           attendees: parseInt(newEvent.attendees, 10)
-        }]);
-        setNewEvent({ title: '', date: '', time: '', type: '', location: '', description: '', attendees: '' });
-        setError(null);
-      } else {
-        setError(data.error || 'Failed to create event');
+        })
+      });
+      const data = await response.json();
+      if (!response.ok) {
+        throw new Error(data.error || 'Failed to create event');
       }
+      setUpcomingEvents([...upcomingEvents, {
+        id: data.eventId,
+        title: newEvent.title,
+        date: newEvent.date,
+        time: newEvent.time,
+        type: newEvent.type,
+        attendees: parseInt(newEvent.attendees, 10)
+      }]);
+      setNewEvent({ title: '', date: '', time: '', type: '', location: '', description: '', attendees: '' });
+      setError(null);
+      toast({
+        title: 'Success',
+        description: 'Event created successfully',
+      });
     } catch (err) {
-      setError('Failed to create event');
+      setError(err.message || 'Failed to create event');
       console.error('Event creation error:', err);
+      toast({
+        title: 'Error',
+        description: err.message || 'Failed to create event',
+        variant: 'destructive',
+      });
     }
   };
 
@@ -92,7 +137,6 @@ const Index = () => {
     { icon: Database, title: "Big Data", projects: 20, members: 28 }
   ];
 
-  // Memoized components for performance
   const FeatureCard = memo(({ feature }) => (
     <Card className="bg-black/40 border-cyan-500/20 backdrop-blur-sm hover:border-cyan-400/40 transition-all duration-300 group h-full">
       <CardHeader className="pb-3">
@@ -158,7 +202,6 @@ const Index = () => {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-950 via-blue-950 to-slate-950">
-      {/* Simplified background elements for mobile */}
       <div className="fixed inset-0 overflow-hidden pointer-events-none">
         <div className="absolute top-[15%] left-[8%] w-1.5 h-1.5 bg-cyan-400 rounded-full animate-pulse"></div>
         <div className="absolute top-[30%] right-[8%] w-1 h-1 bg-purple-400 rounded-full animate-pulse delay-1000"></div>
@@ -166,7 +209,6 @@ const Index = () => {
         <div className="absolute top-[60%] right-[25%] w-0.5 h-0.5 bg-yellow-400 rounded-full animate-pulse delay-700"></div>
       </div>
 
-      {/* Compact Navigation */}
       <nav className="bg-black/30 backdrop-blur-xl border-b border-cyan-500/20 relative z-10">
         <div className="max-w-7xl mx-auto px-3">
           <div className="flex justify-between items-center h-14">
@@ -241,9 +283,9 @@ const Index = () => {
         </div>
       </nav>
 
-      {/* Compact Hero Section */}
       <section className="px-3 py-8 text-center relative">
         <div className="max-w-4xl mx-auto relative z-10">
+          {error && <p className="text-red-400 text-center mb-4">{error}</p>}
           <div className="mb-6">
             <h1 className="text-3xl sm:text-5xl md:text-6xl font-bold mb-4 leading-tight">
               <span className="text-white">Welcome to </span>
@@ -258,7 +300,7 @@ const Index = () => {
             </div>
           </div>
           <p className="text-sm sm:text-base text-gray-300 mb-6 max-w-2xl mx-auto leading-relaxed">
-            Join our vibrant community of developers, innovators, and tech enthusiasts. 
+            Join our vibrant community of developers, innovators, and tech enthusiasts.
             Collaborate on exciting projects and shape the future of technology.
           </p>
           <div className="flex flex-col space-y-3 mb-8">
@@ -273,15 +315,26 @@ const Index = () => {
               </Button>
             </Link>
           </div>
-          {/* Compact Stats Grid */}
           <div className="grid grid-cols-2 gap-3 max-w-md mx-auto">
             <div className="bg-black/40 border border-cyan-500/20 rounded-lg p-3 backdrop-blur-sm">
-              <div className="text-lg font-bold text-cyan-400">{activeMembers}+</div>
-              <div className="text-xs text-gray-300">Members</div>
+              {isLoading.members ? (
+                <OGLoader />
+              ) : (
+                <>
+                  <div className="text-lg font-bold text-cyan-400">{activeMembers}+</div>
+                  <div className="text-xs text-gray-300">Members</div>
+                </>
+              )}
             </div>
             <div className="bg-black/40 border border-purple-500/20 rounded-lg p-3 backdrop-blur-sm">
-              <div className="text-lg font-bold text-purple-400">{activeProjects}+</div>
-              <div className="text-xs text-gray-300">Projects</div>
+              {isLoading.projects ? (
+                <OGLoader />
+              ) : (
+                <>
+                  <div className="text-lg font-bold text-purple-400">{activeProjects}+</div>
+                  <div className="text-xs text-gray-300">Projects</div>
+                </>
+              )}
             </div>
           </div>
           <div className="grid grid-cols-2 gap-3 max-w-md mx-auto mt-3">
@@ -297,7 +350,6 @@ const Index = () => {
         </div>
       </section>
 
-      {/* Admin Event Creation Form (compact for mobile) */}
       {isLoggedIn && isAdmin && (
         <section className="px-3 py-8 bg-gradient-to-r from-purple-900/10 to-cyan-900/10">
           <div className="max-w-2xl mx-auto">
@@ -394,7 +446,6 @@ const Index = () => {
         </section>
       )}
 
-      {/* Compact Tech Focus Areas */}
       <section className="px-3 py-8 bg-gradient-to-r from-cyan-900/10 to-purple-900/10">
         <div className="max-w-4xl mx-auto">
           <h2 className="text-2xl sm:text-3xl font-bold text-center mb-3">
@@ -411,7 +462,6 @@ const Index = () => {
         </div>
       </section>
 
-      {/* Compact Active Project Areas */}
       <section className="px-3 py-8">
         <div className="max-w-4xl mx-auto">
           <h2 className="text-2xl font-bold text-white text-center mb-6">
@@ -425,31 +475,35 @@ const Index = () => {
         </div>
       </section>
 
-      {/* Compact Upcoming Events */}
       <section className="px-3 py-8 bg-gradient-to-r from-purple-900/10 to-cyan-900/10">
         <div className="max-w-4xl mx-auto">
           <h2 className="text-2xl font-bold text-white text-center mb-6">
             Upcoming Events
           </h2>
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-            {upcomingEvents.length > 0 ? (
-              upcomingEvents.map((event) => (
-                <EventCard key={event.id} event={event} />
-              ))
-            ) : (
-              <div className="col-span-full text-center">
-                <div className="bg-black/40 border border-gray-500/20 rounded-lg p-6 backdrop-blur-sm">
-                  <Calendar className="h-8 w-8 text-gray-400 mx-auto mb-2" />
-                  <p className="text-gray-300 text-sm">No upcoming events at the moment</p>
-                  <p className="text-gray-400 text-xs mt-1">Check back soon for exciting tech events!</p>
+          {isLoading.events ? (
+            <div className="col-span-full text-center">
+              <OGLoader />
+            </div>
+          ) : (
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+              {upcomingEvents.length > 0 ? (
+                upcomingEvents.map((event) => (
+                  <EventCard key={event.id} event={event} />
+                ))
+              ) : (
+                <div className="col-span-full text-center">
+                  <div className="bg-black/40 border border-gray-500/20 rounded-lg p-6 backdrop-blur-sm">
+                    <Calendar className="h-8 w-8 text-gray-400 mx-auto mb-2" />
+                    <p className="text-gray-300 text-sm">No upcoming events at the moment</p>
+                    <p className="text-gray-400 text-xs mt-1">Check back soon for exciting tech events!</p>
+                  </div>
                 </div>
-              </div>
-            )}
-          </div>
+              )}
+            </div>
+          )}
         </div>
       </section>
 
-      {/* Compact Footer */}
       <footer className="bg-black/40 border-t border-cyan-500/20 px-3 py-6 backdrop-blur-xl">
         <div className="max-w-4xl mx-auto">
           <div className="text-center mb-4">
