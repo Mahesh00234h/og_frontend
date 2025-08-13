@@ -27,23 +27,21 @@ const Index = () => {
 
   // Fetch live data on mount
   useEffect(() => {
-    fetch('https://og-backend-mwwi.onrender.com/api/active-members')
+  fetch('https://ogtechminds.vercel.app/api/active-members')
+    .then((res) => res.json())
+    .then((data) => setActiveMembers(data.length)) // Use array length
+    .catch((err) => console.error('Failed to fetch active members:', err));
 
-      .then((res) => res.json())
-      .then((data) => data.activeMembers && setActiveMembers(data.activeMembers))
-      .catch((err) => console.error('Failed to fetch active members:', err));
+  fetch('https://ogtechminds.vercel.app/api/active-projects')
+    .then((res) => res.json())
+    .then((data) => setActiveProjects(data.length)) // Use array length
+    .catch((err) => console.error('Failed to fetch active projects:', err));
 
-    fetch('https://og-backend-mwwi.onrender.com/api/active-projects')
-      .then((res) => res.json())
-      .then((data) => data.activeProjects && setActiveProjects(data.activeProjects))
-      .catch((err) => console.error('Failed to fetch active projects:', err));
-
-    fetch('https://og-backend-mwwi.onrender.com/api/events')
-      .then((res) => res.json())
-      .then((data) => data.events && setUpcomingEvents(data.events))
-      .catch((err) => console.error('Failed to fetch events:', err));
-  }, []);
-
+  fetch('https://ogtechminds.vercel.app/api/events')
+    .then((res) => res.json())
+    .then((data) => setUpcomingEvents(data)) // Data is already an array
+    .catch((err) => console.error('Failed to fetch events:', err));
+}, []);
   // Handle admin event form submission
   const handleEventSubmit = async (e) => {
     e.preventDefault();
