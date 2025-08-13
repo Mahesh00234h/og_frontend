@@ -27,17 +27,18 @@ const Index = () => {
 
   // Fetch live data on mount
   useEffect(() => {
-    fetch('/api/active-members')
+    fetch('https://your-backend-domain.com/api/active-members')
+
       .then((res) => res.json())
       .then((data) => data.activeMembers && setActiveMembers(data.activeMembers))
       .catch((err) => console.error('Failed to fetch active members:', err));
 
-    fetch('/api/active-projects')
+    fetch('https://your-backend-domain.com/api/active-projects')
       .then((res) => res.json())
       .then((data) => data.activeProjects && setActiveProjects(data.activeProjects))
       .catch((err) => console.error('Failed to fetch active projects:', err));
 
-    fetch('/api/events')
+    fetch('https://your-backend-domain.com/api/events')
       .then((res) => res.json())
       .then((data) => data.events && setUpcomingEvents(data.events))
       .catch((err) => console.error('Failed to fetch events:', err));
