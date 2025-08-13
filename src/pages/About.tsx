@@ -39,7 +39,7 @@ const About = () => {
       role: 'President',
       department: 'Computer Science',
       year: '2rd Year',
-      image: '',
+      image: 'https://res.cloudinary.com/dxu2xavnq/image/upload/v1753611796/study_baazar/avatars/user_shivajirakte242%40gmail.com_784662.jpg.jpg',
       linkedin: 'https://www.linkedin.com/in/maheshrakte0',
       bio: 'Organizing events and workshops to enhance learning experiences for all members.'
     },
