@@ -26,39 +26,35 @@ const Index = () => {
   const [error, setError] = useState(null);
 
   // Fetch live data on mount
-  useEffect(() => {
-  fetch('https://ogtechminds.vercel.app/api/active-members')
+ useEffect(() => {
+  fetch('https://og-backend-mwwi.onrender.com/api/active-members')
     .then((res) => res.json())
-    .then((data) => setActiveMembers(data.length)) // Use array length
+    .then((data) => setActiveMembers(data.length))
     .catch((err) => console.error('Failed to fetch active members:', err));
 
-  fetch('https://ogtechminds.vercel.app/api/active-projects')
+  fetch('https://og-backend-mwwi.onrender.com/api/active-projects')
     .then((res) => res.json())
-    .then((data) => setActiveProjects(data.length)) // Use array length
+    .then((data) => setActiveProjects(data.length))
     .catch((err) => console.error('Failed to fetch active projects:', err));
 
-  fetch('https://ogtechminds.vercel.app/api/events')
+  fetch('https://og-backend-mwwi.onrender.com/api/events')
     .then((res) => res.json())
-    .then((data) => setUpcomingEvents(data)) // Data is already an array
+    .then((data) => setUpcomingEvents(data))
     .catch((err) => console.error('Failed to fetch events:', err));
 }, []);
   // Handle admin event form submission
-  const handleEventSubmit = async (e) => {
-    e.preventDefault();
-    try {
-      const eventDateTime = new Date(`${newEvent.date}T${newEvent.time}`);
-      const response = await fetch('/api/events', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          title: newEvent.title,
-          date: eventDateTime.toISOString(),
-          location: newEvent.location,
-          description: newEvent.description,
-          type: newEvent.type,
-          attendees: parseInt(newEvent.attendees, 10)
-        })
-      });
+  const response = await fetch('https://og-backend-mwwi.onrender.com/api/events', {
+  method: 'POST',
+  headers: { 'Content-Type': 'application/json' },
+  body: JSON.stringify({
+    title: newEvent.title,
+    date: eventDateTime.toISOString(),
+    location: newEvent.location,
+    description: newEvent.description,
+    type: newEvent.type,
+    attendees: parseInt(newEvent.attendees, 10)
+  })
+});
       const data = await response.json();
       if (response.ok) {
         setUpcomingEvents([...upcomingEvents, {
