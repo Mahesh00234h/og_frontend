@@ -27,18 +27,18 @@ const Index = () => {
 
   // Fetch live data on mount
   useEffect(() => {
-    fetch('https://ogtechminds.vercel.app/api/active-members')
+    fetch('https://og-backend-mwwi.onrender.com/api/active-members')
 
       .then((res) => res.json())
       .then((data) => data.activeMembers && setActiveMembers(data.activeMembers))
       .catch((err) => console.error('Failed to fetch active members:', err));
 
-    fetch('https://ogtechminds.vercel.app/api/active-projects')
+    fetch('https://og-backend-mwwi.onrender.com/api/active-projects')
       .then((res) => res.json())
       .then((data) => data.activeProjects && setActiveProjects(data.activeProjects))
       .catch((err) => console.error('Failed to fetch active projects:', err));
 
-    fetch('https://ogtechminds.vercel.app/api/events')
+    fetch('https://og-backend-mwwi.onrender.com/api/events')
       .then((res) => res.json())
       .then((data) => data.events && setUpcomingEvents(data.events))
       .catch((err) => console.error('Failed to fetch events:', err));
