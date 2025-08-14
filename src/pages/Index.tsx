@@ -79,7 +79,7 @@ const Index = () => {
     };
 
     fetchData(`${API_BASE_URL}/active-members`, setActiveMembers, 'members');
-    fetchData(`${API_BASE_URL}/active-projects`, setActiveProjects, 'projects');
+    fetchData(`${API_BASE_URL}/public-events`, setUpcomingEvents, 'events');
     fetchData(`${API_BASE_URL}/events`, setUpcomingEvents, 'events');
   }, [toast]);
 
