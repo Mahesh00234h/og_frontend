@@ -16,7 +16,6 @@ import { Checkbox } from '@/components/ui/checkbox';
 
 const API_BASE_URL = 'https://og-backend-mwwi.onrender.com/api';
 
-
 interface Member {
   id: string;
   name: string;
@@ -72,6 +71,8 @@ const AdminDashboard = () => {
     location: '',
     category: 'General',
     isVirtual: false,
+    attendees: 0,
+    image: null as File | null, // Add image field
   });
   const [isAnnouncementModalOpen, setIsAnnouncementModalOpen] = useState(false);
   const [isEventModalOpen, setIsEventModalOpen] = useState(false);
@@ -251,7 +252,7 @@ const AdminDashboard = () => {
           headers: { 'Accept': 'application/json' },
         }
       );
-      const membersData = await membersResponse.json();
+      const membersData = await response.json();
       if (membersResponse.ok) {
         const membersArray = Array.isArray(membersData.members)
           ? membersData.members.map((member: any) => ({
@@ -289,14 +290,22 @@ const AdminDashboard = () => {
     e.preventDefault();
     try {
       console.log('AdminDashboard: Sending create event request with credentials: include');
+      const formData = new FormData();
+      formData.append('title', eventData.title);
+      formData.append('date', eventData.date);
+      formData.append('description', eventData.description);
+      formData.append('location', eventData.location);
+      formData.append('category', eventData.category);
+      formData.append('isVirtual', eventData.isVirtual.toString());
+      formData.append('attendees', eventData.attendees.toString());
+      if (eventData.image) {
+        formData.append('image', eventData.image);
+      }
+
       const response = await fetch(`${API_BASE_URL}/admin/events`, {
         method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'Accept': 'application/json',
-        },
         credentials: 'include',
-        body: JSON.stringify(eventData),
+        body: formData,
       });
 
       console.log('AdminDashboard: Create event response headers:', Object.fromEntries(response.headers));
@@ -317,6 +326,8 @@ const AdminDashboard = () => {
         location: '',
         category: 'General',
         isVirtual: false,
+        attendees: 0,
+        image: null,
       });
     } catch (error) {
       console.error('AdminDashboard: Create event error:', error);
@@ -416,62 +427,62 @@ const AdminDashboard = () => {
   };
 
   if (isAuthenticated === null || loading) {
-    return <div className="text-white text-center">Loading...</div>;
+    return <div className="text-white text-center text-sm p-4">Loading...</div>;
   }
 
   return (
-    <ErrorBoundary fallback={<div className="text-white text-center p-6">An error occurred. Please refresh the page.</div>}>
+    <ErrorBoundary fallback={<div className="text-white text-center text-sm p-4">An error occurred. Please refresh the page.</div>}>
       <div className="min-h-screen bg-gradient-to-br from-slate-900 via-red-900 to-slate-900">
-        <header className="bg-black/20 backdrop-blur-md border-b border-red-500/20 p-4">
+        <header className="bg-black/20 backdrop-blur-md border-b border-red-500/20 p-2">
           <div className="max-w-7xl mx-auto flex justify-between items-center">
-            <div className="flex items-center space-x-2">
-              <Shield className="h-8 w-8 text-red-400" />
-              <h1 className="text-2xl font-bold text-white">Admin Dashboard</h1>
+            <div className="flex items-center space-x-1">
+              <Shield className="h-5 w-5 text-red-400" />
+              <h1 className="text-lg font-bold text-white">Admin Dashboard</h1>
             </div>
-            <div className="flex items-center space-x-2">
+            <div className="flex items-center space-x-1">
               <Dialog open={isAnnouncementModalOpen} onOpenChange={setIsAnnouncementModalOpen}>
                 <DialogTrigger asChild>
-                  <Button className="bg-red-600 hover:bg-red-700">
-                    <Mail className="h-4 w-4 mr-2" />
-                    
+                  <Button className="bg-red-600 hover:bg-red-700 text-xs py-1 px-2">
+                    <Mail className="h-3 w-3 mr-1" />
+                    Announce
                   </Button>
                 </DialogTrigger>
-                <DialogContent className="bg-black/80 border-red-500/20">
+                <DialogContent className="bg-black/80 border-red-500/20 max-w-[90vw] sm:max-w-md p-4">
                   <DialogHeader>
-                    <DialogTitle className="text-white">Send Announcement</DialogTitle>
+                    <DialogTitle className="text-white text-base">Send Announcement</DialogTitle>
                   </DialogHeader>
-                  <form onSubmit={handleSendAnnouncement} className="space-y-4">
+                  <form onSubmit={handleSendAnnouncement} className="space-y-3">
                     <div>
-                      <Label htmlFor="announcement-title" className="text-white">Title</Label>
+                      <Label htmlFor="announcement-title" className="text-white text-sm">Title</Label>
                       <Input
                         id="announcement-title"
                         value={announcement.title}
                         onChange={(e) => setAnnouncement({ ...announcement, title: e.target.value })}
-                        className="bg-gray-800 text-white border-red-500/30"
+                        className="bg-gray-800 text-white border-red-500/30 text-sm py-1"
                         required
                       />
                     </div>
                     <div>
-                      <Label htmlFor="announcement-message" className="text-white">Message</Label>
+                      <Label htmlFor="announcement-message" className="text-white text-sm">Message</Label>
                       <Textarea
                         id="announcement-message"
                         value={announcement.message}
                         onChange={(e) => setAnnouncement({ ...announcement, message: e.target.value })}
-                        className="bg-gray-800 text-white border-red-500/30"
-                        rows={4}
+                        className="bg-gray-800 text-white border-red-500/30 text-sm py-1"
+                        rows={3}
                         required
                       />
                     </div>
                     <div>
-                      <Label htmlFor="announcement-target" className="text-white">Target</Label>
+                      <Label htmlFor="announcement-target" className="text-white text-sm">Target</Label>
                       <Select
                         value={announcement.target}
                         onValueChange={(value) => setAnnouncement({ ...announcement, target: value })}
                       >
-                        <SelectTrigger className="bg-gray-800 text-white border-red-500/30">
+                        <SelectTrigger className="bg-gray-800 text-white border-red-500/30 text-sm py-1">
                           <SelectValue />
                         </SelectTrigger>
-                        <SelectContent className="bg-gray-800 text-white border-red-500/30">
+                        <SelectContent className="bg-gray-800 text-white border-red-500/30 text-sm">
                           <SelectItem value="all">All Members</SelectItem>
                           <SelectItem value="CSE">CSE</SelectItem>
                           <SelectItem value="ECE">ECE</SelectItem>
@@ -480,36 +491,36 @@ const AdminDashboard = () => {
                       </Select>
                     </div>
                     <div>
-                      <Label htmlFor="announcement-priority" className="text-white">Priority</Label>
+                      <Label htmlFor="announcement-priority" className="text-white text-sm">Priority</Label>
                       <Select
                         value={announcement.priority}
                         onValueChange={(value) => setAnnouncement({ ...announcement, priority: value })}
                       >
-                        <SelectTrigger className="bg-gray-800 text-white border-red-500/30">
+                        <SelectTrigger className="bg-gray-800 text-white border-red-500/30 text-sm py-1">
                           <SelectValue />
                         </SelectTrigger>
-                        <SelectContent className="bg-gray-800 text-white border-red-500/30">
+                        <SelectContent className="bg-gray-800 text-white border-red-500/30 text-sm">
                           <SelectItem value="normal">Normal</SelectItem>
                           <SelectItem value="high">High</SelectItem>
                           <SelectItem value="urgent">Urgent</SelectItem>
                         </SelectContent>
                       </Select>
                     </div>
-                    <Button type="submit" className="bg-red-600 hover:bg-red-700">Send</Button>
+                    <Button type="submit" className="bg-red-600 hover:bg-red-700 text-sm py-1 px-3">Send</Button>
                   </form>
                 </DialogContent>
               </Dialog>
               <Button
                 variant="outline"
-                className="text-black border-red-400"
+                className="text-white border-red-400 text-xs py-1 px-2"
                 onClick={() => navigate('/members')}
               >
-                <Users className="h-4 w-4 mr-2" />
-                
+                <Users className="h-3 w-3 mr-1" />
+                Members
               </Button>
               <Button
                 variant="outline"
-                className="text-black border-red-400"
+                className="text-white border-red-400 text-xs py-1 px-2"
                 onClick={async () => {
                   try {
                     await fetch(`${API_BASE_URL}/logout`, {
@@ -523,105 +534,105 @@ const AdminDashboard = () => {
                   }
                 }}
               >
-                <Settings className="h-4 w-4 mr-2" />
+                <Settings className="h-3 w-3 mr-1" />
                 Logout
               </Button>
             </div>
           </div>
         </header>
-        <div className="max-w-7xl mx-auto p-6 space-y-6">
-          <div className="grid grid-cols-1 md:grid-cols-5 gap-6">
+        <div className="max-w-7xl mx-auto p-3 space-y-4">
+          <div className="grid grid-cols-1 gap-3">
             <Card className="bg-black/40 border-red-500/20 backdrop-blur-md">
-              <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+              <CardHeader className="flex flex-row items-center justify-between space-y-0 p-3">
                 <CardTitle className="text-sm font-medium text-white">Total Members</CardTitle>
-                <Users className="h-4 w-4 text-red-400" />
+                <Users className="h-3 w-3 text-red-400" />
               </CardHeader>
-              <CardContent>
-                <div className="text-2xl font-bold text-white">{stats.totalMembers}</div>
+              <CardContent className="p-3">
+                <div className="text-lg font-bold text-white">{stats.totalMembers}</div>
                 <p className="text-xs text-gray-400">Active members</p>
               </CardContent>
             </Card>
             <Card className="bg-black/40 border-red-500/20 backdrop-blur-md">
-              <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+              <CardHeader className="flex flex-row items-center justify-between space-y-0 p-3">
                 <CardTitle className="text-sm font-medium text-white">Active Events</CardTitle>
-                <Calendar className="h-4 w-4 text-red-400" />
+                <Calendar className="h-3 w-3 text-red-400" />
               </CardHeader>
-              <CardContent>
-                <div className="text-2xl font-bold text-white">{stats.activeEvents}</div>
+              <CardContent className="p-3">
+                <div className="text-lg font-bold text-white">{stats.activeEvents}</div>
                 <p className="text-xs text-gray-400">Upcoming events</p>
               </CardContent>
             </Card>
             <Card className="bg-black/40 border-red-500/20 backdrop-blur-md">
-              <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+              <CardHeader className="flex flex-row items-center justify-between space-y-0 p-3">
                 <CardTitle className="text-sm font-medium text-white">Pending Approvals</CardTitle>
-                <UserCheck className="h-4 w-4 text-red-400" />
+                <UserCheck className="h-3 w-3 text-red-400" />
               </CardHeader>
-              <CardContent>
-                <div className="text-2xl font-bold text-white">{stats.pendingApprovals}</div>
+              <CardContent className="p-3">
+                <div className="text-lg font-bold text-white">{stats.pendingApprovals}</div>
                 <p className="text-xs text-gray-400">Awaiting review</p>
               </CardContent>
             </Card>
             <Card className="bg-black/40 border-red-500/20 backdrop-blur-md">
-              <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+              <CardHeader className="flex flex-row items-center justify-between space-y-0 p-3">
                 <CardTitle className="text-sm font-medium text-white">Total Projects</CardTitle>
-                <Code className="h-4 w-4 text-red-400" />
+                <Code className="h-3 w-3 text-red-400" />
               </CardHeader>
-              <CardContent>
-                <div className="text-2xl font-bold text-white">{stats.totalProjects}</div>
+              <CardContent className="p-3">
+                <div className="text-lg font-bold text-white">{stats.totalProjects}</div>
                 <p className="text-xs text-gray-400">Club projects</p>
               </CardContent>
             </Card>
             <Card className="bg-black/40 border-red-500/20 backdrop-blur-md">
-              <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+              <CardHeader className="flex flex-row items-center justify-between space-y-0 p-3">
                 <CardTitle className="text-sm font-medium text-white">Announcements</CardTitle>
-                <Mail className="h-4 w-4 text-red-400" />
+                <Mail className="h-3 w-3 text-red-400" />
               </CardHeader>
-              <CardContent>
-                <div className="text-2xl font-bold text-white">{stats.totalAnnouncements}</div>
+              <CardContent className="p-3">
+                <div className="text-lg font-bold text-white">{stats.totalAnnouncements}</div>
                 <p className="text-xs text-gray-400">Sent announcements</p>
               </CardContent>
             </Card>
           </div>
-          <Tabs defaultValue="approvals" className="space-y-4">
-            <TabsList className="bg-black/20 border-red-500/20">
-              <TabsTrigger value="approvals" className="data-[state=active]:bg-red-600">Pending Approvals</TabsTrigger>
-              <TabsTrigger value="members" className="data-[state=active]:bg-red-600">Members</TabsTrigger>
-              <TabsTrigger value="events" className="data-[state=active]:bg-red-600">Events</TabsTrigger>
-              <TabsTrigger value="analytics" className="data-[state=active]:bg-red-600">Analytics</TabsTrigger>
+          <Tabs defaultValue="approvals" className="space-y-3">
+            <TabsList className="bg-black/20 border-red-500/20 flex overflow-x-auto">
+              <TabsTrigger value="approvals" className="data-[state=active]:bg-red-600 text-sm py-1 px-2">Approvals</TabsTrigger>
+              <TabsTrigger value="members" className="data-[state=active]:bg-red-600 text-sm py-1 px-2">Members</TabsTrigger>
+              <TabsTrigger value="events" className="data-[state=active]:bg-red-600 text-sm py-1 px-2">Events</TabsTrigger>
+              <TabsTrigger value="analytics" className="data-[state=active]:bg-red-600 text-sm py-1 px-2">Analytics</TabsTrigger>
             </TabsList>
             <TabsContent value="approvals">
               <Card className="bg-black/40 border-red-500/20 backdrop-blur-md">
-                <CardHeader>
-                  <CardTitle className="text-white">Pending Member Approvals</CardTitle>
-                  <CardDescription className="text-gray-300">Review and approve new member registrations</CardDescription>
+                <CardHeader className="p-3">
+                  <CardTitle className="text-base text-white">Pending Member Approvals</CardTitle>
+                  <CardDescription className="text-xs text-gray-300">Review and approve new member registrations</CardDescription>
                 </CardHeader>
-                <CardContent className="space-y-4">
+                <CardContent className="space-y-3 p-3">
                   {pendingMembers.length === 0 ? (
-                    <p className="text-gray-300">No pending approvals</p>
+                    <p className="text-gray-300 text-xs">No pending approvals</p>
                   ) : (
                     pendingMembers.map((member: any) => (
-                      <div key={member.id} className="flex items-center justify-between p-4 bg-red-500/10 rounded-lg">
+                      <div key={member.id} className="flex items-center justify-between p-2 bg-red-500/10 rounded-lg">
                         <div>
-                          <h4 className="text-white font-medium">{member.name || 'Unknown'}</h4>
-                          <p className="text-gray-400 text-sm">{member.email || 'Unknown'}</p>
-                          <p className="text-gray-400 text-sm">{member.department || ''} - {member.year || ''}</p>
+                          <h4 className="text-white font-medium text-sm">{member.name || 'Unknown'}</h4>
+                          <p className="text-gray-400 text-xs">{member.email || 'Unknown'}</p>
+                          <p className="text-gray-400 text-xs">{member.department || ''} - {member.year || ''}</p>
                         </div>
-                        <div className="flex space-x-2">
+                        <div className="flex space-x-1">
                           <Button
                             size="sm"
-                            className="bg-green-600 hover:bg-green-700"
+                            className="bg-green-600 hover:bg-green-700 text-xs py-1 px-2"
                             onClick={() => handleApproval(member.id, 'approve')}
                           >
-                            <UserCheck className="h-4 w-4 mr-1" />
+                            <UserCheck className="h-3 w-3 mr-1" />
                             Approve
                           </Button>
                           <Button
                             size="sm"
                             variant="outline"
-                            className="border-red-500 text-red-400"
+                            className="border-red-500 text-red-400 text-xs py-1 px-2"
                             onClick={() => handleApproval(member.id, 'reject')}
                           >
-                            <UserX className="h-4 w-4 mr-1" />
+                            <UserX className="h-3 w-3 mr-1" />
                             Reject
                           </Button>
                         </div>
@@ -633,82 +644,84 @@ const AdminDashboard = () => {
             </TabsContent>
             <TabsContent value="members">
               <Card className="bg-black/40 border-red-500/20 backdrop-blur-md">
-                <CardHeader>
-                  <CardTitle className="text-white">Member Management</CardTitle>
-                  <CardDescription className="text-gray-300">Manage all club members and their permissions</CardDescription>
+                <CardHeader className="p-3">
+                  <CardTitle className="text-base text-white">Member Management</CardTitle>
+                  <CardDescription className="text-xs text-gray-300">Manage all club members and their permissions</CardDescription>
                 </CardHeader>
-                <CardContent>
-                  <div className="flex justify-between items-center mb-4">
-                    <div className="flex space-x-2">
-                      <Button variant="outline" className="text-white border-red-400" onClick={handleExportMembers}>
-                        <FileText className="h-4 w-4 mr-2" />
-                        Export List
+                <CardContent className="p-3">
+                  <div className="flex justify-between items-center mb-3">
+                    <div className="flex space-x-1">
+                      <Button variant="outline" className="text-white border-red-400 text-xs py-1 px-2" onClick={handleExportMembers}>
+                        <FileText className="h-3 w-3 mr-1" />
+                        Export
                       </Button>
                     </div>
                   </div>
-                  <div className="flex space-x-4 mb-4">
-                    <div className="flex-1 relative">
-                      <Search className="absolute left-2 top-2.5 h-4 w-4 text-gray-400" />
+                  <div className="flex flex-col space-y-2 mb-3">
+                    <div className="relative">
+                      <Search className="absolute left-2 top-2 h-3 w-3 text-gray-400" />
                       <Input
                         placeholder="Search by name, email, or roll number"
                         value={searchQuery}
                         onChange={(e) => setSearchQuery(e.target.value)}
-                        className="pl-8 bg-gray-800 text-white border-red-500/30"
+                        className="pl-7 bg-gray-800 text-white border-red-500/30 text-sm py-1"
                       />
                     </div>
-                    <Select value={departmentFilter} onValueChange={setDepartmentFilter}>
-                      <SelectTrigger className="w-[180px] bg-gray-800 text-white border-red-500/30">
-                        <SelectValue placeholder="Filter by Department" />
-                      </SelectTrigger>
-                      <SelectContent className="bg-gray-800 text-white border-red-500/30">
-                        <SelectItem value="">All Departments</SelectItem>
-                        <SelectItem value="CSE">CSE</SelectItem>
-                        <SelectItem value="ECE">ECE</SelectItem>
-                        <SelectItem value="ME">ME</SelectItem>
-                      </SelectContent>
-                    </Select>
-                    <Select value={yearFilter} onValueChange={setYearFilter}>
-                      <SelectTrigger className="w-[180px] bg-gray-800 text-white border-red-500/30">
-                        <SelectValue placeholder="Filter by Year" />
-                      </SelectTrigger>
-                      <SelectContent className="bg-gray-800 text-white border-red-500/30">
-                        <SelectItem value="">All Years</SelectItem>
-                        <SelectItem value="1st">1st</SelectItem>
-                        <SelectItem value="2nd">2nd</SelectItem>
-                        <SelectItem value="3rd">3rd</SelectItem>
-                        <SelectItem value="4th">4th</SelectItem>
-                      </SelectContent>
-                    </Select>
+                    <div className="flex space-x-2">
+                      <Select value={departmentFilter} onValueChange={setDepartmentFilter}>
+                        <SelectTrigger className="w-full bg-gray-800 text-white border-red-500/30 text-sm py-1">
+                          <SelectValue placeholder="Department" />
+                        </SelectTrigger>
+                        <SelectContent className="bg-gray-800 text-white border-red-500/30 text-sm">
+                          <SelectItem value="">All Departments</SelectItem>
+                          <SelectItem value="CSE">CSE</SelectItem>
+                          <SelectItem value="ECE">ECE</SelectItem>
+                          <SelectItem value="ME">ME</SelectItem>
+                        </SelectContent>
+                      </Select>
+                      <Select value={yearFilter} onValueChange={setYearFilter}>
+                        <SelectTrigger className="w-full bg-gray-800 text-white border-red-500/30 text-sm py-1">
+                          <SelectValue placeholder="Year" />
+                        </SelectTrigger>
+                        <SelectContent className="bg-gray-800 text-white border-red-500/30 text-sm">
+                          <SelectItem value="">All Years</SelectItem>
+                          <SelectItem value="1st">1st</SelectItem>
+                          <SelectItem value="2nd">2nd</SelectItem>
+                          <SelectItem value="3rd">3rd</SelectItem>
+                          <SelectItem value="4th">4th</SelectItem>
+                        </SelectContent>
+                      </Select>
+                    </div>
                   </div>
                   <Table>
                     <TableHeader>
                       <TableRow className="border-red-500/20">
-                        <TableHead className="text-white">Name</TableHead>
-                        <TableHead className="text-white">Email</TableHead>
-                        <TableHead className="text-white">Roll Number</TableHead>
-                        <TableHead className="text-white">Department</TableHead>
-                        <TableHead className="text-white">Year</TableHead>
-                        <TableHead className="text-white">Projects</TableHead>
-                        <TableHead className="text-white">Skills</TableHead>
+                        <TableHead className="text-white text-xs">Name</TableHead>
+                        <TableHead className="text-white text-xs">Email</TableHead>
+                        <TableHead className="text-white text-xs">Roll</TableHead>
+                        <TableHead className="text-white text-xs">Dept</TableHead>
+                        <TableHead className="text-white text-xs">Year</TableHead>
+                        <TableHead className="text-white text-xs">Projects</TableHead>
+                        <TableHead className="text-white text-xs">Skills</TableHead>
                       </TableRow>
                     </TableHeader>
                     <TableBody>
                       {members.length === 0 ? (
                         <TableRow>
-                          <TableCell colSpan={7} className="text-gray-300 text-center">
+                          <TableCell colSpan={7} className="text-gray-300 text-center text-xs">
                             No members found
                           </TableCell>
                         </TableRow>
                       ) : (
                         members.map((member: Member) => (
                           <TableRow key={member.id || Math.random()} className="border-red-500/20">
-                            <TableCell className="text-white">{member.name || 'Unknown'}</TableCell>
-                            <TableCell className="text-gray-300">{member.email || 'Unknown'}</TableCell>
-                            <TableCell className="text-gray-300">{member.rollNumber || ''}</TableCell>
-                            <TableCell className="text-gray-300">{member.department || ''}</TableCell>
-                            <TableCell className="text-gray-300">{member.year || ''}</TableCell>
-                            <TableCell className="text-gray-300">{member.projects || 0}</TableCell>
-                            <TableCell className="text-gray-300">
+                            <TableCell className="text-white text-xs">{member.name || 'Unknown'}</TableCell>
+                            <TableCell className="text-gray-300 text-xs">{member.email || 'Unknown'}</TableCell>
+                            <TableCell className="text-gray-300 text-xs">{member.rollNumber || ''}</TableCell>
+                            <TableCell className="text-gray-300 text-xs">{member.department || ''}</TableCell>
+                            <TableCell className="text-gray-300 text-xs">{member.year || ''}</TableCell>
+                            <TableCell className="text-gray-300 text-xs">{member.projects || 0}</TableCell>
+                            <TableCell className="text-gray-300 text-xs">
                               {(Array.isArray(member.skills) ? member.skills : []).join(', ') || 'None'}
                             </TableCell>
                           </TableRow>
@@ -721,75 +734,97 @@ const AdminDashboard = () => {
             </TabsContent>
             <TabsContent value="events">
               <Card className="bg-black/40 border-red-500/20 backdrop-blur-md">
-                <CardHeader>
-                  <CardTitle className="text-white">Event Management</CardTitle>
-                  <CardDescription className="text-gray-300">Create and manage club events</CardDescription>
+                <CardHeader className="p-3">
+                  <CardTitle className="text-base text-white">Event Management</CardTitle>
+                  <CardDescription className="text-xs text-gray-300">Create and manage club events</CardDescription>
                 </CardHeader>
-                <CardContent>
+                <CardContent className="p-3">
                   <Dialog open={isEventModalOpen} onOpenChange={setIsEventModalOpen}>
                     <DialogTrigger asChild>
-                      <Button className="bg-red-600 hover:bg-red-700 mb-4">
-                        <Calendar className="h-4 w-4 mr-2" />
-                        Create New Event
+                      <Button className="bg-red-600 hover:bg-red-700 text-xs py-1 px-2 mb-3">
+                        <Calendar className="h-3 w-3 mr-1" />
+                        New Event
                       </Button>
                     </DialogTrigger>
-                    <DialogContent className="bg-black/80 border-red-500/20">
+                    <DialogContent className="bg-black/80 border-red-500/20 max-w-[90vw] sm:max-w-md p-4">
                       <DialogHeader>
-                        <DialogTitle className="text-white">Create Event</DialogTitle>
+                        <DialogTitle className="text-white text-base">Create Event</DialogTitle>
                       </DialogHeader>
-                      <form onSubmit={handleCreateEvent} className="space-y-4">
+                      <form onSubmit={handleCreateEvent} className="space-y-3">
                         <div>
-                          <Label htmlFor="event-title" className="text-white">Title</Label>
+                          <Label htmlFor="event-title" className="text-white text-sm">Title</Label>
                           <Input
                             id="event-title"
                             value={eventData.title}
                             onChange={(e) => setEventData({ ...eventData, title: e.target.value })}
-                            className="bg-gray-800 text-white border-red-500/30"
+                            className="bg-gray-800 text-white border-red-500/30 text-sm py-1"
                             required
                           />
                         </div>
                         <div>
-                          <Label htmlFor="event-date" className="text-white">Date & Time</Label>
+                          <Label htmlFor="event-date" className="text-white text-sm">Date & Time</Label>
                           <Input
                             id="event-date"
                             type="datetime-local"
                             value={eventData.date}
                             onChange={(e) => setEventData({ ...eventData, date: e.target.value })}
-                            className="bg-gray-800 text-white border-red-500/30"
+                            className="bg-gray-800 text-white border-red-500/30 text-sm py-1"
                             required
                           />
                         </div>
                         <div>
-                          <Label htmlFor="event-description" className="text-white">Description</Label>
+                          <Label htmlFor="event-description" className="text-white text-sm">Description</Label>
                           <Textarea
                             id="event-description"
                             value={eventData.description}
                             onChange={(e) => setEventData({ ...eventData, description: e.target.value })}
-                            className="bg-gray-800 text-white border-red-500/30"
-                            rows={4}
+                            className="bg-gray-800 text-white border-red-500/30 text-sm py-1"
+                            rows={3}
                             required
                           />
                         </div>
                         <div>
-                          <Label htmlFor="event-location" className="text-white">Location</Label>
+                          <Label htmlFor="event-location" className="text-white text-sm">Location</Label>
                           <Input
                             id="event-location"
                             value={eventData.location}
                             onChange={(e) => setEventData({ ...eventData, location: e.target.value })}
-                            className="bg-gray-800 text-white border-red-500/30"
+                            className="bg-gray-800 text-white border-red-500/30 text-sm py-1"
                             required
                           />
                         </div>
                         <div>
-                          <Label htmlFor="event-category" className="text-white">Category</Label>
+                          <Label htmlFor="event-attendees" className="text-white text-sm">Expected Attendees</Label>
+                          <Input
+                            id="event-attendees"
+                            type="number"
+                            value={eventData.attendees}
+                            onChange={(e) => setEventData({ ...eventData, attendees: parseInt(e.target.value) || 0 })}
+                            className="bg-gray-800 text-white border-red-500/30 text-sm py-1"
+                            min="0"
+                            required
+                          />
+                        </div>
+                        <div>
+                          <Label htmlFor="event-image" className="text-white text-sm">Event Image</Label>
+                          <Input
+                            id="event-image"
+                            type="file"
+                            accept="image/*"
+                            onChange={(e) => setEventData({ ...eventData, image: e.target.files ? e.target.files[0] : null })}
+                            className="bg-gray-800 text-white border-red-500/30 text-sm py-1"
+                          />
+                        </div>
+                        <div>
+                          <Label htmlFor="event-category" className="text-white text-sm">Category</Label>
                           <Select
                             value={eventData.category}
                             onValueChange={(value) => setEventData({ ...eventData, category: value })}
                           >
-                            <SelectTrigger className="bg-gray-800 text-white border-red-500/30">
+                            <SelectTrigger className="bg-gray-800 text-white border-red-500/30 text-sm py-1">
                               <SelectValue />
                             </SelectTrigger>
-                            <SelectContent className="bg-gray-800 text-white border-red-500/30">
+                            <SelectContent className="bg-gray-800 text-white border-red-500/30 text-sm">
                               <SelectItem value="General">General</SelectItem>
                               <SelectItem value="Workshop">Workshop</SelectItem>
                               <SelectItem value="Hackathon">Hackathon</SelectItem>
@@ -803,33 +838,33 @@ const AdminDashboard = () => {
                             checked={eventData.isVirtual}
                             onCheckedChange={(checked) => setEventData({ ...eventData, isVirtual: !!checked })}
                           />
-                          <Label htmlFor="event-isVirtual" className="text-white">Virtual Event</Label>
+                          <Label htmlFor="event-isVirtual" className="text-white text-sm">Virtual Event</Label>
                         </div>
-                        <Button type="submit" className="bg-red-600 hover:bg-red-700">Create</Button>
+                        <Button type="submit" className="bg-red-600 hover:bg-red-700 text-sm py-1 px-3">Create</Button>
                       </form>
                     </DialogContent>
                   </Dialog>
-                  <p className="text-gray-300">Event list and management features will be displayed here.</p>
+                  <p className="text-gray-300 text-xs">Event list and management features will be displayed here.</p>
                 </CardContent>
               </Card>
             </TabsContent>
             <TabsContent value="analytics">
               <Card className="bg-black/40 border-red-500/20 backdrop-blur-md">
-                <CardHeader>
-                  <CardTitle className="text-white">Analytics & Reports</CardTitle>
-                  <CardDescription className="text-gray-300">View club statistics and generate reports</CardDescription>
+                <CardHeader className="p-3">
+                  <CardTitle className="text-base text-white">Analytics & Reports</CardTitle>
+                  <CardDescription className="text-xs text-gray-300">View club statistics and generate reports</CardDescription>
                 </CardHeader>
-                <CardContent>
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                    <div className="p-4 bg-red-500/10 rounded-lg">
-                      <h4 className="text-white font-medium mb-2">Member Growth</h4>
-                      <p className="text-2xl font-bold text-red-400">+23%</p>
-                      <p className="text-gray-400 text-sm">This quarter</p>
+                <CardContent className="p-3">
+                  <div className="grid grid-cols-1 gap-3">
+                    <div className="p-2 bg-red-500/10 rounded-lg">
+                      <h4 className="text-white font-medium text-sm mb-1">Member Growth</h4>
+                      <p className="text-lg font-bold text-red-400">+23%</p>
+                      <p className="text-gray-400 text-xs">This quarter</p>
                     </div>
-                    <div className="p-4 bg-red-500/10 rounded-lg">
-                      <h4 className="text-white font-medium mb-2">Event Attendance</h4>
-                      <p className="text-2xl font-bold text-red-400">87%</p>
-                      <p className="text-gray-400 text-sm">Average rate</p>
+                    <div className="p-2 bg-red-500/10 rounded-lg">
+                      <h4 className="text-white font-medium text-sm mb-1">Event Attendance</h4>
+                      <p className="text-lg font-bold text-red-400">87%</p>
+                      <p className="text-gray-400 text-xs">Average rate</p>
                     </div>
                   </div>
                 </CardContent>
@@ -837,20 +872,20 @@ const AdminDashboard = () => {
             </TabsContent>
           </Tabs>
           <Card className="bg-black/40 border-red-500/20 backdrop-blur-md">
-            <CardHeader>
-              <CardTitle className="text-white">Recent Activities</CardTitle>
+            <CardHeader className="p-3">
+              <CardTitle className="text-base text-white">Recent Activities</CardTitle>
             </CardHeader>
-            <CardContent className="space-y-3">
+            <CardContent className="space-y-2 p-3">
               {recentActivities.length === 0 ? (
-                <p className="text-gray-300">No recent activities</p>
+                <p className="text-gray-300 text-xs">No recent activities</p>
               ) : (
                 recentActivities.map((activity: any) => (
-                  <div key={activity.id} className="flex justify-between items-center p-3 bg-red-500/10 rounded-lg">
+                  <div key={activity.id} className="flex justify-between items-center p-2 bg-red-500/10 rounded-lg">
                     <div>
-                      <p className="text-white font-medium">{activity.message || 'Unknown'}</p>
-                      <p className="text-gray-400 text-sm">By Admin</p>
+                      <p className="text-white font-medium text-sm">{activity.message || 'Unknown'}</p>
+                      <p className="text-gray-400 text-xs">By Admin</p>
                     </div>
-                    <Badge variant="outline" className="text-gray-300 border-red-500/30">
+                    <Badge variant="outline" className="text-gray-300 border-red-500/30 text-xs">
                       {new Date(activity.createdAt).toLocaleString()}
                     </Badge>
                   </div>
