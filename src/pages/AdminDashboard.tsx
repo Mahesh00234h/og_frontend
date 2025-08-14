@@ -520,7 +520,7 @@ const AdminDashboard = () => {
               </Button>
               <Button
                 variant="outline"
-                className="text-white border-red-400 text-xs py-1 px-2"
+                className="text-black border-red-400 text-xs py-1 px-2"
                 onClick={async () => {
                   try {
                     await fetch(`${API_BASE_URL}/logout`, {
