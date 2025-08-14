@@ -463,7 +463,7 @@ const AdminDashboard = () => {
                       />
                     </div>
                     <div>
-                      <Label htmlFor="announcement-message" className="text-white text-sm">Message</Label>
+                      <Label htmlFor="announcement-message" className="text-black text-sm">Message</Label>
                       <Textarea
                         id="announcement-message"
                         value={announcement.message}
@@ -512,7 +512,7 @@ const AdminDashboard = () => {
               </Dialog>
               <Button
                 variant="outline"
-                className="text-white border-red-400 text-xs py-1 px-2"
+                className="text-black border-red-400 text-xs py-1 px-2"
                 onClick={() => navigate('/members')}
               >
                 <Users className="h-3 w-3 mr-1" />
