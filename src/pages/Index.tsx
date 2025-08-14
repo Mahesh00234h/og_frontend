@@ -43,11 +43,11 @@ const Index = () => {
         const data = await res.json();
         console.log(`Fetched ${type} data:`, data);
         if (type === 'events') {
-          setUpcomingEvents(Array.isArray(data.events) ? data.events : []);
+          setter(Array.isArray(data) ? data : []);
         } else if (type === 'members') {
-          setActiveMembers(Number(data.activeMembers) || 0);
+          setter(Number(data.activeMembers) || 0);
         } else if (type === 'projects') {
-          setActiveProjects(Number(data.activeProjects) || 0);
+          setter(Number(data.activeProjects) || 0);
         }
       } catch (error) {
         console.error(`Failed to fetch ${type}:`, error);
@@ -58,11 +58,9 @@ const Index = () => {
           variant: 'destructive',
         });
         if (type === 'events') {
-          setUpcomingEvents([]);
-        } else if (type === 'members') {
-          setActiveMembers(0);
-        } else if (type === 'projects') {
-          setActiveProjects(0);
+          setter([]);
+        } else {
+          setter(0);
         }
       } finally {
         setIsLoading((prev) => ({ ...prev, [type]: false }));
@@ -76,13 +74,11 @@ const Index = () => {
         fetchData(`${API_BASE_URL}/active-projects`, setActiveProjects, 'projects'),
         fetchData(`${API_BASE_URL}/public-events`, setUpcomingEvents, 'events'),
       ]);
-      // Log state in a useEffect to ensure updated values
     };
 
     fetchAllData();
   }, [toast]);
 
-  // Log state after updates
   useEffect(() => {
     console.log('State after fetch:', { activeMembers, activeProjects, upcomingEvents });
   }, [activeMembers, activeProjects, upcomingEvents]);
