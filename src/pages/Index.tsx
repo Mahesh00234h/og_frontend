@@ -44,9 +44,9 @@ const Index = () => {
         if (type === 'events') {
           setter(Array.isArray(data.events) ? data.events : []);
         } else if (type === 'members') {
-          setter(typeof data.activeMembers === 'number' ? data.activeMembers : 0);
+          setter(Number(data.activeMembers) || 0); // Ensure number conversion
         } else if (type === 'projects') {
-          setter(typeof data.activeProjects === 'number' ? data.activeProjects : 0);
+          setter(Number(data.activeProjects) || 0); // Ensure number conversion
         }
       } catch (error) {
         console.error(`Failed to fetch ${type}:`, error);
@@ -141,6 +141,10 @@ const Index = () => {
             src={event.image}
             alt={event.title}
             className="w-full h-24 object-cover rounded-t-lg"
+            onError={(e) => {
+              console.error(`Failed to load image for event ${event.title}: ${event.image}`);
+              e.currentTarget.style.display = 'none'; // Hide broken image
+            }}
           />
         )}
         <div className="flex flex-col space-y-1">
@@ -149,7 +153,7 @@ const Index = () => {
               {event.title}
             </CardTitle>
             <Badge className="bg-gradient-to-r from-cyan-600 to-purple-600 text-white text-xs px-2 py-1 flex-shrink-0">
-              {event.type}
+              {event.type || 'General'}
             </Badge>
           </div>
         </div>
@@ -164,7 +168,7 @@ const Index = () => {
           </div>
           <div className="flex items-center space-x-1 text-gray-300 text-xs">
             <Users className="h-3 w-3 text-purple-400 flex-shrink-0" />
-            <span>{event.attendees} Expected</span>
+            <span>{event.attendees || 0} Expected</span>
           </div>
         </div>
       </CardContent>
@@ -240,7 +244,7 @@ const Index = () => {
           <div className="mb-4">
             <h1 className="text-2xl sm:text-4xl font-bold mb-3 leading-tight">
               <span className="text-white">Welcome to </span>
-              <span className="bg-gradient-to-r from-cyan-400 via-purple-400 to-pink-400 bg-clip-text text-transparent">
+              <span className="bg-gradient-to-r from-cyan-400 to-purple-400 bg-clip-text text-transparent">
                 OG Techminds
               </span>
             </h1>
