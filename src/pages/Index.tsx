@@ -33,7 +33,8 @@ const Index = () => {
           credentials: 'include',
         });
         if (!res.ok) {
-          throw new Error(`HTTP error! Status: ${res.status}`);
+          const errorData = await res.json().catch(() => ({}));
+          throw new Error(`HTTP error! Status: ${res.status}, Message: ${errorData.error || 'Unknown error'}`);
         }
         const contentType = res.headers.get('content-type');
         if (!contentType || !contentType.includes('application/json')) {
@@ -44,22 +45,18 @@ const Index = () => {
         if (type === 'events') {
           setter(Array.isArray(data.events) ? data.events : []);
         } else if (type === 'members') {
-          setter(Number(data.activeMembers) || 0); // Ensure number conversion
+          setActiveMembers(Number(data.activeMembers) || 0); // Direct state update
         } else if (type === 'projects') {
-          setter(Number(data.activeProjects) || 0); // Ensure number conversion
+          setActiveProjects(Number(data.activeProjects) || 0); // Direct state update
         }
       } catch (error) {
         console.error(`Failed to fetch ${type}:`, error);
-        if (error.message.includes('401')) {
-          console.log(`${type} endpoint requires authentication, using fallback data`);
-        } else {
-          setError(`Failed to load ${type}.`);
-          toast({
-            title: 'Error',
-            description: `Failed to fetch ${type}. Please try again later.`,
-            variant: 'destructive',
-          });
-        }
+        setError(`Failed to load ${type}: ${error.message}`);
+        toast({
+          title: 'Error',
+          description: `Failed to fetch ${type}: ${error.message}`,
+          variant: 'destructive',
+        });
         if (type === 'events') {
           setter([]);
         } else {
