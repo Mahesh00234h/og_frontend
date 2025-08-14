@@ -3,8 +3,6 @@ import { Link } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
-import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
 import { Users, Calendar, Code, Brain, Atom, Zap, Database, Terminal, Rocket, CircuitBoard, Monitor, Menu, X } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 import OGLoader from '@/components/ui/OGLoader';
@@ -13,21 +11,10 @@ const API_BASE_URL = process.env.REACT_APP_API_URL || 'https://og-backend-mwwi.o
 
 const Index = () => {
   const { toast } = useToast();
-  const [isLoggedIn, setIsLoggedIn] = useState(false); // Still needed for UI logic (e.g., showing Login/Join buttons)
-  const [isAdmin, setIsAdmin] = useState(false); // Still needed for conditional event creation form
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
-  const [activeMembers, setActiveMembers] = useState(0); // Changed default to 0 for clarity
-  const [activeProjects, setActiveProjects] = useState(0); // Changed default to 0 for clarity
+  const [activeMembers, setActiveMembers] = useState(0);
+  const [activeProjects, setActiveProjects] = useState(0);
   const [upcomingEvents, setUpcomingEvents] = useState([]);
-  const [newEvent, setNewEvent] = useState({
-    title: '',
-    date: '',
-    time: '',
-    type: '',
-    location: '',
-    description: '',
-    attendees: ''
-  });
   const [error, setError] = useState(null);
   const [isLoading, setIsLoading] = useState({
     members: true,
@@ -39,10 +26,11 @@ const Index = () => {
     const fetchData = async (url, setter, type) => {
       try {
         setIsLoading((prev) => ({ ...prev, [type]: true }));
+        console.log(`Fetching ${type} from ${url}`);
         const res = await fetch(url, {
           method: 'GET',
           headers: { 'Accept': 'application/json' },
-          credentials: 'include', // Keep for potential session-based features
+          credentials: 'include',
         });
         if (!res.ok) {
           throw new Error(`HTTP error! Status: ${res.status}`);
@@ -52,7 +40,7 @@ const Index = () => {
           throw new Error('Response is not JSON');
         }
         const data = await res.json();
-        console.log(`Fetched ${type} data:`, data); // Debug log
+        console.log(`Fetched ${type} data:`, data);
         if (type === 'events') {
           setter(Array.isArray(data.events) ? data.events : []);
         } else if (type === 'members') {
@@ -62,12 +50,16 @@ const Index = () => {
         }
       } catch (error) {
         console.error(`Failed to fetch ${type}:`, error);
-        toast({
-          title: 'Error',
-          description: `Failed to fetch ${type}. Please try again later.`,
-          variant: 'destructive',
-        });
-        setError(`Failed to load ${type}.`);
+        if (error.message.includes('401')) {
+          console.log(`${type} endpoint requires authentication, using fallback data`);
+        } else {
+          setError(`Failed to load ${type}.`);
+          toast({
+            title: 'Error',
+            description: `Failed to fetch ${type}. Please try again later.`,
+            variant: 'destructive',
+          });
+        }
         if (type === 'events') {
           setter([]);
         } else {
@@ -79,56 +71,14 @@ const Index = () => {
     };
 
     fetchData(`${API_BASE_URL}/active-members`, setActiveMembers, 'members');
+    fetchData(`${API_BASE_URL}/active-projects`, setActiveProjects, 'projects');
     fetchData(`${API_BASE_URL}/public-events`, setUpcomingEvents, 'events');
-    fetchData(`${API_BASE_URL}/events`, setUpcomingEvents, 'events');
-  }, [toast]);
 
-  const handleEventSubmit = async (e) => {
-    e.preventDefault();
-    try {
-      const eventDateTime = new Date(`${newEvent.date}T${newEvent.time}`);
-      const response = await fetch(`${API_BASE_URL}/events`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
-        credentials: 'include',
-        body: JSON.stringify({
-          title: newEvent.title,
-          date: eventDateTime.toISOString(),
-          location: newEvent.location,
-          description: newEvent.description,
-          type: newEvent.type,
-          attendees: parseInt(newEvent.attendees, 10)
-        })
-      });
-      const data = await response.json();
-      if (!response.ok) {
-        throw new Error(data.error || 'Failed to create event');
-      }
-      setUpcomingEvents([...upcomingEvents, {
-        _id: data.eventId,
-        title: newEvent.title,
-        date: eventDateTime.toISOString(),
-        location: newEvent.location,
-        description: newEvent.description,
-        type: newEvent.type,
-        attendees: parseInt(newEvent.attendees, 10)
-      }]);
-      setNewEvent({ title: '', date: '', time: '', type: '', location: '', description: '', attendees: '' });
-      setError(null);
-      toast({
-        title: 'Success',
-        description: 'Event created successfully',
-      });
-    } catch (err) {
-      setError(err.message || 'Failed to create event');
-      console.error('Event creation error:', err);
-      toast({
-        title: 'Error',
-        description: err.message || 'Failed to create event',
-        variant: 'destructive',
-      });
-    }
-  };
+    // Log state after fetching
+    setTimeout(() => {
+      console.log('State after fetch:', { activeMembers, activeProjects, upcomingEvents });
+    }, 1000);
+  }, [toast]);
 
   const features = [
     { icon: Brain, title: "AI & ML", description: "Explore cutting-edge AI algorithms and neural networks" },
@@ -233,26 +183,16 @@ const Index = () => {
               </span>
             </div>
             <div className="hidden sm:flex space-x-3">
-              {!isLoggedIn ? (
-                <>
-                  <Link to="/login">
-                    <Button variant="outline" className="text-cyan-400 border-cyan-400/50 hover:bg-cyan-400/10 backdrop-blur-sm text-sm px-4 py-2">
-                      Login
-                    </Button>
-                  </Link>
-                  <Link to="/register">
-                    <Button className="bg-gradient-to-r from-cyan-600 to-purple-600 hover:from-cyan-700 hover:to-purple-700 text-white shadow-lg shadow-cyan-500/25 text-sm px-4 py-2">
-                      Join Now
-                    </Button>
-                  </Link>
-                </>
-              ) : (
-                <Link to="/dashboard">
-                  <Button className="bg-gradient-to-r from-cyan-600 to-purple-600 hover:from-cyan-700 hover:to-purple-700 text-white text-sm px-4 py-2">
-                    Dashboard
-                  </Button>
-                </Link>
-              )}
+              <Link to="/login">
+                <Button variant="outline" className="text-cyan-400 border-cyan-400/50 hover:bg-cyan-400/10 backdrop-blur-sm text-sm px-4 py-2">
+                  Login
+                </Button>
+              </Link>
+              <Link to="/register">
+                <Button className="bg-gradient-to-r from-cyan-600 to-purple-600 hover:from-cyan-700 hover:to-purple-700 text-white shadow-lg shadow-cyan-500/25 text-sm px-4 py-2">
+                  Join Now
+                </Button>
+              </Link>
             </div>
             <div className="sm:hidden">
               <Button
@@ -269,26 +209,16 @@ const Index = () => {
           </div>
           {mobileMenuOpen && (
             <div className="sm:hidden py-3 space-y-2 border-t border-cyan-500/20">
-              {!isLoggedIn ? (
-                <>
-                  <Link to="/login" className="block">
-                    <Button variant="outline" className="w-full text-cyan-400 border-cyan-400/50 hover:bg-cyan-400/10 backdrop-blur-sm text-sm py-2">
-                      Login
-                    </Button>
-                  </Link>
-                  <Link to="/register" className="block">
-                    <Button className="w-full bg-gradient-to-r from-cyan-600 to-purple-600 hover:from-cyan-700 hover:to-purple-700 text-white shadow-lg shadow-cyan-500/25 text-sm py-2">
-                      Join Now
-                    </Button>
-                  </Link>
-                </>
-              ) : (
-                <Link to="/dashboard" className="block">
-                  <Button className="w-full bg-gradient-to-r from-cyan-600 to-purple-600 hover:from-cyan-700 hover:to-purple-700 text-white text-sm py-2">
-                    Dashboard
-                  </Button>
-                </Link>
-              )}
+              <Link to="/login" className="block">
+                <Button variant="outline" className="w-full text-cyan-400 border-cyan-400/50 hover:bg-cyan-400/10 backdrop-blur-sm text-sm py-2">
+                  Login
+                </Button>
+              </Link>
+              <Link to="/register" className="block">
+                <Button className="w-full bg-gradient-to-r from-cyan-600 to-purple-600 hover:from-cyan-700 hover:to-purple-700 text-white shadow-lg shadow-cyan-500/25 text-sm py-2">
+                  Join Now
+                </Button>
+              </Link>
             </div>
           )}
         </div>
@@ -332,7 +262,7 @@ const Index = () => {
                 <OGLoader />
               ) : (
                 <>
-                  <div className="text-lg font-bold text-cyan-400">{activeMembers !== null && activeMembers !== undefined ? `${activeMembers}+` : '0+'}</div>
+                  <div className="text-lg font-bold text-cyan-400">{activeMembers >= 0 ? `${activeMembers}+` : '0+'}</div>
                   <div className="text-xs text-gray-300">Members</div>
                 </>
               )}
@@ -342,7 +272,7 @@ const Index = () => {
                 <OGLoader />
               ) : (
                 <>
-                  <div className="text-lg font-bold text-purple-400">{activeProjects !== null && activeProjects !== undefined ? `${activeProjects}+` : '0+'}</div>
+                  <div className="text-lg font-bold text-purple-400">{activeProjects >= 0 ? `${activeProjects}+` : '0+'}</div>
                   <div className="text-xs text-gray-300">Projects</div>
                 </>
               )}
@@ -360,102 +290,6 @@ const Index = () => {
           </div>
         </div>
       </section>
-
-      {isLoggedIn && isAdmin && (
-        <section className="px-3 py-8 bg-gradient-to-r from-purple-900/10 to-cyan-900/10">
-          <div className="max-w-2xl mx-auto">
-            <h2 className="text-2xl font-bold text-white text-center mb-6">
-              Create Event
-            </h2>
-            <Card className="bg-black/40 border-cyan-500/20 backdrop-blur-sm">
-              <CardContent className="pt-4">
-                <form onSubmit={handleEventSubmit} className="space-y-3">
-                  <div>
-                    <Label htmlFor="title" className="text-white text-sm">Event Title</Label>
-                    <Input
-                      id="title"
-                      value={newEvent.title}
-                      onChange={(e) => setNewEvent({ ...newEvent, title: e.target.value })}
-                      className="bg-black/60 text-white border-cyan-400/50 text-sm"
-                      required
-                    />
-                  </div>
-                  <div className="grid grid-cols-2 gap-3">
-                    <div>
-                      <Label htmlFor="date" className="text-white text-sm">Date</Label>
-                      <Input
-                        id="date"
-                        type="date"
-                        value={newEvent.date}
-                        onChange={(e) => setNewEvent({ ...newEvent, date: e.target.value })}
-                        className="bg-black/60 text-white border-cyan-400/50 text-sm"
-                        required
-                      />
-                    </div>
-                    <div>
-                      <Label htmlFor="time" className="text-white text-sm">Time</Label>
-                      <Input
-                        id="time"
-                        type="time"
-                        value={newEvent.time}
-                        onChange={(e) => setNewEvent({ ...newEvent, time: e.target.value })}
-                        className="bg-black/60 text-white border-cyan-400/50 text-sm"
-                        required
-                      />
-                    </div>
-                  </div>
-                  <div>
-                    <Label htmlFor="type" className="text-white text-sm">Type</Label>
-                    <Input
-                      id="type"
-                      value={newEvent.type}
-                      onChange={(e) => setNewEvent({ ...newEvent, type: e.target.value })}
-                      className="bg-black/60 text-white border-cyan-400/50 text-sm"
-                      placeholder="Workshop, Conference"
-                      required
-                    />
-                  </div>
-                  <div>
-                    <Label htmlFor="location" className="text-white text-sm">Location</Label>
-                    <Input
-                      id="location"
-                      value={newEvent.location}
-                      onChange={(e) => setNewEvent({ ...newEvent, location: e.target.value })}
-                      className="bg-black/60 text-white border-cyan-400/50 text-sm"
-                      required
-                    />
-                  </div>
-                  <div>
-                    <Label htmlFor="description" className="text-white text-sm">Description</Label>
-                    <Input
-                      id="description"
-                      value={newEvent.description}
-                      onChange={(e) => setNewEvent({ ...newEvent, description: e.target.value })}
-                      className="bg-black/60 text-white border-cyan-400/50 text-sm"
-                      required
-                    />
-                  </div>
-                  <div>
-                    <Label htmlFor="attendees" className="text-white text-sm">Expected Attendees</Label>
-                    <Input
-                      id="attendees"
-                      type="number"
-                      value={newEvent.attendees}
-                      onChange={(e) => setNewEvent({ ...newEvent, attendees: e.target.value })}
-                      className="bg-black/60 text-white border-cyan-400/50 text-sm"
-                      required
-                    />
-                  </div>
-                  {error && <p className="text-red-400 text-xs">{error}</p>}
-                  <Button type="submit" className="w-full bg-gradient-to-r from-cyan-600 to-purple-600 hover:from-cyan-700 hover:to-purple-700 text-white text-sm py-2">
-                    Create Event
-                  </Button>
-                </form>
-              </CardContent>
-            </Card>
-          </div>
-        </section>
-      )}
 
       <section className="px-3 py-8 bg-gradient-to-r from-cyan-900/10 to-purple-900/10">
         <div className="max-w-4xl mx-auto">
@@ -539,7 +373,7 @@ const Index = () => {
             </div>
             <div>
               <h3 className="text-green-400 font-semibold mb-1">Community</h3>
-              <p className="text-gray-400">{activeMembers !== null && activeMembers !== undefined ? `${activeMembers}+` : '0+'} Members • Global</p>
+              <p className="text-gray-400">{activeMembers >= 0 ? `${activeMembers}+` : '0+'} Members • Global</p>
             </div>
           </div>
           <div className="text-center mt-4 pt-4 border-t border-cyan-500/10">
