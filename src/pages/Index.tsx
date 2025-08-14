@@ -67,17 +67,20 @@ const Index = () => {
         }
       } finally {
         setIsLoading((prev) => ({ ...prev, [type]: false }));
+        console.log(`Fetch finished loading: GET "${url}"`);
       }
     };
 
-    fetchData(`${API_BASE_URL}/active-members`, setActiveMembers, 'members');
-    fetchData(`${API_BASE_URL}/active-projects`, setActiveProjects, 'projects');
-    fetchData(`${API_BASE_URL}/public-events`, setUpcomingEvents, 'events');
-
-    // Log state after fetching
-    setTimeout(() => {
+    const fetchAllData = async () => {
+      await Promise.all([
+        fetchData(`${API_BASE_URL}/active-members`, setActiveMembers, 'members'),
+        fetchData(`${API_BASE_URL}/active-projects`, setActiveProjects, 'projects'),
+        fetchData(`${API_BASE_URL}/public-events`, setUpcomingEvents, 'events'),
+      ]);
       console.log('State after fetch:', { activeMembers, activeProjects, upcomingEvents });
-    }, 1000);
+    };
+
+    fetchAllData();
   }, [toast]);
 
   const features = [
