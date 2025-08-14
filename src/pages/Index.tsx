@@ -43,11 +43,11 @@ const Index = () => {
         const data = await res.json();
         console.log(`Fetched ${type} data:`, data);
         if (type === 'events') {
-          setter(Array.isArray(data.events) ? data.events : []);
+          setUpcomingEvents(Array.isArray(data.events) ? data.events : []);
         } else if (type === 'members') {
-          setActiveMembers(Number(data.activeMembers) || 0); // Direct state update
+          setActiveMembers(Number(data.activeMembers) || 0);
         } else if (type === 'projects') {
-          setActiveProjects(Number(data.activeProjects) || 0); // Direct state update
+          setActiveProjects(Number(data.activeProjects) || 0);
         }
       } catch (error) {
         console.error(`Failed to fetch ${type}:`, error);
@@ -58,9 +58,11 @@ const Index = () => {
           variant: 'destructive',
         });
         if (type === 'events') {
-          setter([]);
-        } else {
-          setter(0);
+          setUpcomingEvents([]);
+        } else if (type === 'members') {
+          setActiveMembers(0);
+        } else if (type === 'projects') {
+          setActiveProjects(0);
         }
       } finally {
         setIsLoading((prev) => ({ ...prev, [type]: false }));
@@ -74,11 +76,16 @@ const Index = () => {
         fetchData(`${API_BASE_URL}/active-projects`, setActiveProjects, 'projects'),
         fetchData(`${API_BASE_URL}/public-events`, setUpcomingEvents, 'events'),
       ]);
-      console.log('State after fetch:', { activeMembers, activeProjects, upcomingEvents });
+      // Log state in a useEffect to ensure updated values
     };
 
     fetchAllData();
   }, [toast]);
+
+  // Log state after updates
+  useEffect(() => {
+    console.log('State after fetch:', { activeMembers, activeProjects, upcomingEvents });
+  }, [activeMembers, activeProjects, upcomingEvents]);
 
   const features = [
     { icon: Brain, title: "AI & ML", description: "Explore cutting-edge AI algorithms and neural networks" },
