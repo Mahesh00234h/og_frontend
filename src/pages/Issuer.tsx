@@ -10,7 +10,7 @@ import { Code, Plus, User } from 'lucide-react';
 import OGLoader from '@/components/ui/OGLoader';
 
 const CLUB_API_BASE_URL = import.meta.env.VITE_CLUB_API_BASE_URL || 'https://og-backend-mwwi.onrender.com/api';
-const CERTIFICATE_API_BASE_URL = import.meta.env.VITE_CERTIFICATE_API_BASE_URL || 'http://localhost:5000';
+const CERTIFICATE_API_BASE_URL = import.meta.env.VITE_CERTIFICATE_API_BASE_URL || 'https://certi-og-backend.onrender.com';
 
 interface User {
   id: string;
