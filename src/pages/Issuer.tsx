@@ -34,7 +34,10 @@ const Issuer: React.FC = () => {
     prize: '',
     placement: '',
     description: '',
-    pdf_hash: ''
+    pdf_hash: '',
+    rollNumber: '',
+    department: '',
+    year: '',
   });
   const [users, setUsers] = useState<User[]>([]);
   const [selectedUser, setSelectedUser] = useState<string>('');
@@ -50,7 +53,7 @@ const Issuer: React.FC = () => {
           credentials: 'include',
         });
         const data = await res.json();
-        if (!res.ok) throw new Error(data.error || 'HTTP error');
+        if (!res.ok) throw new Error(data.error || `HTTP error: ${res.status}`);
         if (data.user.role !== 'admin') {
           toast({
             title: 'Access Denied',
@@ -69,8 +72,6 @@ const Issuer: React.FC = () => {
           variant: 'destructive',
         });
         navigate('/login');
-      } finally {
-        setLoading(false);
       }
     };
 
@@ -82,15 +83,18 @@ const Issuer: React.FC = () => {
           credentials: 'include',
         });
         const data = await res.json();
-        if (!res.ok) throw new Error(data.error || 'Failed to fetch users');
+        if (!res.ok) throw new Error(data.error || `HTTP error: ${res.status}`);
+        if (!Array.isArray(data.users)) throw new Error('Expected users array in response');
         setUsers(data.users);
       } catch (error) {
         console.error('Issuer: Fetch users error:', error);
         toast({
           title: 'Error',
-          description: 'Failed to fetch users',
+          description: 'Failed to fetch users. Please try again.',
           variant: 'destructive',
         });
+      } finally {
+        setLoading(false);
       }
     };
 
@@ -121,11 +125,20 @@ const Issuer: React.FC = () => {
         department: user.department,
         year: user.year,
       });
+    } else {
+      setFormData({
+        ...formData,
+        recipient: '',
+        email: '',
+        rollNumber: '',
+        department: '',
+        year: '',
+      });
     }
   };
 
   const handleIssueCertificate = async () => {
-    if (!formData.recipient || !formData.event_name) {
+    if (!formData.recipient.trim() || !formData.event_name.trim()) {
       toast({
         title: 'Validation Error',
         description: 'Recipient name and event name are required',
@@ -136,6 +149,22 @@ const Issuer: React.FC = () => {
 
     setLoading(true);
     try {
+      const payload = {
+        recipient: formData.recipient.trim(),
+        issuer: formData.issuer.trim(),
+        email: formData.email.trim(),
+        event_name: formData.event_name.trim(),
+        type: formData.type,
+        prize: formData.prize.trim(),
+        placement: formData.placement.trim(),
+        description: formData.description.trim(),
+        pdf_hash: formData.pdf_hash.trim(),
+        rollNumber: formData.rollNumber.trim(),
+        department: formData.department.trim(),
+        year: formData.year.trim(),
+        recipientId: selectedUser || undefined, // Include if user is selected
+      };
+      console.log('Issuer: Sending payload to /generate-certificate:', payload);
       const res = await fetch(`${CERTIFICATE_API_BASE_URL}/generate-certificate`, {
         method: 'POST',
         headers: {
@@ -143,10 +172,10 @@ const Issuer: React.FC = () => {
           'Accept': 'application/json',
         },
         credentials: 'include',
-        body: JSON.stringify(formData),
+        body: JSON.stringify(payload),
       });
       const data = await res.json();
-      if (!res.ok) throw new Error(data.error || 'Failed to issue certificate');
+      if (!res.ok) throw new Error(data.error || `HTTP error: ${res.status}`);
       toast({
         title: 'Certificate Issued',
         description: `Certificate #${data.certificate.id} issued for ${data.certificate.recipient}`,
@@ -161,6 +190,9 @@ const Issuer: React.FC = () => {
         placement: '',
         description: '',
         pdf_hash: '',
+        rollNumber: '',
+        department: '',
+        year: '',
       });
       setSelectedUser('');
     } catch (error: any) {
@@ -174,6 +206,9 @@ const Issuer: React.FC = () => {
       setLoading(false);
     }
   };
+
+  const isCustomFormValid = formData.recipient.trim() && formData.event_name.trim();
+  const isMongoFormValid = selectedUser && formData.event_name.trim();
 
   if (loading) {
     return (
@@ -247,6 +282,7 @@ const Issuer: React.FC = () => {
                       onChange={handleInputChange}
                       className="bg-black/20 border-green-500/20 text-white placeholder:text-gray-400 focus:border-green-400"
                       disabled={loading}
+                      required={id === 'recipient' || id === 'event_name'}
                     />
                   </div>
                 ))}
@@ -274,7 +310,7 @@ const Issuer: React.FC = () => {
               <Button
                 className="bg-gradient-to-r from-emerald-600 to-green-600 hover:from-emerald-700 hover:to-green-700 text-white"
                 onClick={handleIssueCertificate}
-                disabled={loading}
+                disabled={loading || !isCustomFormValid}
               >
                 {loading ? (
                   <>
@@ -301,6 +337,7 @@ const Issuer: React.FC = () => {
                     onChange={handleInputChange}
                     className="bg-black/20 border-green-500/20 text-white placeholder:text-gray-400 focus:border-green-400"
                     disabled={loading}
+                    required
                   />
                 </div>
                 <div className="space-y-2">
@@ -367,10 +404,10 @@ const Issuer: React.FC = () => {
                   <Select
                     value={selectedUser}
                     onValueChange={handleUserSelect}
-                    disabled={loading}
+                    disabled={loading || users.length === 0}
                   >
                     <SelectTrigger className="bg-black/20 border-green-500/20 text-white">
-                      <SelectValue placeholder="Select a user" />
+                      <SelectValue placeholder={users.length === 0 ? 'No users available' : 'Select a user'} />
                     </SelectTrigger>
                     <SelectContent className="bg-black/80 border-green-500/20 text-white">
                       {users.map((user) => (
@@ -385,7 +422,7 @@ const Issuer: React.FC = () => {
               <Button
                 className="bg-gradient-to-r from-emerald-600 to-green-600 hover:from-emerald-700 hover:to-green-700 text-white"
                 onClick={handleIssueCertificate}
-                disabled={loading || !selectedUser}
+                disabled={loading || !isMongoFormValid}
               >
                 {loading ? (
                   <>
