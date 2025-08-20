@@ -162,7 +162,7 @@ const Issuer: React.FC = () => {
         rollNumber: formData.rollNumber.trim(),
         department: formData.department.trim(),
         year: formData.year.trim(),
-        recipientId: selectedUser || undefined, // Include if user is selected
+        recipientId: selectedUser || undefined,
       };
       console.log('Issuer: Sending payload to /generate-certificate:', payload);
       const res = await fetch(`${CERTIFICATE_API_BASE_URL}/generate-certificate`, {
