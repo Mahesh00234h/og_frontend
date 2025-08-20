@@ -22,10 +22,11 @@ import NotFound from "./pages/NotFound";
 import AdminRegister from "./pages/AdminRegister";
 import Announcements from "./pages/Announcements";
 import ContactUs from "./pages/ContactUs";
+import Issuer from "./pages/Issuer";
+import VerifyCertificate from "./pages/VerifyCertificate";
 
 const queryClient = new QueryClient();
 const API_BASE_URL = 'https://og-backend-mwwi.onrender.com/api';
-
 
 interface SessionData {
   message: string;
@@ -89,8 +90,10 @@ const App = () => (
           <Route path="/register" element={<Register />} />
           <Route path="/admin-login" element={<AdminLogin />} />
           <Route path="/admin-register" element={<AdminRegister />} />
-          <Route path="announcements" element={<Announcements />} />
-          <Route path="contactus" element={<ContactUs />} />
+          <Route path="/announcements" element={<Announcements />} />
+          <Route path="/contactus" element={<ContactUs />} />
+          <Route path="/about" element={<About />} />
+          <Route path="/verify-certificate" element={<VerifyCertificate />} />
           <Route
             path="/dashboard"
             element={
@@ -115,7 +118,6 @@ const App = () => (
               </ProtectedRoute>
             }
           />
-          
           <Route
             path="/members"
             element={
@@ -180,7 +182,14 @@ const App = () => (
               </ProtectedRoute>
             }
           />
-          <Route path="/about" element={<About />} />
+          <Route
+            path="/issuer"
+            element={
+              <ProtectedRoute requireAdmin={true}>
+                <Issuer />
+              </ProtectedRoute>
+            }
+          />
           <Route path="*" element={<NotFound />} />
         </Routes>
       </BrowserRouter>
