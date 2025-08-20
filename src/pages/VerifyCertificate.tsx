@@ -8,7 +8,7 @@ import { useToast } from '@/hooks/use-toast';
 import { Code, Search } from 'lucide-react';
 import OGLoader from '@/components/ui/OGLoader';
 
-const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'https://og-backend-mwwi.onrender.com/api';
+const CERTIFICATE_API_BASE_URL = import.meta.env.VITE_CERTIFICATE_API_BASE_URL || 'http://localhost:5000';
 
 const VerifyCertificate: React.FC = () => {
   const [certId, setCertId] = useState('');
@@ -33,7 +33,7 @@ const VerifyCertificate: React.FC = () => {
     setCertificate(null);
 
     try {
-      const res = await fetch(`${API_BASE_URL}/verify/${certId}`, {
+      const res = await fetch(`${CERTIFICATE_API_BASE_URL}/verify/${certId}`, {
         method: 'GET',
         headers: { 'Accept': 'application/json' },
         credentials: 'include',
