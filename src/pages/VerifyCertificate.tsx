@@ -8,7 +8,7 @@ import { useToast } from '@/hooks/use-toast';
 import { Code, Search } from 'lucide-react';
 import OGLoader from '@/components/ui/OGLoader';
 
-const CERTIFICATE_API_BASE_URL = import.meta.env.VITE_CERTIFICATE_API_BASE_URL || 'http://localhost:5000';
+const CERTIFICATE_API_BASE_URL = import.meta.env.VITE_CERTIFICATE_API_BASE_URL || "https://certi-og-backend.onrender.com";
 
 const VerifyCertificate: React.FC = () => {
   const [certId, setCertId] = useState('');
