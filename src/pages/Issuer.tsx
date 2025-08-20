@@ -9,7 +9,8 @@ import { useToast } from '@/hooks/use-toast';
 import { Code, Plus, User } from 'lucide-react';
 import OGLoader from '@/components/ui/OGLoader';
 
-const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'https://og-backend-mwwi.onrender.com/api';
+const CLUB_API_BASE_URL = import.meta.env.VITE_CLUB_API_BASE_URL || 'https://og-backend-mwwi.onrender.com/api';
+const CERTIFICATE_API_BASE_URL = import.meta.env.VITE_CERTIFICATE_API_BASE_URL || 'http://localhost:5000';
 
 interface User {
   id: string;
@@ -18,6 +19,7 @@ interface User {
   rollNumber: string;
   department: string;
   year: string;
+  role: string;
 }
 
 const Issuer: React.FC = () => {
@@ -42,7 +44,7 @@ const Issuer: React.FC = () => {
   useEffect(() => {
     const fetchUser = async () => {
       try {
-        const res = await fetch(`${API_BASE_URL}/current-user`, {
+        const res = await fetch(`${CLUB_API_BASE_URL}/current-user`, {
           method: 'GET',
           headers: { 'Accept': 'application/json' },
           credentials: 'include',
@@ -74,13 +76,13 @@ const Issuer: React.FC = () => {
 
     const fetchUsers = async () => {
       try {
-        const res = await fetch(`${API_BASE_URL}/users`, {
+        const res = await fetch(`${CERTIFICATE_API_BASE_URL}/users`, {
           method: 'GET',
           headers: { 'Accept': 'application/json' },
           credentials: 'include',
         });
         const data = await res.json();
-        if (!res.ok) throw new Error(data.error);
+        if (!res.ok) throw new Error(data.error || 'Failed to fetch users');
         setUsers(data.users);
       } catch (error) {
         console.error('Issuer: Fetch users error:', error);
@@ -134,7 +136,7 @@ const Issuer: React.FC = () => {
 
     setLoading(true);
     try {
-      const res = await fetch(`${API_BASE_URL}/generate-certificate`, {
+      const res = await fetch(`${CERTIFICATE_API_BASE_URL}/generate-certificate`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
