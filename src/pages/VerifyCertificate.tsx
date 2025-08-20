@@ -1,5 +1,5 @@
-import { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useState, useEffect } from 'react';
+import { useNavigate, useLocation } from 'react-router-dom';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -17,9 +17,20 @@ const VerifyCertificate: React.FC = () => {
   const [error, setError] = useState('');
   const navigate = useNavigate();
   const { toast } = useToast();
+  const location = useLocation();
 
-  const handleVerify = async () => {
-    if (!certId || isNaN(Number(certId))) {
+  // Extract certId from URL query parameter
+  useEffect(() => {
+    const params = new URLSearchParams(location.search);
+    const id = params.get('id');
+    if (id && !isNaN(Number(id))) {
+      setCertId(id);
+      handleVerify(id);
+    }
+  }, [location.search]);
+
+  const handleVerify = async (id: string = certId) => {
+    if (!id || isNaN(Number(id))) {
       toast({
         title: 'Validation Error',
         description: 'Please enter a valid certificate ID',
@@ -33,7 +44,7 @@ const VerifyCertificate: React.FC = () => {
     setCertificate(null);
 
     try {
-      const res = await fetch(`${CERTIFICATE_API_BASE_URL}/verify/${certId}`, {
+      const res = await fetch(`${CERTIFICATE_API_BASE_URL}/verify/${id}`, {
         method: 'GET',
         headers: { 'Accept': 'application/json' },
         credentials: 'include',
@@ -43,7 +54,7 @@ const VerifyCertificate: React.FC = () => {
       setCertificate(data.certificate);
       toast({
         title: 'Certificate Verified',
-        description: `Certificate #${certId} is valid`,
+        description: `Certificate #${id} is valid`,
       });
     } catch (error: any) {
       console.error('VerifyCertificate: Error:', error);
@@ -91,7 +102,7 @@ const VerifyCertificate: React.FC = () => {
           </div>
           <Button
             className="w-full bg-gradient-to-r from-emerald-600 to-green-600 hover:from-emerald-700 hover:to-green-700 text-white"
-            onClick={handleVerify}
+            onClick={() => handleVerify()}
             disabled={loading}
           >
             {loading ? (
