@@ -3,7 +3,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { Users, Calendar, Code, Settings, Shield, UserCheck, UserX, Mail, FileText, Search, Filter } from 'lucide-react';
+import { Users, Calendar, Code, Settings, Shield, UserCheck, UserX, Mail, FileText, Search, Filter, FileCheck } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 import { useNavigate } from 'react-router-dom';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
@@ -72,7 +72,7 @@ const AdminDashboard = () => {
     category: 'General',
     isVirtual: false,
     attendees: 0,
-    image: null as File | null, // Add image field
+    image: null as File | null,
   });
   const [isAnnouncementModalOpen, setIsAnnouncementModalOpen] = useState(false);
   const [isEventModalOpen, setIsEventModalOpen] = useState(false);
@@ -517,6 +517,14 @@ const AdminDashboard = () => {
               >
                 <Users className="h-3 w-3 mr-1" />
                 Members
+              </Button>
+              <Button
+                variant="outline"
+                className="text-black border-red-400 text-xs py-1 px-2"
+                onClick={() => navigate('/issuer')}
+              >
+                <FileCheck className="h-3 w-3 mr-1" />
+                Certificates
               </Button>
               <Button
                 variant="outline"
