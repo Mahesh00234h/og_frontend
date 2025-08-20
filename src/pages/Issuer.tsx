@@ -105,12 +105,12 @@ const Issuer: React.FC = () => {
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setFormData({
       ...formData,
-      [e.target.name]: e.target.value,
+      [e.target.name]: e.target.value || '', // Ensure no undefined values
     });
   };
 
   const handleSelectChange = (name: string, value: string) => {
-    setFormData({ ...formData, [name]: value });
+    setFormData({ ...formData, [name]: value || '' });
   };
 
   const handleUserSelect = (value: string) => {
@@ -119,11 +119,11 @@ const Issuer: React.FC = () => {
     if (user) {
       setFormData({
         ...formData,
-        recipient: user.fullName,
-        email: user.email,
-        rollNumber: user.rollNumber,
-        department: user.department,
-        year: user.year,
+        recipient: user.fullName || '',
+        email: user.email || '',
+        rollNumber: user.rollNumber || '',
+        department: user.department || '',
+        year: user.year || '',
       });
     } else {
       setFormData({
@@ -138,7 +138,8 @@ const Issuer: React.FC = () => {
   };
 
   const handleIssueCertificate = async () => {
-    if (!formData.recipient.trim() || !formData.event_name.trim()) {
+    // Ensure recipient and event_name are strings before trimming
+    if (!formData.recipient?.trim() || !formData.event_name?.trim()) {
       toast({
         title: 'Validation Error',
         description: 'Recipient name and event name are required',
@@ -150,18 +151,18 @@ const Issuer: React.FC = () => {
     setLoading(true);
     try {
       const payload = {
-        recipient: formData.recipient.trim(),
-        issuer: formData.issuer.trim(),
-        email: formData.email.trim(),
-        event_name: formData.event_name.trim(),
-        type: formData.type,
-        prize: formData.prize.trim(),
-        placement: formData.placement.trim(),
-        description: formData.description.trim(),
-        pdf_hash: formData.pdf_hash.trim(),
-        rollNumber: formData.rollNumber.trim(),
-        department: formData.department.trim(),
-        year: formData.year.trim(),
+        recipient: formData.recipient?.trim() || '',
+        issuer: formData.issuer?.trim() || 'OG Techminds',
+        email: formData.email?.trim() || '',
+        event_name: formData.event_name?.trim() || '',
+        type: formData.type || 'Participation',
+        prize: formData.prize?.trim() || '',
+        placement: formData.placement?.trim() || '',
+        description: formData.description?.trim() || '',
+        pdf_hash: formData.pdf_hash?.trim() || '',
+        rollNumber: formData.rollNumber?.trim() || '',
+        department: formData.department?.trim() || '',
+        year: formData.year?.trim() || '',
         recipientId: selectedUser || undefined,
       };
       console.log('Issuer: Sending payload to /generate-certificate:', payload);
@@ -207,8 +208,8 @@ const Issuer: React.FC = () => {
     }
   };
 
-  const isCustomFormValid = formData.recipient.trim() && formData.event_name.trim();
-  const isMongoFormValid = selectedUser && formData.event_name.trim();
+  const isCustomFormValid = formData.recipient?.trim() && formData.event_name?.trim();
+  const isMongoFormValid = selectedUser && formData.event_name?.trim();
 
   if (loading) {
     return (
@@ -278,7 +279,7 @@ const Issuer: React.FC = () => {
                       name={id}
                       type={type}
                       placeholder={placeholder}
-                      value={(formData as any)[id]}
+                      value={formData[id] || ''} // Ensure value is always a string
                       onChange={handleInputChange}
                       className="bg-black/20 border-green-500/20 text-white placeholder:text-gray-400 focus:border-green-400"
                       disabled={loading}
@@ -333,7 +334,7 @@ const Issuer: React.FC = () => {
                     name="event_name"
                     type="text"
                     placeholder="OG Techminds Event"
-                    value={formData.event_name}
+                    value={formData.event_name || ''}
                     onChange={handleInputChange}
                     className="bg-black/20 border-green-500/20 text-white placeholder:text-gray-400 focus:border-green-400"
                     disabled={loading}
@@ -367,7 +368,7 @@ const Issuer: React.FC = () => {
                     name="prize"
                     type="text"
                     placeholder="First Place"
-                    value={formData.prize}
+                    value={formData.prize || ''}
                     onChange={handleInputChange}
                     className="bg-black/20 border-green-500/20 text-white placeholder:text-gray-400 focus:border-green-400"
                     disabled={loading}
@@ -380,7 +381,7 @@ const Issuer: React.FC = () => {
                     name="placement"
                     type="text"
                     placeholder="1st"
-                    value={formData.placement}
+                    value={formData.placement || ''}
                     onChange={handleInputChange}
                     className="bg-black/20 border-green-500/20 text-white placeholder:text-gray-400 focus:border-green-400"
                     disabled={loading}
@@ -393,7 +394,7 @@ const Issuer: React.FC = () => {
                     name="description"
                     type="text"
                     placeholder="Certificate details"
-                    value={formData.description}
+                    value={formData.description || ''}
                     onChange={handleInputChange}
                     className="bg-black/20 border-green-500/20 text-white placeholder:text-gray-400 focus:border-green-400"
                     disabled={loading}
