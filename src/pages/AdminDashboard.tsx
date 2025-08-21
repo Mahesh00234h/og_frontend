@@ -3,7 +3,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { Users, Calendar, Code, Settings, Shield, UserCheck, UserX, Mail, FileText, Search, Filter, FileCheck } from 'lucide-react';
+import { Users, Calendar, Code, Settings, Shield, UserCheck, UserX, Mail, FileText, Search, Filter, FileCheck,LogOut } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 import { useNavigate } from 'react-router-dom';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
@@ -516,7 +516,7 @@ const AdminDashboard = () => {
                 onClick={() => navigate('/members')}
               >
                 <Users className="h-3 w-3 mr-1" />
-                Members
+                
               </Button>
               <Button
                 variant="outline"
@@ -524,7 +524,7 @@ const AdminDashboard = () => {
                 onClick={() => navigate('/issuer')}
               >
                 <FileCheck className="h-3 w-3 mr-1" />
-                Certificates
+                Cert
               </Button>
               <Button
                 variant="outline"
@@ -542,8 +542,8 @@ const AdminDashboard = () => {
                   }
                 }}
               >
-                <Settings className="h-3 w-3 mr-1" />
-                Logout
+                <LogOut className="h-4 w-4" />
+                
               </Button>
             </div>
           </div>
