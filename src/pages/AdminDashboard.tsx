@@ -444,7 +444,7 @@ const AdminDashboard = () => {
                 <DialogTrigger asChild>
                   <Button className="bg-red-600 hover:bg-red-700 text-xs py-1 px-2">
                     <Mail className="h-3 w-3 mr-1" />
-                    Announce
+                    
                   </Button>
                 </DialogTrigger>
                 <DialogContent className="bg-black/80 border-red-500/20 max-w-[90vw] sm:max-w-md p-4">
@@ -524,7 +524,7 @@ const AdminDashboard = () => {
                 onClick={() => navigate('/issuer')}
               >
                 <FileCheck className="h-3 w-3 mr-1" />
-                Cert
+                
               </Button>
               <Button
                 variant="outline"
