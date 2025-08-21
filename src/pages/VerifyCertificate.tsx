@@ -165,7 +165,7 @@ const VerifyCertificate: React.FC = () => {
           >
             {loading ? (
               <>
-                <OGLoader className="mr-2 h-5 w-5" />
+                <OGLoader className="mr-2 h-4 w-4" />
                 Verifying...
               </>
             ) : (
@@ -243,16 +243,6 @@ const VerifyCertificate: React.FC = () => {
           )}
         </CardContent>
       </Card>
-
-      {/* Loading Overlay */}
-      {loading && (
-        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
-          <div className="text-white flex flex-col items-center">
-            <OGLoader className="h-12 w-12 mb-4" />
-            <p>Verifying Certificate...</p>
-          </div>
-        </div>
-      )}
     </div>
   );
 };
