@@ -1,5 +1,5 @@
 {
   "rewrites": [
-    { "source": "/(.*)", "destination": "/verify-certificate" }
+    { "source": "/(.*)", "destination": "/verify-certificate?id={id}" }
   ]
 }
