@@ -147,6 +147,41 @@ const Login = () => {
     }
   };
 
+  const handleVerifyOtp = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setForgotLoading(true);
+    try {
+      // Client-side validation for OTP
+      if (otp.length !== 6 || !/^\d+$/.test(otp)) {
+        throw new Error('OTP must be 6 digits.');
+      }
+
+      const response = await fetch(`${API_BASE_URL}/verify-otp-password-reset`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        credentials: 'include',
+        body: JSON.stringify({ email: forgotEmail, otp }),
+      });
+      const data = await response.json();
+      if (!response.ok) {
+        throw new Error(data.error || 'Failed to verify OTP');
+      }
+      toast({
+        title: 'OTP Verified',
+        description: 'Please enter your new password.',
+      });
+      setForgotStep('reset');
+    } catch (error: any) {
+      toast({
+        title: 'Error',
+        description: error.message || 'Invalid OTP. Please try again.',
+        variant: 'destructive',
+      });
+    } finally {
+      setForgotLoading(false);
+    }
+  };
+
   const handleResetPassword = async (e: React.FormEvent) => {
     e.preventDefault();
     setForgotLoading(true);
@@ -265,7 +300,7 @@ const Login = () => {
           </form>
           <div className="mt-6 text-center">
             <p className="text-gray-300">
-              Don't have an account?{' '}
+              Don't have an account?{' '
               <Link to="/register" className="text-purple-400 hover:text-purple-300">
                 Join the club
               </Link>
@@ -280,7 +315,19 @@ const Login = () => {
       </Card>
 
       {/* Forgot Password Modal */}
-      <Dialog open={isForgotPasswordOpen} onOpenChange={setIsForgotPasswordOpen}>
+      <Dialog 
+        open={isForgotPasswordOpen} 
+        onOpenChange={(open) => {
+          setIsForgotPasswordOpen(open);
+          if (!open) {
+            setForgotStep('email');
+            setForgotEmail('');
+            setOtp('');
+            setNewPassword('');
+            setConfirmPassword('');
+          }
+        }}
+      >
         <DialogContent className="bg-black/40 border-purple-500/20 backdrop-blur-md text-white">
           <DialogHeader>
             <DialogTitle>Reset Your Password</DialogTitle>
@@ -327,13 +374,7 @@ const Login = () => {
             </form>
           )}
           {forgotStep === 'otp' && (
-            <form
-              onSubmit={(e) => {
-                e.preventDefault();
-                setForgotStep('reset');
-              }}
-              className="space-y-4"
-            >
+            <form onSubmit={handleVerifyOtp} className="space-y-4">
               <div className="space-y-2">
                 <Label htmlFor="otp" className="text-white">OTP</Label>
                 <Input
@@ -341,7 +382,7 @@ const Login = () => {
                   type="text"
                   placeholder="Enter 6-digit OTP"
                   value={otp}
-                  onChange={(e) => setOtp(e.target.value)}
+                  onChange={(e) => setOtp(e.target.value.trim())}
                   className="bg-black/20 border-purple-500/20 text-white placeholder:text-gray-400 focus:border-purple-400"
                   required
                   disabled={forgotLoading}
@@ -353,7 +394,14 @@ const Login = () => {
                   className="bg-purple-600 hover:bg-purple-700 text-white"
                   disabled={forgotLoading}
                 >
-                  Verify OTP
+                  {forgotLoading ? (
+                    <>
+                      <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                      Verifying OTP...
+                    </>
+                  ) : (
+                    'Verify OTP'
+                  )}
                 </Button>
               </DialogFooter>
             </form>
