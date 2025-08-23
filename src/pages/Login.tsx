@@ -147,34 +147,6 @@ const Login = () => {
     }
   };
 
-  const handleVerifyOtp = async (e: React.FormEvent) => {
-    e.preventDefault();
-    setForgotLoading(true);
-    try {
-      const response = await fetch(`${API_BASE_URL}/verify-reset-otp`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        credentials: 'include',
-        body: JSON.stringify({ email: forgotEmail, otp }),
-      });
-      const data = await response.json();
-      if (!response.ok) throw new Error(data.error || 'Invalid OTP');
-      toast({
-        title: 'OTP Verified',
-        description: 'OTP verified successfully. Please enter your new password.',
-      });
-      setForgotStep('reset');
-    } catch (error: any) {
-      toast({
-        title: 'Error',
-        description: error.message || 'Failed to verify OTP. Please try again.',
-        variant: 'destructive',
-      });
-    } finally {
-      setForgotLoading(false);
-    }
-  };
-
   const handleResetPassword = async (e: React.FormEvent) => {
     e.preventDefault();
     setForgotLoading(true);
@@ -315,8 +287,7 @@ const Login = () => {
             <DialogDescription className="text-gray-300">
               {forgotStep === 'email' && 'Enter your email to receive a password reset OTP.'}
               {forgotStep === 'otp' && 'Enter the OTP sent to your email.'}
-              {forgotStep === 'reset' &&
-                'Enter your new password. It must include at least one uppercase letter, one lowercase letter, one number, and one special character (@$!%*?&).'}
+              {forgotStep === 'reset' && 'Enter your new password.'}
             </DialogDescription>
           </DialogHeader>
           {forgotStep === 'email' && (
@@ -356,7 +327,13 @@ const Login = () => {
             </form>
           )}
           {forgotStep === 'otp' && (
-            <form onSubmit={handleVerifyOtp} className="space-y-4">
+            <form
+              onSubmit={(e) => {
+                e.preventDefault();
+                setForgotStep('reset');
+              }}
+              className="space-y-4"
+            >
               <div className="space-y-2">
                 <Label htmlFor="otp" className="text-white">OTP</Label>
                 <Input
@@ -376,14 +353,7 @@ const Login = () => {
                   className="bg-purple-600 hover:bg-purple-700 text-white"
                   disabled={forgotLoading}
                 >
-                  {forgotLoading ? (
-                    <>
-                      <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                      Verifying OTP...
-                    </>
-                  ) : (
-                    'Verify OTP'
-                  )}
+                  Verify OTP
                 </Button>
               </DialogFooter>
             </form>
