@@ -50,13 +50,7 @@ const Login = () => {
 
       console.log('Login: Login response headers:', Object.fromEntries(response.headers));
       console.log('Login: Cookies after login:', document.cookie);
-      let data;
-      try {
-        data = await response.json();
-      } catch (e) {
-        console.error('Login: Failed to parse JSON:', e, 'Response text:', await response.text());
-        throw new Error('Server returned an invalid response');
-      }
+      const data = await response.json();
       console.log('Login: Login response data:', data);
 
       if (!response.ok) {
@@ -107,13 +101,7 @@ const Login = () => {
         credentials: 'include',
         body: JSON.stringify({ token: credentialResponse.credential }),
       });
-      let data;
-      try {
-        data = await res.json();
-      } catch (e) {
-        console.error('Google Login: Failed to parse JSON:', e, 'Response text:', await res.text());
-        throw new Error('Server returned an invalid response');
-      }
+      const data = await res.json();
       if (!res.ok) throw new Error(data.error || 'Google login failed');
       toast({
         title: 'Google Login Successful!',
@@ -121,7 +109,6 @@ const Login = () => {
       });
       navigate('/dashboard');
     } catch (err: any) {
-      console.error('Google Login: Error:', err);
       toast({
         title: 'Google Login Failed',
         description: err.message || 'An error occurred during Google login.',
@@ -136,22 +123,13 @@ const Login = () => {
     e.preventDefault();
     setForgotLoading(true);
     try {
-      console.log('Forgot Password: Sending POST to:', `${API_BASE_URL}/forgot-password`, 'Body:', { email: forgotEmail });
       const response = await fetch(`${API_BASE_URL}/forgot-password`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         credentials: 'include',
         body: JSON.stringify({ email: forgotEmail }),
       });
-      console.log('Forgot Password: Response status:', response.status, 'Headers:', Object.fromEntries(response.headers));
-      let data;
-      try {
-        data = await response.json();
-      } catch (e) {
-        console.error('Forgot Password: Failed to parse JSON:', e, 'Response text:', await response.text());
-        throw new Error('Server returned an invalid response');
-      }
-      console.log('Forgot Password: Response data:', data);
+      const data = await response.json();
       if (!response.ok) throw new Error(data.error || 'Failed to send OTP');
       toast({
         title: 'OTP Sent',
@@ -159,48 +137,9 @@ const Login = () => {
       });
       setForgotStep('otp');
     } catch (error: any) {
-      console.error('Forgot Password: Error:', error);
       toast({
         title: 'Error',
         description: error.message || 'Failed to send OTP. Please try again.',
-        variant: 'destructive',
-      });
-    } finally {
-      setForgotLoading(false);
-    }
-  };
-
-  const handleVerifyOtp = async (e: React.FormEvent) => {
-    e.preventDefault();
-    setForgotLoading(true);
-    try {
-      console.log('Verify OTP: Sending POST to:', `${API_BASE_URL}/verify-reset-otp`, 'Body:', { email: forgotEmail, otp });
-      const response = await fetch(`${API_BASE_URL}/verify-reset-otp`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        credentials: 'include',
-        body: JSON.stringify({ email: forgotEmail, otp }),
-      });
-      console.log('Verify OTP: Response status:', response.status, 'Headers:', Object.fromEntries(response.headers));
-      let data;
-      try {
-        data = await response.json();
-      } catch (e) {
-        console.error('Verify OTP: Failed to parse JSON:', e, 'Response text:', await response.text());
-        throw new Error('Server returned an invalid response');
-      }
-      console.log('Verify OTP: Response data:', data);
-      if (!response.ok) throw new Error(data.error || 'Invalid OTP');
-      toast({
-        title: 'OTP Verified',
-        description: 'OTP verified successfully. Please enter your new password.',
-      });
-      setForgotStep('reset');
-    } catch (error: any) {
-      console.error('Verify OTP: Error:', error);
-      toast({
-        title: 'Error',
-        description: error.message || 'Failed to verify OTP. Please try again.',
         variant: 'destructive',
       });
     } finally {
@@ -212,12 +151,6 @@ const Login = () => {
     e.preventDefault();
     setForgotLoading(true);
     try {
-      console.log('Reset Password: Sending POST to:', `${API_BASE_URL}/reset-password`, 'Body:', {
-        email: forgotEmail,
-        otp,
-        newPassword,
-        confirmPassword,
-      });
       const response = await fetch(`${API_BASE_URL}/reset-password`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -229,15 +162,7 @@ const Login = () => {
           confirmPassword,
         }),
       });
-      console.log('Reset Password: Response status:', response.status, 'Headers:', Object.fromEntries(response.headers));
-      let data;
-      try {
-        data = await response.json();
-      } catch (e) {
-        console.error('Reset Password: Failed to parse JSON:', e, 'Response text:', await response.text());
-        throw new Error('Server returned an invalid response');
-      }
-      console.log('Reset Password: Response data:', data);
+      const data = await response.json();
       if (!response.ok) throw new Error(data.error || 'Failed to reset password');
       toast({
         title: 'Password Reset Successful',
@@ -250,7 +175,6 @@ const Login = () => {
       setNewPassword('');
       setConfirmPassword('');
     } catch (error: any) {
-      console.error('Reset Password: Error:', error);
       toast({
         title: 'Error',
         description: error.message || 'Failed to reset password. Please try again.',
@@ -363,8 +287,7 @@ const Login = () => {
             <DialogDescription className="text-gray-300">
               {forgotStep === 'email' && 'Enter your email to receive a password reset OTP.'}
               {forgotStep === 'otp' && 'Enter the OTP sent to your email.'}
-              {forgotStep === 'reset' &&
-                'Enter your new password. It must include at least one uppercase letter, one lowercase letter, one number, and one special character (@$!%*?&).'}
+              {forgotStep === 'reset' && 'Enter your new password.'}
             </DialogDescription>
           </DialogHeader>
           {forgotStep === 'email' && (
@@ -404,7 +327,13 @@ const Login = () => {
             </form>
           )}
           {forgotStep === 'otp' && (
-            <form onSubmit={handleVerifyOtp} className="space-y-4">
+            <form
+              onSubmit={(e) => {
+                e.preventDefault();
+                setForgotStep('reset');
+              }}
+              className="space-y-4"
+            >
               <div className="space-y-2">
                 <Label htmlFor="otp" className="text-white">OTP</Label>
                 <Input
@@ -424,14 +353,7 @@ const Login = () => {
                   className="bg-purple-600 hover:bg-purple-700 text-white"
                   disabled={forgotLoading}
                 >
-                  {forgotLoading ? (
-                    <>
-                      <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                      Verifying OTP...
-                    </>
-                  ) : (
-                    'Verify OTP'
-                  )}
+                  Verify OTP
                 </Button>
               </DialogFooter>
             </form>
