@@ -50,7 +50,13 @@ const Login = () => {
 
       console.log('Login: Login response headers:', Object.fromEntries(response.headers));
       console.log('Login: Cookies after login:', document.cookie);
-      const data = await response.json();
+      let data;
+      try {
+        data = await response.json();
+      } catch (e) {
+        console.error('Login: Failed to parse JSON:', e, 'Response text:', await response.text());
+        throw new Error('Server returned an invalid response');
+      }
       console.log('Login: Login response data:', data);
 
       if (!response.ok) {
@@ -101,7 +107,13 @@ const Login = () => {
         credentials: 'include',
         body: JSON.stringify({ token: credentialResponse.credential }),
       });
-      const data = await res.json();
+      let data;
+      try {
+        data = await res.json();
+      } catch (e) {
+        console.error('Google Login: Failed to parse JSON:', e, 'Response text:', await res.text());
+        throw new Error('Server returned an invalid response');
+      }
       if (!res.ok) throw new Error(data.error || 'Google login failed');
       toast({
         title: 'Google Login Successful!',
@@ -109,6 +121,7 @@ const Login = () => {
       });
       navigate('/dashboard');
     } catch (err: any) {
+      console.error('Google Login: Error:', err);
       toast({
         title: 'Google Login Failed',
         description: err.message || 'An error occurred during Google login.',
@@ -131,7 +144,13 @@ const Login = () => {
         body: JSON.stringify({ email: forgotEmail }),
       });
       console.log('Forgot Password: Response status:', response.status, 'Headers:', Object.fromEntries(response.headers));
-      const data = await response.json();
+      let data;
+      try {
+        data = await response.json();
+      } catch (e) {
+        console.error('Forgot Password: Failed to parse JSON:', e, 'Response text:', await response.text());
+        throw new Error('Server returned an invalid response');
+      }
       console.log('Forgot Password: Response data:', data);
       if (!response.ok) throw new Error(data.error || 'Failed to send OTP');
       toast({
@@ -163,7 +182,13 @@ const Login = () => {
         body: JSON.stringify({ email: forgotEmail, otp }),
       });
       console.log('Verify OTP: Response status:', response.status, 'Headers:', Object.fromEntries(response.headers));
-      const data = await response.json();
+      let data;
+      try {
+        data = await response.json();
+      } catch (e) {
+        console.error('Verify OTP: Failed to parse JSON:', e, 'Response text:', await response.text());
+        throw new Error('Server returned an invalid response');
+      }
       console.log('Verify OTP: Response data:', data);
       if (!response.ok) throw new Error(data.error || 'Invalid OTP');
       toast({
@@ -205,7 +230,13 @@ const Login = () => {
         }),
       });
       console.log('Reset Password: Response status:', response.status, 'Headers:', Object.fromEntries(response.headers));
-      const data = await response.json();
+      let data;
+      try {
+        data = await response.json();
+      } catch (e) {
+        console.error('Reset Password: Failed to parse JSON:', e, 'Response text:', await response.text());
+        throw new Error('Server returned an invalid response');
+      }
       console.log('Reset Password: Response data:', data);
       if (!response.ok) throw new Error(data.error || 'Failed to reset password');
       toast({
