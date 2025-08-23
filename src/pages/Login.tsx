@@ -300,7 +300,7 @@ const Login = () => {
           </form>
           <div className="mt-6 text-center">
             <p className="text-gray-300">
-              Don't have an account?{' '
+              Don't have an account?{' '}
               <Link to="/register" className="text-purple-400 hover:text-purple-300">
                 Join the club
               </Link>
