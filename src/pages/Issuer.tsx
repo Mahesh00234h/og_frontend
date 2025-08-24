@@ -8,7 +8,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { useToast } from '@/hooks/use-toast';
 import { Toaster } from '@/components/ui/toaster'; // Updated to import from toaster
 import { Code, Plus, User } from 'lucide-react';
-import OGLoader from '@/components/ui/OGLoader';
+import SmallLoader from "@/components/ui/SmallLoader";
 
 const CLUB_API_BASE_URL = import.meta.env.VITE_CLUB_API_BASE_URL || 'https://og-backend-mwwi.onrender.com/api';
 const CERTIFICATE_API_BASE_URL = import.meta.env.VITE_CERTIFICATE_API_BASE_URL || 'https://certi-og-backend.onrender.com';
@@ -325,7 +325,7 @@ const Issuer: React.FC = () => {
               >
                 {submitting ? (
                   <>
-                    <OGLoader className="mr-2 h-4 w-4" />
+                    <SmallLoader className="mr-2 h-4 w-4" />
                     Generating...
                   </>
                 ) : (
