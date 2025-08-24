@@ -1,5 +1,5 @@
 import React from 'react';
-import './smallloader.css';
+import './Smallloader.css';
 
 const SmallLoader: React.FC = () => {
   return (
