@@ -5,7 +5,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Badge } from '@/components/ui/badge';
 import { Users, Calendar, Code, Brain, Atom, Zap, Database, Terminal, Rocket, CircuitBoard, Monitor, Menu, X } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
-import OGLoader from '@/components/ui/ogloader';
+import SmallLoader from "./SmallLoader";
 
 const API_BASE_URL = process.env.REACT_APP_API_URL || 'https://og-backend-mwwi.onrender.com/api';
 
@@ -273,7 +273,7 @@ const Index = () => {
           <div className="grid grid-cols-2 gap-2 max-w-md mx-auto">
             <div className="bg-black/40 border border-cyan-500/20 rounded-lg p-2 backdrop-blur-sm">
               {isLoading.members ? (
-                <OGLoader />
+                <SmallLoader />
               ) : (
                 <>
                   <div className="text-base font-bold text-cyan-400">{activeMembers >= 0 ? `${activeMembers}+` : '0+'}</div>
@@ -283,7 +283,7 @@ const Index = () => {
             </div>
             <div className="bg-black/40 border border-purple-500/20 rounded-lg p-2 backdrop-blur-sm">
               {isLoading.projects ? (
-                <OGLoader />
+                <SmallLoader />
               ) : (
                 <>
                   <div className="text-base font-bold text-purple-400">{activeProjects >= 0 ? `${activeProjects}+` : '0+'}</div>
@@ -341,7 +341,7 @@ const Index = () => {
           </h2>
           {isLoading.events ? (
             <div className="col-span-full text-center">
-              <OGLoader />
+              <SmallLoader />
             </div>
           ) : (
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
