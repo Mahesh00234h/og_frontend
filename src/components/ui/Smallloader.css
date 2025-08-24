@@ -1,26 +1,26 @@
-.loader-container {
+.small-loader-container {
   position: relative;
-  width: 30px;   /* smaller size */
-  height: 30px;  /* smaller size */
+  width: 30px;
+  height: 30px;
 }
 
-.loader {
-  width: 30px;   /* smaller size */
-  height: 30px;  /* smaller size */
+.small-loader {
+  width: 30px;
+  height: 30px;
   box-sizing: border-box;
   border-radius: 50%;
-  border-top: 2px solid #e74c3c; /* thin border */
-  animation: load 2s linear infinite;
+  border-top: 2px solid #e74c3c;
+  animation: spin 2s linear infinite;
   position: absolute;
   top: 0;
   left: 0;
 }
 
-.loader::before,
-.loader::after {
+.small-loader::before,
+.small-loader::after {
   content: '';
-  width: 30px;   /* smaller size */
-  height: 30px;  /* smaller size */
+  width: 30px;
+  height: 30px;
   position: absolute;
   left: 0;
   top: 0;
@@ -28,32 +28,32 @@
   border-radius: 50%;
 }
 
-.loader::before {
+.small-loader::before {
   border-top: 2px solid #e67e22;
   transform: rotate(120deg);
 }
 
-.loader::after {
+.small-loader::after {
   border-top: 2px solid #3498db;
   transform: rotate(240deg);
 }
 
-.logo-wrapper {
+.small-logo-wrapper {
   position: absolute;
-  width: 15px;   /* smaller logo */
-  height: 15px;  /* smaller logo */
+  width: 15px;
+  height: 15px;
   top: 50%;
   left: 50%;
   transform: translate(-50%, -50%);
   z-index: 10;
 }
 
-.logo-wrapper img {
+.small-logo-wrapper img {
   width: 100%;
   height: 100%;
 }
 
-@keyframes load {
+@keyframes spin {
   to {
     transform: rotate(360deg);
   }
