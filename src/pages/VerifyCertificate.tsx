@@ -6,7 +6,7 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { useToast } from '@/hooks/use-toast';
 import { Code, Search, Copy, ExternalLink, RefreshCw } from 'lucide-react';
-import OGLoader from '@/components/ui/OGLoader';
+import SmallLoader from "@/components/ui/SmallLoader";
 import { cn } from '@/lib/utils';
 
 const CERTIFICATE_API_BASE_URL = import.meta.env.VITE_CERTIFICATE_API_BASE_URL || "https://certi-og-backend.onrender.com";
@@ -165,7 +165,7 @@ const VerifyCertificate: React.FC = () => {
           >
             {loading ? (
               <>
-                <OGLoader className="mr-2 h-4 w-4" />
+                <SmallLoader className="mr-2 h-4 w-4" />
                 Verifying...
               </>
             ) : (
