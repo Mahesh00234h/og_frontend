@@ -5,7 +5,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Badge } from '@/components/ui/badge';
 import { Users, Calendar, Code, Brain, Atom, Zap, Database, Terminal, Rocket, CircuitBoard, Monitor, Menu, X } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
-import ogloader from '@/components/ui/ogloader';
+import OGLoader from '@/components/ui/ogloader';
 
 const API_BASE_URL = process.env.REACT_APP_API_URL || 'https://og-backend-mwwi.onrender.com/api';
 
