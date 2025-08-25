@@ -4,11 +4,12 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
-import { Users, Calendar, Code, Star, Bell, Settings, Plus, Mail } from 'lucide-react';
+import { Users, Calendar, Code, Star, Bell, Settings, Plus, Mail, Sun, Moon, CheckCircle, MessageSquare } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from '@/components/ui/dialog';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
+import { Progress } from '@/components/ui/progress';
 import OGLoader from '@/components/ui/OGLoader';
 
 const API_BASE_URL = 'https://og-backend-mwwi.onrender.com/api';
@@ -23,6 +24,8 @@ interface User {
   isActive: boolean;
   avatar?: string;
   role?: string;
+  skills?: string[];
+  interests?: string[];
 }
 
 interface Notification {
@@ -67,6 +70,8 @@ const Dashboard: React.FC = () => {
   const [announcements, setAnnouncements] = useState<Announcement[]>([]);
   const [isProjectModalOpen, setIsProjectModalOpen] = useState<boolean>(false);
   const [newProject, setNewProject] = useState<{ title: string; technology: string }>({ title: '', technology: '' });
+  const [isDarkMode, setIsDarkMode] = useState<boolean>(true);
+  const [profileCompletion, setProfileCompletion] = useState<number>(0);
   const navigate = useNavigate();
   const { toast } = useToast();
 
@@ -93,6 +98,10 @@ const Dashboard: React.FC = () => {
         const data = await res.json();
         if (!res.ok) throw new Error(data.error || `HTTP error! status: ${res.status}`);
         setUser(data.user);
+        // Calculate profile completion
+        const fields = [data.user.fullName, data.user.email, data.user.rollNumber, data.user.department, data.user.year, data.user.skills?.length, data.user.interests?.length];
+        const completedFields = fields.filter(Boolean).length;
+        setProfileCompletion(Math.round((completedFields / 7) * 100));
       } catch (error) {
         console.error('Dashboard: Fetch user error:', error);
         toast({
@@ -247,50 +256,91 @@ const Dashboard: React.FC = () => {
     }
   };
 
+  const handleRSVP = async (eventId: string) => {
+    try {
+      const res = await fetch(`${API_BASE_URL}/events/${eventId}/rsvp`, {
+        method: 'POST',
+        headers: { 'Accept': 'application/json' },
+        credentials: 'include',
+      });
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.error);
+      toast({
+        title: 'Success',
+        description: 'Successfully RSVP\'d for the event',
+      });
+    } catch (error: any) {
+      console.error('Dashboard: RSVP error:', error);
+      toast({
+        title: 'Error',
+        description: error.message || 'Failed to RSVP for the event',
+        variant: 'destructive',
+      });
+    }
+  };
+
+  const toggleTheme = () => {
+    setIsDarkMode(!isDarkMode);
+  };
+
   if (loading) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-slate-950 via-blue-950 to-slate-950 flex justify-center items-center">
+      <div className={`min-h-screen ${isDarkMode ? 'bg-gradient-to-br from-slate-950 via-blue-950 to-slate-950' : 'bg-gradient-to-br from-gray-100 via-blue-100 to-gray-100'} flex justify-center items-center`}>
         <OGLoader />
       </div>
     );
   }
   if (!user) return null;
 
+  const featuredProject = recentProjects.reduce((prev, curr) => (prev.stars > curr.stars ? prev : curr), recentProjects[0]);
+
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-950 via-blue-950 to-slate-950 overflow-x-hidden">
+    <div className={`min-h-screen ${isDarkMode ? 'bg-gradient-to-br from-slate-950 via-blue-950 to-slate-950' : 'bg-gradient-to-br from-gray-100 via-blue-100 to-gray-100'} overflow-x-hidden transition-colors duration-300`}>
       {/* Header */}
-      <header className="bg-black/30 backdrop-blur-xl border-b border-cyan-500/20 fixed top-0 left-0 right-0 z-50">
+      <header className={`${isDarkMode ? 'bg-black/30 border-cyan-500/20' : 'bg-white/80 border-blue-200'} backdrop-blur-xl border-b fixed top-0 left-0 right-0 z-50`}>
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex justify-between items-center h-14">
-            <h1 className="text-xl sm:text-2xl font-bold text-white">TechMinds Dashboard</h1>
+            <h1 className={`text-xl sm:text-2xl font-bold ${isDarkMode ? 'text-white' : 'text-gray-900'}`}>TechMinds Dashboard</h1>
             <div className="flex items-center space-x-3">
               <Button
                 variant="outline"
                 size="sm"
-                className="text-cyan-400 border-cyan-400/50 hover:bg-cyan-400/10 backdrop-blur-sm h-9 w-9 p-0"
+                className={`${isDarkMode ? 'text-cyan-400 border-cyan-400/50 hover:bg-cyan-400/10' : 'text-blue-600 border-blue-300 hover:bg-blue-100'} backdrop-blur-sm h-9 w-9 p-0`}
+                onClick={toggleTheme}
+                aria-label={isDarkMode ? 'Switch to light mode' : 'Switch to dark mode'}
+              >
+                {isDarkMode ? <Sun className="h-5 w-5" /> : <Moon className="h-5 w-5" />}
+              </Button>
+              <Button
+                variant="outline"
+                size="sm"
+                className={`${isDarkMode ? 'text-cyan-400 border-cyan-400/50 hover:bg-cyan-400/10' : 'text-blue-600 border-blue-300 hover:bg-blue-100'} backdrop-blur-sm h-9 w-9 p-0`}
                 onClick={() => navigate('/notifications')}
+                aria-label="Notifications"
               >
                 <Bell className="h-5 w-5" />
               </Button>
               <Button
                 variant="outline"
                 size="sm"
-                className="text-cyan-400 border-cyan-400/50 hover:bg-cyan-400/10 backdrop-blur-sm h-9 w-9 p-0"
+                className={`${isDarkMode ? 'text-cyan-400 border-cyan-400/50 hover:bg-cyan-400/10' : 'text-blue-600 border-blue-300 hover:bg-blue-100'} backdrop-blur-sm h-9 w-9 p-0`}
                 onClick={() => navigate('/members')}
+                aria-label="Members"
               >
                 <Users className="h-5 w-5" />
               </Button>
               <Button
                 variant="outline"
                 size="sm"
-                className="text-cyan-400 border-cyan-400/50 hover:bg-cyan-400/10 backdrop-blur-sm h-9 w-9 p-0"
+                className={`${isDarkMode ? 'text-cyan-400 border-cyan-400/50 hover:bg-cyan-400/10' : 'text-blue-600 border-blue-300 hover:bg-blue-100'} backdrop-blur-sm h-9 w-9 p-0`}
                 onClick={() => navigate('/settings')}
+                aria-label="Settings"
               >
                 <Settings className="h-5 w-5" />
               </Button>
               <Avatar className="cursor-pointer h-9 w-9" onClick={() => navigate('/profile')}>
                 <AvatarImage src={user.avatar || ''} />
-                <AvatarFallback className="bg-gradient-to-r from-cyan-600 to-purple-600 text-white text-sm">
+                <AvatarFallback className={`${isDarkMode ? 'bg-gradient-to-r from-cyan-600 to-purple-600' : 'bg-gradient-to-r from-blue-500 to-purple-500'} text-white text-sm`}>
                   {user.fullName.split(' ').map((n: string) => n[0]).join('')}
                 </AvatarFallback>
               </Avatar>
@@ -299,71 +349,169 @@ const Dashboard: React.FC = () => {
         </div>
       </header>
 
+      {/* News Ticker */}
+      {announcements.some((a) => a.priority === 'high') && (
+        <div className="bg-gradient-to-r from-cyan-600 to-purple-600 text-white py-2 overflow-hidden">
+          <div className="animate-marquee whitespace-nowrap">
+            {announcements
+              .filter((a) => a.priority === 'high')
+              .map((announcement) => (
+                <span key={announcement.id} className="mx-4 text-sm">
+                  {announcement.title}: {announcement.message}
+                </span>
+              ))}
+          </div>
+        </div>
+      )}
+
       {/* Main Content */}
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-16 pb-8 space-y-6">
         {/* User Card */}
-        <Card className="bg-black/40 border-cyan-500/20 backdrop-blur-sm">
+        <Card className={`${isDarkMode ? 'bg-black/40 border-cyan-500/20' : 'bg-white border-blue-200'} backdrop-blur-sm`}>
           <CardHeader>
-            <CardTitle className="text-white text-xl sm:text-2xl">
+            <CardTitle className={`${isDarkMode ? 'text-white' : 'text-gray-900'} text-xl sm:text-2xl`}>
               Welcome back to TechMinds, {user.fullName}! 👋
             </CardTitle>
-            <CardDescription className="text-gray-300 text-sm">
+            <CardDescription className={`${isDarkMode ? 'text-gray-300' : 'text-gray-600'} text-sm`}>
               Member ID: {user.rollNumber} | {user.department} | {user.year}
             </CardDescription>
           </CardHeader>
           <CardContent className="flex flex-col sm:flex-row sm:items-center sm:space-x-4 space-y-2 sm:space-y-0">
             <div className="flex items-center space-x-1">
-              <Star className="h-5 w-5 text-yellow-400" />
-              <span className="text-white text-sm font-semibold">
+              <Star className={`h-5 w-5 ${isDarkMode ? 'text-yellow-400' : 'text-yellow-500'}`} />
+              <span className={`${isDarkMode ? 'text-white' : 'text-gray-900'} text-sm font-semibold`}>
                 {recentProjects.reduce((acc: number, p: Project) => acc + p.stars, 0)} Stars
               </span>
             </div>
             <div className="flex items-center space-x-1">
-              <Code className="h-5 w-5 text-cyan-400" />
-              <span className="text-white text-sm font-semibold">{recentProjects.length} Projects</span>
+              <Code className={`h-5 w-5 ${isDarkMode ? 'text-cyan-400' : 'text-blue-500'}`} />
+              <span className={`${isDarkMode ? 'text-white' : 'text-gray-900'} text-sm font-semibold`}>{recentProjects.length} Projects</span>
             </div>
             <div className="flex items-center space-x-1">
-              <Bell className="h-5 w-5 text-purple-400" />
-              <span className="text-white text-sm font-semibold">
+              <Bell className={`h-5 w-5 ${isDarkMode ? 'text-purple-400' : 'text-purple-500'}`} />
+              <span className={`${isDarkMode ? 'text-white' : 'text-gray-900'} text-sm font-semibold`}>
                 {notifications.filter((n) => !n.read).length} Unread
               </span>
             </div>
+          </CardContent>
+          <CardContent>
+            <div className="flex flex-col space-y-2">
+              <div className="flex items-center space-x-2">
+                <CheckCircle className={`h-5 w-5 ${isDarkMode ? 'text-green-400' : 'text-green-500'}`} />
+                <span className={`${isDarkMode ? 'text-white' : 'text-gray-900'} text-sm font-semibold`}>Profile Completion: {profileCompletion}%</span>
+              </div>
+              <Progress value={profileCompletion} className={`h-2 ${isDarkMode ? 'bg-gray-700' : 'bg-gray-200'} [&>div]:bg-gradient-to-r [&>div]:from-cyan-600 [&>div]:to-purple-600`} />
+              {profileCompletion < 100 && (
+                <Button
+                  variant="link"
+                  className={`${isDarkMode ? 'text-cyan-400' : 'text-blue-600'} text-sm`}
+                  onClick={() => navigate('/profile/edit')}
+                >
+                  Complete Your Profile
+                </Button>
+              )}
+            </div>
+          </CardContent>
+        </Card>
+
+        {/* Quick Actions */}
+        <Card className={`${isDarkMode ? 'bg-black/40 border-cyan-500/20' : 'bg-white border-blue-200'} backdrop-blur-sm`}>
+          <CardHeader>
+            <CardTitle className={`${isDarkMode ? 'text-white' : 'text-gray-900'} text-lg sm:text-xl flex items-center`}>
+              <Plus className="h-5 w-5 mr-2" />
+              Quick Actions
+            </CardTitle>
+            <CardDescription className={`${isDarkMode ? 'text-gray-300' : 'text-gray-600'} text-sm`}>Get started with TechMinds</CardDescription>
+          </CardHeader>
+          <CardContent className="flex flex-wrap gap-3">
+            <Button
+              className={`${isDarkMode ? 'bg-gradient-to-r from-cyan-600 to-purple-600 hover:from-cyan-700 hover:to-purple-700' : 'bg-gradient-to-r from-blue-500 to-purple-500 hover:from-blue-600 hover:to-purple-600'} text-white text-sm h-9`}
+              onClick={() => setIsProjectModalOpen(true)}
+            >
+              <Plus className="h-4 w-4 mr-1" />
+              Create Project
+            </Button>
+            <Button
+              className={`${isDarkMode ? 'bg-gradient-to-r from-cyan-600 to-purple-600 hover:from-cyan-700 hover:to-purple-700' : 'bg-gradient-to-r from-blue-500 to-purple-500 hover:from-blue-600 hover:to-purple-600'} text-white text-sm h-9`}
+              onClick={() => navigate('/projects/join')}
+            >
+              <Users className="h-4 w-4 mr-1" />
+              Join Project
+            </Button>
+            <Button
+              className={`${isDarkMode ? 'bg-gradient-to-r from-cyan-600 to-purple-600 hover:from-cyan-700 hover:to-purple-700' : 'bg-gradient-to-r from-blue-500 to-purple-500 hover:from-blue-600 hover:to-purple-600'} text-white text-sm h-9`}
+              onClick={() => navigate('/feedback')}
+            >
+              <MessageSquare className="h-4 w-4 mr-1" />
+              Submit Feedback
+            </Button>
           </CardContent>
         </Card>
 
         {/* Main Grid */}
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6">
+          {/* Featured Project */}
+          {featuredProject && (
+            <Card className={`${isDarkMode ? 'bg-black/40 border-cyan-500/20' : 'bg-white border-blue-200'} backdrop-blur-sm`}>
+              <CardHeader>
+                <CardTitle className={`${isDarkMode ? 'text-white' : 'text-gray-900'} text-lg sm:text-xl flex items-center`}>
+                  <Star className={`h-5 w-5 mr-2 ${isDarkMode ? 'text-yellow-400' : 'text-yellow-500'}`} />
+                  Featured Project
+                </CardTitle>
+                <CardDescription className={`${isDarkMode ? 'text-gray-300' : 'text-gray-600'} text-sm`}>Top-rated project</CardDescription>
+              </CardHeader>
+              <CardContent>
+                <div className="p-3 rounded-md bg-gradient-to-r from-cyan-900/30 to-purple-900/30">
+                  <span className={`${isDarkMode ? 'text-white' : 'text-gray-900'} text-sm font-semibold`}>{featuredProject.title}</span>
+                  <p className={`${isDarkMode ? 'text-gray-300' : 'text-gray-600'} text-sm`}>{featuredProject.technology}</p>
+                  <div className="flex items-center space-x-3 mt-2">
+                    <Star className={`h-4 w-4 ${isDarkMode ? 'text-yellow-400' : 'text-yellow-500'}`} />
+                    <span className={`${isDarkMode ? 'text-white' : 'text-gray-900'} text-sm`}>{featuredProject.stars}</span>
+                    <Users className={`h-4 w-4 ${isDarkMode ? 'text-cyan-400' : 'text-blue-500'}`} />
+                    <span className={`${isDarkMode ? 'text-white' : 'text-gray-900'} text-sm`}>{featuredProject.collaborators}</span>
+                  </div>
+                  <Button
+                    variant="link"
+                    className={`${isDarkMode ? 'text-cyan-400' : 'text-blue-600'} text-sm mt-3`}
+                    onClick={() => navigate(`/projects/${featuredProject.id}`)}
+                  >
+                    View Project
+                  </Button>
+                </div>
+              </CardContent>
+            </Card>
+          )}
+
           {/* Notifications Section */}
-          <Card className="bg-black/40 border-cyan-500/20 backdrop-blur-sm">
+          <Card className={`${isDarkMode ? 'bg-black/40 border-cyan-500/20' : 'bg-white border-blue-200'} backdrop-blur-sm`}>
             <CardHeader>
-              <CardTitle className="text-white text-lg sm:text-xl flex items-center">
+              <CardTitle className={`${isDarkMode ? 'text-white' : 'text-gray-900'} text-lg sm:text-xl flex items-center`}>
                 <Bell className="h-5 w-5 mr-2" />
                 Notifications
               </CardTitle>
-              <CardDescription className="text-gray-300 text-sm">
-                Stay updated
-              </CardDescription>
+              <CardDescription className={`${isDarkMode ? 'text-gray-300' : 'text-gray-600'} text-sm`}>Stay updated</CardDescription>
             </CardHeader>
             <CardContent>
               {notifications.length === 0 ? (
-                <p className="text-gray-400 text-sm">No notifications available</p>
+                <p className={`${isDarkMode ? 'text-gray-400' : 'text-gray-500'} text-sm`}>No notifications available</p>
               ) : (
                 <ul className="space-y-3 max-h-64 overflow-y-auto">
                   {notifications.slice(0, 5).map((notification) => (
                     <li
                       key={notification.id}
-                      className={`p-3 rounded-md ${notification.read ? 'bg-gray-800/50' : 'bg-cyan-900/30'}`}
+                      className={`p-3 rounded-md ${isDarkMode ? notification.read ? 'bg-gray-800/50' : 'bg-cyan-900/30' : notification.read ? 'bg-gray-100' : 'bg-blue-50'}`}
                     >
                       <div className="flex flex-col justify-between items-start space-y-2">
-                        <span className="text-white text-sm">{notification.message}</span>
+                        <span className={`${isDarkMode ? 'text-white' : 'text-gray-900'} text-sm`}>{notification.message}</span>
                         <div className="flex items-center w-full justify-between">
-                          <span className="text-gray-400 text-xs">{timeAgo(notification.createdAt)}</span>
+                          <span className={`${isDarkMode ? 'text-gray-400' : 'text-gray-500'} text-xs`}>{timeAgo(notification.createdAt)}</span>
                           {!notification.read && (
                             <Button
                               variant="ghost"
                               size="sm"
-                              className="text-cyan-400 text-sm p-1"
+                              className={`${isDarkMode ? 'text-cyan-400' : 'text-blue-600'} text-sm p-1`}
                               onClick={() => markNotificationRead(notification.id)}
+                              aria-label="Mark notification as read"
                             >
                               Mark Read
                             </Button>
@@ -376,7 +524,7 @@ const Dashboard: React.FC = () => {
               )}
               <Button
                 variant="link"
-                className="text-cyan-400 text-sm mt-4"
+                className={`${isDarkMode ? 'text-cyan-400' : 'text-blue-600'} text-sm mt-4`}
                 onClick={() => navigate('/notifications')}
               >
                 View All
@@ -385,34 +533,43 @@ const Dashboard: React.FC = () => {
           </Card>
 
           {/* Events Section */}
-          <Card className="bg-black/40 border-cyan-500/20 backdrop-blur-sm">
+          <Card className={`${isDarkMode ? 'bg-black/40 border-cyan-500/20' : 'bg-white border-blue-200'} backdrop-blur-sm`}>
             <CardHeader>
-              <CardTitle className="text-white text-lg sm:text-xl flex items-center">
+              <CardTitle className={`${isDarkMode ? 'text-white' : 'text-gray-900'} text-lg sm:text-xl flex items-center`}>
                 <Calendar className="h-5 w-5 mr-2" />
                 Upcoming Events
               </CardTitle>
-              <CardDescription className="text-gray-300 text-sm">
-                Club events
-              </CardDescription>
+              <CardDescription className={`${isDarkMode ? 'text-gray-300' : 'text-gray-600'} text-sm`}>Club events</CardDescription>
             </CardHeader>
             <CardContent>
               {events.length === 0 ? (
-                <p className="text-gray-400 text-sm">No events available</p>
+                <p className={`${isDarkMode ? 'text-gray-400' : 'text-gray-500'} text-sm`}>No events available</p>
               ) : (
                 <ul className="space-y-3 max-h-64 overflow-y-auto">
                   {events.slice(0, 5).map((event) => (
-                    <li key={event.id} className="p-3 rounded-md bg-cyan-900/30">
+                    <li key={event.id} className={`p-3 rounded-md ${isDarkMode ? 'bg-cyan-900/30' : 'bg-blue-50'}`}>
                       <div className="flex flex-col justify-between items-start space-y-2">
                         <div>
-                          <span className="text-white text-sm font-semibold">{event.title}</span>
-                          <p className="text-gray-300 text-sm">{event.description}</p>
-                          <p className="text-gray-400 text-xs">
+                          <span className={`${isDarkMode ? 'text-white' : 'text-gray-900'} text-sm font-semibold`}>{event.title}</span>
+                          <p className={`${isDarkMode ? 'text-gray-300' : 'text-gray-600'} text-sm`}>{event.description}</p>
+                          <p className={`${isDarkMode ? 'text-gray-400' : 'text-gray-500'} text-xs`}>
                             {new Date(event.date).toLocaleString()} | {event.location} {event.isVirtual ? '(Virtual)' : ''}
                           </p>
                         </div>
-                        <Badge variant={event.category === 'General' ? 'default' : 'secondary'} className="text-sm">
-                          {event.category}
-                        </Badge>
+                        <div className="flex items-center w-full justify-between">
+                          <Badge variant={event.category === 'General' ? 'default' : 'secondary'} className="text-sm">
+                            {event.category}
+                          </Badge>
+                          <Button
+                            variant="outline"
+                            size="sm"
+                            className={`${isDarkMode ? 'text-cyan-400 border-cyan-400/50 hover:bg-cyan-400/10' : 'text-blue-600 border-blue-300 hover:bg-blue-100'} text-sm h-9`}
+                            onClick={() => handleRSVP(event.id)}
+                            aria-label={`RSVP for ${event.title}`}
+                          >
+                            RSVP
+                          </Button>
+                        </div>
                       </div>
                     </li>
                   ))}
@@ -420,7 +577,7 @@ const Dashboard: React.FC = () => {
               )}
               <Button
                 variant="link"
-                className="text-cyan-400 text-sm mt-4"
+                className={`${isDarkMode ? 'text-cyan-400' : 'text-blue-600'} text-sm mt-4`}
                 onClick={() => navigate('/events')}
               >
                 View All
@@ -429,28 +586,26 @@ const Dashboard: React.FC = () => {
           </Card>
 
           {/* Announcements Section */}
-          <Card className="bg-black/40 border-cyan-500/20 backdrop-blur-sm">
+          <Card className={`${isDarkMode ? 'bg-black/40 border-cyan-500/20' : 'bg-white border-blue-200'} backdrop-blur-sm`}>
             <CardHeader>
-              <CardTitle className="text-white text-lg sm:text-xl flex items-center">
+              <CardTitle className={`${isDarkMode ? 'text-white' : 'text-gray-900'} text-lg sm:text-xl flex items-center`}>
                 <Mail className="h-5 w-5 mr-2" />
                 Announcements
               </CardTitle>
-              <CardDescription className="text-gray-300 text-sm">
-                Club updates
-              </CardDescription>
+              <CardDescription className={`${isDarkMode ? 'text-gray-300' : 'text-gray-600'} text-sm`}>Club updates</CardDescription>
             </CardHeader>
             <CardContent>
               {announcements.length === 0 ? (
-                <p className="text-gray-400 text-sm">No announcements available</p>
+                <p className={`${isDarkMode ? 'text-gray-400' : 'text-gray-500'} text-sm`}>No announcements available</p>
               ) : (
                 <ul className="space-y-3 max-h-64 overflow-y-auto">
                   {announcements.slice(0, 5).map((announcement) => (
-                    <li key={announcement.id} className="p-3 rounded-md bg-cyan-900/30">
+                    <li key={announcement.id} className={`p-3 rounded-md ${isDarkMode ? 'bg-cyan-900/30' : 'bg-blue-50'}`}>
                       <div className="flex flex-col justify-between items-start space-y-2">
                         <div>
-                          <span className="text-white text-sm font-semibold">{announcement.title}</span>
-                          <p className="text-gray-300 text-sm">{announcement.message}</p>
-                          <p className="text-gray-400 text-xs">{timeAgo(announcement.createdAt)}</p>
+                          <span className={`${isDarkMode ? 'text-white' : 'text-gray-900'} text-sm font-semibold`}>{announcement.title}</span>
+                          <p className={`${isDarkMode ? 'text-gray-300' : 'text-gray-600'} text-sm`}>{announcement.message}</p>
+                          <p className={`${isDarkMode ? 'text-gray-400' : 'text-gray-500'} text-xs`}>{timeAgo(announcement.createdAt)}</p>
                         </div>
                         <Badge
                           variant={
@@ -471,7 +626,7 @@ const Dashboard: React.FC = () => {
               )}
               <Button
                 variant="link"
-                className="text-cyan-400 text-sm mt-4"
+                className={`${isDarkMode ? 'text-cyan-400' : 'text-blue-600'} text-sm mt-4`}
                 onClick={() => navigate('/announcements')}
               >
                 View All
@@ -480,33 +635,31 @@ const Dashboard: React.FC = () => {
           </Card>
 
           {/* Projects Section */}
-          <Card className="bg-black/40 border-cyan-500/20 backdrop-blur-sm">
+          <Card className={`${isDarkMode ? 'bg-black/40 border-cyan-500/20' : 'bg-white border-blue-200'} backdrop-blur-sm`}>
             <CardHeader>
-              <CardTitle className="text-white text-lg sm:text-xl flex items-center">
+              <CardTitle className={`${isDarkMode ? 'text-white' : 'text-gray-900'} text-lg sm:text-xl flex items-center`}>
                 <Code className="h-5 w-5 mr-2" />
                 Recent Projects
               </CardTitle>
-              <CardDescription className="text-gray-300 text-sm">
-                Your projects
-              </CardDescription>
+              <CardDescription className={`${isDarkMode ? 'text-gray-300' : 'text-gray-600'} text-sm`}>Your projects</CardDescription>
             </CardHeader>
             <CardContent>
               {recentProjects.length === 0 ? (
-                <p className="text-gray-400 text-sm">No projects available</p>
+                <p className={`${isDarkMode ? 'text-gray-400' : 'text-gray-500'} text-sm`}>No projects available</p>
               ) : (
                 <ul className="space-y-3 max-h-64 overflow-y-auto">
                   {recentProjects.slice(0, 5).map((project) => (
-                    <li key={project.id} className="p-3 rounded-md bg-cyan-900/30">
+                    <li key={project.id} className={`p-3 rounded-md ${isDarkMode ? 'bg-cyan-900/30' : 'bg-blue-50'}`}>
                       <div className="flex flex-col justify-between items-start space-y-2">
                         <div>
-                          <span className="text-white text-sm font-semibold">{project.title}</span>
-                          <p className="text-gray-300 text-sm">{project.technology}</p>
+                          <span className={`${isDarkMode ? 'text-white' : 'text-gray-900'} text-sm font-semibold`}>{project.title}</span>
+                          <p className={`${isDarkMode ? 'text-gray-300' : 'text-gray-600'} text-sm`}>{project.technology}</p>
                         </div>
                         <div className="flex items-center space-x-3">
-                          <Star className="h-4 w-4 text-yellow-400" />
-                          <span className="text-white text-sm">{project.stars}</span>
-                          <Users className="h-4 w-4 text-cyan-400" />
-                          <span className="text-white text-sm">{project.collaborators}</span>
+                          <Star className={`h-4 w-4 ${isDarkMode ? 'text-yellow-400' : 'text-yellow-500'}`} />
+                          <span className={`${isDarkMode ? 'text-white' : 'text-gray-900'} text-sm`}>{project.stars}</span>
+                          <Users className={`h-4 w-4 ${isDarkMode ? 'text-cyan-400' : 'text-blue-500'}`} />
+                          <span className={`${isDarkMode ? 'text-white' : 'text-gray-900'} text-sm`}>{project.collaborators}</span>
                         </div>
                       </div>
                     </li>
@@ -515,7 +668,7 @@ const Dashboard: React.FC = () => {
               )}
               <Button
                 variant="outline"
-                className="text-cyan-400 border-cyan-400/50 hover:bg-cyan-400/10 text-sm mt-4 h-9"
+                className={`${isDarkMode ? 'text-cyan-400 border-cyan-400/50 hover:bg-cyan-400/10' : 'text-blue-600 border-blue-300 hover:bg-blue-100'} text-sm mt-4 h-9`}
                 onClick={() => setIsProjectModalOpen(true)}
               >
                 <Plus className="h-4 w-4 mr-1" />
@@ -527,44 +680,40 @@ const Dashboard: React.FC = () => {
 
         {/* Create Project Modal */}
         <Dialog open={isProjectModalOpen} onOpenChange={setIsProjectModalOpen}>
-          <DialogContent className="bg-black/80 border-cyan-500/20 backdrop-blur-sm text-white max-w-[90vw] sm:max-w-md">
+          <DialogContent className={`${isDarkMode ? 'bg-black/80 border-cyan-500/20' : 'bg-white border-blue-200'} backdrop-blur-sm ${isDarkMode ? 'text-white' : 'text-gray-900'} max-w-[90vw] sm:max-w-md`}>
             <DialogHeader>
               <DialogTitle className="text-xl sm:text-2xl">Create New Project</DialogTitle>
             </DialogHeader>
             <div className="space-y-4">
               <div>
-                <Label htmlFor="project-title" className="text-gray-300 text-sm">
-                  Project Title
-                </Label>
+                <Label htmlFor="project-title" className={`${isDarkMode ? 'text-gray-300' : 'text-gray-600'} text-sm`}>Project Title</Label>
                 <Input
                   id="project-title"
                   value={newProject.title}
                   onChange={(e) => setNewProject({ ...newProject, title: e.target.value })}
-                  className="bg-black/60 border-cyan-400/50 text-white text-sm h-9"
+                  className={`${isDarkMode ? 'bg-black/60 border-cyan-400/50 text-white' : 'bg-gray-100 border-blue-300 text-gray-900'} text-sm h-9`}
                 />
               </div>
               <div>
-                <Label htmlFor="project-technology" className="text-gray-300 text-sm">
-                  Technology
-                </Label>
+                <Label htmlFor="project-technology" className={`${isDarkMode ? 'text-gray-300' : 'text-gray-600'} text-sm`}>Technology</Label>
                 <Input
                   id="project-technology"
                   value={newProject.technology}
                   onChange={(e) => setNewProject({ ...newProject, technology: e.target.value })}
-                  className="bg-black/60 border-cyan-400/50 text-white text-sm h-9"
+                  className={`${isDarkMode ? 'bg-black/60 border-cyan-400/50 text-white' : 'bg-gray-100 border-blue-300 text-gray-900'} text-sm h-9`}
                 />
               </div>
             </div>
             <DialogFooter className="flex flex-col sm:flex-row sm:justify-end space-y-2 sm:space-y-0 sm:space-x-2">
               <Button
                 variant="outline"
-                className="text-cyan-400 border-cyan-400/50 hover:bg-cyan-400/10 text-sm h-9"
+                className={`${isDarkMode ? 'text-cyan-400 border-cyan-400/50 hover:bg-cyan-400/10' : 'text-blue-600 border-blue-300 hover:bg-blue-100'} text-sm h-9`}
                 onClick={() => setIsProjectModalOpen(false)}
               >
                 Cancel
               </Button>
               <Button
-                className="bg-gradient-to-r from-cyan-600 to-purple-600 hover:from-cyan-700 hover:to-purple-700 text-white text-sm h-9"
+                className={`${isDarkMode ? 'bg-gradient-to-r from-cyan-600 to-purple-600 hover:from-cyan-700 hover:to-purple-700' : 'bg-gradient-to-r from-blue-500 to-purple-500 hover:from-blue-600 hover:to-purple-600'} text-white text-sm h-9`}
                 onClick={handleCreateProject}
                 disabled={!newProject.title || !newProject.technology}
               >
