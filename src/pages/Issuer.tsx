@@ -185,7 +185,7 @@ const Issuer: React.FC = () => {
   if (loading) {
     return (
       <div className="min-h-screen bg-gradient-to-br from-emerald-600 via-green-600 to-emerald-800 flex justify-center items-center">
-        <OGLoader />
+        <SmallLoader />
       </div>
     );
   }
