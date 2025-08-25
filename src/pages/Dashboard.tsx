@@ -260,37 +260,37 @@ const Dashboard: React.FC = () => {
     <div className="min-h-screen bg-gradient-to-br from-slate-950 via-blue-950 to-slate-950 overflow-x-hidden">
       {/* Header */}
       <header className="bg-black/30 backdrop-blur-xl border-b border-cyan-500/20 fixed top-0 left-0 right-0 z-50">
-        <div className="max-w-7xl mx-auto px-2 sm:px-4 lg:px-8">
-          <div className="flex justify-between items-center h-12">
-            <h1 className="text-lg sm:text-xl font-bold text-white">Dashboard</h1>
-            <div className="flex items-center space-x-2">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="flex justify-between items-center h-14">
+            <h1 className="text-xl sm:text-2xl font-bold text-white">TechMinds Dashboard</h1>
+            <div className="flex items-center space-x-3">
               <Button
                 variant="outline"
                 size="sm"
-                className="text-cyan-400 border-cyan-400/50 hover:bg-cyan-400/10 backdrop-blur-sm h-8 w-8 p-0"
+                className="text-cyan-400 border-cyan-400/50 hover:bg-cyan-400/10 backdrop-blur-sm h-9 w-9 p-0"
                 onClick={() => navigate('/notifications')}
               >
-                <Bell className="h-4 w-4" />
+                <Bell className="h-5 w-5" />
               </Button>
               <Button
                 variant="outline"
                 size="sm"
-                className="text-cyan-400 border-cyan-400/50 hover:bg-cyan-400/10 backdrop-blur-sm h-8 w-8 p-0"
+                className="text-cyan-400 border-cyan-400/50 hover:bg-cyan-400/10 backdrop-blur-sm h-9 w-9 p-0"
                 onClick={() => navigate('/members')}
               >
-                <Users className="h-4 w-4" />
+                <Users className="h-5 w-5" />
               </Button>
               <Button
                 variant="outline"
                 size="sm"
-                className="text-cyan-400 border-cyan-400/50 hover:bg-cyan-400/10 backdrop-blur-sm h-8 w-8 p-0"
+                className="text-cyan-400 border-cyan-400/50 hover:bg-cyan-400/10 backdrop-blur-sm h-9 w-9 p-0"
                 onClick={() => navigate('/settings')}
               >
-                <Settings className="h-4 w-4" />
+                <Settings className="h-5 w-5" />
               </Button>
-              <Avatar className="cursor-pointer h-8 w-8" onClick={() => navigate('/profile')}>
+              <Avatar className="cursor-pointer h-9 w-9" onClick={() => navigate('/profile')}>
                 <AvatarImage src={user.avatar || ''} />
-                <AvatarFallback className="bg-gradient-to-r from-cyan-600 to-purple-600 text-white text-xs">
+                <AvatarFallback className="bg-gradient-to-r from-cyan-600 to-purple-600 text-white text-sm">
                   {user.fullName.split(' ').map((n: string) => n[0]).join('')}
                 </AvatarFallback>
               </Avatar>
@@ -300,30 +300,30 @@ const Dashboard: React.FC = () => {
       </header>
 
       {/* Main Content */}
-      <div className="max-w-7xl mx-auto px-2 sm:px-4 lg:px-8 pt-14 pb-8 space-y-4">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-16 pb-8 space-y-6">
         {/* User Card */}
         <Card className="bg-black/40 border-cyan-500/20 backdrop-blur-sm">
           <CardHeader>
-            <CardTitle className="text-white text-lg sm:text-xl">
-              Welcome back, {user.fullName}! 👋
+            <CardTitle className="text-white text-xl sm:text-2xl">
+              Welcome back to TechMinds, {user.fullName}! 👋
             </CardTitle>
-            <CardDescription className="text-gray-300 text-xs sm:text-sm">
+            <CardDescription className="text-gray-300 text-sm">
               Member ID: {user.rollNumber} | {user.department} | {user.year}
             </CardDescription>
           </CardHeader>
           <CardContent className="flex flex-col sm:flex-row sm:items-center sm:space-x-4 space-y-2 sm:space-y-0">
             <div className="flex items-center space-x-1">
-              <Star className="h-4 w-4 text-yellow-400" />
+              <Star className="h-5 w-5 text-yellow-400" />
               <span className="text-white text-sm font-semibold">
                 {recentProjects.reduce((acc: number, p: Project) => acc + p.stars, 0)} Stars
               </span>
             </div>
             <div className="flex items-center space-x-1">
-              <Code className="h-4 w-4 text-cyan-400" />
+              <Code className="h-5 w-5 text-cyan-400" />
               <span className="text-white text-sm font-semibold">{recentProjects.length} Projects</span>
             </div>
             <div className="flex items-center space-x-1">
-              <Bell className="h-4 w-4 text-purple-400" />
+              <Bell className="h-5 w-5 text-purple-400" />
               <span className="text-white text-sm font-semibold">
                 {notifications.filter((n) => !n.read).length} Unread
               </span>
@@ -332,37 +332,37 @@ const Dashboard: React.FC = () => {
         </Card>
 
         {/* Main Grid */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 sm:gap-4">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6">
           {/* Notifications Section */}
           <Card className="bg-black/40 border-cyan-500/20 backdrop-blur-sm">
             <CardHeader>
-              <CardTitle className="text-white text-base sm:text-lg flex items-center">
-                <Bell className="h-4 w-4 mr-1 sm:mr-2" />
+              <CardTitle className="text-white text-lg sm:text-xl flex items-center">
+                <Bell className="h-5 w-5 mr-2" />
                 Notifications
               </CardTitle>
-              <CardDescription className="text-gray-300 text-xs sm:text-sm">
+              <CardDescription className="text-gray-300 text-sm">
                 Stay updated
               </CardDescription>
             </CardHeader>
             <CardContent>
               {notifications.length === 0 ? (
-                <p className="text-gray-400 text-xs">No notifications available</p>
+                <p className="text-gray-400 text-sm">No notifications available</p>
               ) : (
-                <ul className="space-y-2">
+                <ul className="space-y-3 max-h-64 overflow-y-auto">
                   {notifications.slice(0, 5).map((notification) => (
                     <li
                       key={notification.id}
-                      className={`p-2 rounded-md ${notification.read ? 'bg-gray-800/50' : 'bg-cyan-900/30'}`}
+                      className={`p-3 rounded-md ${notification.read ? 'bg-gray-800/50' : 'bg-cyan-900/30'}`}
                     >
-                      <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center space-y-1 sm:space-y-0">
-                        <span className="text-white text-xs sm:text-sm">{notification.message}</span>
-                        <div className="flex items-center space-x-2">
+                      <div className="flex flex-col justify-between items-start space-y-2">
+                        <span className="text-white text-sm">{notification.message}</span>
+                        <div className="flex items-center w-full justify-between">
                           <span className="text-gray-400 text-xs">{timeAgo(notification.createdAt)}</span>
                           {!notification.read && (
                             <Button
                               variant="ghost"
                               size="sm"
-                              className="text-cyan-400 text-xs p-1"
+                              className="text-cyan-400 text-sm p-1"
                               onClick={() => markNotificationRead(notification.id)}
                             >
                               Mark Read
@@ -376,7 +376,7 @@ const Dashboard: React.FC = () => {
               )}
               <Button
                 variant="link"
-                className="text-cyan-400 text-xs mt-3"
+                className="text-cyan-400 text-sm mt-4"
                 onClick={() => navigate('/notifications')}
               >
                 View All
@@ -387,30 +387,30 @@ const Dashboard: React.FC = () => {
           {/* Events Section */}
           <Card className="bg-black/40 border-cyan-500/20 backdrop-blur-sm">
             <CardHeader>
-              <CardTitle className="text-white text-base sm:text-lg flex items-center">
-                <Calendar className="h-4 w-4 mr-1 sm:mr-2" />
+              <CardTitle className="text-white text-lg sm:text-xl flex items-center">
+                <Calendar className="h-5 w-5 mr-2" />
                 Upcoming Events
               </CardTitle>
-              <CardDescription className="text-gray-300 text-xs sm:text-sm">
+              <CardDescription className="text-gray-300 text-sm">
                 Club events
               </CardDescription>
             </CardHeader>
             <CardContent>
               {events.length === 0 ? (
-                <p className="text-gray-400 text-xs">No events available</p>
+                <p className="text-gray-400 text-sm">No events available</p>
               ) : (
-                <ul className="space-y-2">
+                <ul className="space-y-3 max-h-64 overflow-y-auto">
                   {events.slice(0, 5).map((event) => (
-                    <li key={event.id} className="p-2 rounded-md bg-cyan-900/30">
-                      <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center space-y-1 sm:space-y-0">
+                    <li key={event.id} className="p-3 rounded-md bg-cyan-900/30">
+                      <div className="flex flex-col justify-between items-start space-y-2">
                         <div>
-                          <span className="text-white text-xs sm:text-sm font-semibold">{event.title}</span>
-                          <p className="text-gray-300 text-xs">{event.description}</p>
+                          <span className="text-white text-sm font-semibold">{event.title}</span>
+                          <p className="text-gray-300 text-sm">{event.description}</p>
                           <p className="text-gray-400 text-xs">
                             {new Date(event.date).toLocaleString()} | {event.location} {event.isVirtual ? '(Virtual)' : ''}
                           </p>
                         </div>
-                        <Badge variant={event.category === 'General' ? 'default' : 'secondary'} className="text-xs">
+                        <Badge variant={event.category === 'General' ? 'default' : 'secondary'} className="text-sm">
                           {event.category}
                         </Badge>
                       </div>
@@ -420,7 +420,7 @@ const Dashboard: React.FC = () => {
               )}
               <Button
                 variant="link"
-                className="text-cyan-400 text-xs mt-3"
+                className="text-cyan-400 text-sm mt-4"
                 onClick={() => navigate('/events')}
               >
                 View All
@@ -431,25 +431,25 @@ const Dashboard: React.FC = () => {
           {/* Announcements Section */}
           <Card className="bg-black/40 border-cyan-500/20 backdrop-blur-sm">
             <CardHeader>
-              <CardTitle className="text-white text-base sm:text-lg flex items-center">
-                <Mail className="h-4 w-4 mr-1 sm:mr-2" />
+              <CardTitle className="text-white text-lg sm:text-xl flex items-center">
+                <Mail className="h-5 w-5 mr-2" />
                 Announcements
               </CardTitle>
-              <CardDescription className="text-gray-300 text-xs sm:text-sm">
+              <CardDescription className="text-gray-300 text-sm">
                 Club updates
               </CardDescription>
             </CardHeader>
             <CardContent>
               {announcements.length === 0 ? (
-                <p className="text-gray-400 text-xs">No announcements available</p>
+                <p className="text-gray-400 text-sm">No announcements available</p>
               ) : (
-                <ul className="space-y-2">
+                <ul className="space-y-3 max-h-64 overflow-y-auto">
                   {announcements.slice(0, 5).map((announcement) => (
-                    <li key={announcement.id} className="p-2 rounded-md bg-cyan-900/30">
-                      <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center space-y-1 sm:space-y-0">
+                    <li key={announcement.id} className="p-3 rounded-md bg-cyan-900/30">
+                      <div className="flex flex-col justify-between items-start space-y-2">
                         <div>
-                          <span className="text-white text-xs sm:text-sm font-semibold">{announcement.title}</span>
-                          <p className="text-gray-300 text-xs">{announcement.message}</p>
+                          <span className="text-white text-sm font-semibold">{announcement.title}</span>
+                          <p className="text-gray-300 text-sm">{announcement.message}</p>
                           <p className="text-gray-400 text-xs">{timeAgo(announcement.createdAt)}</p>
                         </div>
                         <Badge
@@ -460,7 +460,7 @@ const Dashboard: React.FC = () => {
                               ? 'default'
                               : 'secondary'
                           }
-                          className="text-xs"
+                          className="text-sm"
                         >
                           {announcement.priority}
                         </Badge>
@@ -471,7 +471,7 @@ const Dashboard: React.FC = () => {
               )}
               <Button
                 variant="link"
-                className="text-cyan-400 text-xs mt-3"
+                className="text-cyan-400 text-sm mt-4"
                 onClick={() => navigate('/announcements')}
               >
                 View All
@@ -482,31 +482,31 @@ const Dashboard: React.FC = () => {
           {/* Projects Section */}
           <Card className="bg-black/40 border-cyan-500/20 backdrop-blur-sm">
             <CardHeader>
-              <CardTitle className="text-white text-base sm:text-lg flex items-center">
-                <Code className="h-4 w-4 mr-1 sm:mr-2" />
+              <CardTitle className="text-white text-lg sm:text-xl flex items-center">
+                <Code className="h-5 w-5 mr-2" />
                 Recent Projects
               </CardTitle>
-              <CardDescription className="text-gray-300 text-xs sm:text-sm">
+              <CardDescription className="text-gray-300 text-sm">
                 Your projects
               </CardDescription>
             </CardHeader>
             <CardContent>
               {recentProjects.length === 0 ? (
-                <p className="text-gray-400 text-xs">No projects available</p>
+                <p className="text-gray-400 text-sm">No projects available</p>
               ) : (
-                <ul className="space-y-2">
+                <ul className="space-y-3 max-h-64 overflow-y-auto">
                   {recentProjects.slice(0, 5).map((project) => (
-                    <li key={project.id} className="p-2 rounded-md bg-cyan-900/30">
-                      <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center space-y-1 sm:space-y-0">
+                    <li key={project.id} className="p-3 rounded-md bg-cyan-900/30">
+                      <div className="flex flex-col justify-between items-start space-y-2">
                         <div>
-                          <span className="text-white text-xs sm:text-sm font-semibold">{project.title}</span>
-                          <p className="text-gray-300 text-xs">{project.technology}</p>
+                          <span className="text-white text-sm font-semibold">{project.title}</span>
+                          <p className="text-gray-300 text-sm">{project.technology}</p>
                         </div>
-                        <div className="flex items-center space-x-2">
-                          <Star className="h-3 w-3 text-yellow-400" />
-                          <span className="text-white text-xs">{project.stars}</span>
-                          <Users className="h-3 w-3 text-cyan-400" />
-                          <span className="text-white text-xs">{project.collaborators}</span>
+                        <div className="flex items-center space-x-3">
+                          <Star className="h-4 w-4 text-yellow-400" />
+                          <span className="text-white text-sm">{project.stars}</span>
+                          <Users className="h-4 w-4 text-cyan-400" />
+                          <span className="text-white text-sm">{project.collaborators}</span>
                         </div>
                       </div>
                     </li>
@@ -515,10 +515,10 @@ const Dashboard: React.FC = () => {
               )}
               <Button
                 variant="outline"
-                className="text-cyan-400 border-cyan-400/50 hover:bg-cyan-400/10 text-xs mt-3 h-8"
+                className="text-cyan-400 border-cyan-400/50 hover:bg-cyan-400/10 text-sm mt-4 h-9"
                 onClick={() => setIsProjectModalOpen(true)}
               >
-                <Plus className="h-3 w-3 mr-1" />
+                <Plus className="h-4 w-4 mr-1" />
                 New Project
               </Button>
             </CardContent>
@@ -529,42 +529,42 @@ const Dashboard: React.FC = () => {
         <Dialog open={isProjectModalOpen} onOpenChange={setIsProjectModalOpen}>
           <DialogContent className="bg-black/80 border-cyan-500/20 backdrop-blur-sm text-white max-w-[90vw] sm:max-w-md">
             <DialogHeader>
-              <DialogTitle className="text-lg sm:text-xl">Create New Project</DialogTitle>
+              <DialogTitle className="text-xl sm:text-2xl">Create New Project</DialogTitle>
             </DialogHeader>
-            <div className="space-y-3">
+            <div className="space-y-4">
               <div>
-                <Label htmlFor="project-title" className="text-gray-300 text-xs sm:text-sm">
+                <Label htmlFor="project-title" className="text-gray-300 text-sm">
                   Project Title
                 </Label>
                 <Input
                   id="project-title"
                   value={newProject.title}
                   onChange={(e) => setNewProject({ ...newProject, title: e.target.value })}
-                  className="bg-black/60 border-cyan-400/50 text-white text-xs sm:text-sm h-8 sm:h-9"
+                  className="bg-black/60 border-cyan-400/50 text-white text-sm h-9"
                 />
               </div>
               <div>
-                <Label htmlFor="project-technology" className="text-gray-300 text-xs sm:text-sm">
+                <Label htmlFor="project-technology" className="text-gray-300 text-sm">
                   Technology
                 </Label>
                 <Input
                   id="project-technology"
                   value={newProject.technology}
                   onChange={(e) => setNewProject({ ...newProject, technology: e.target.value })}
-                  className="bg-black/60 border-cyan-400/50 text-white text-xs sm:text-sm h-8 sm:h-9"
+                  className="bg-black/60 border-cyan-400/50 text-white text-sm h-9"
                 />
               </div>
             </div>
             <DialogFooter className="flex flex-col sm:flex-row sm:justify-end space-y-2 sm:space-y-0 sm:space-x-2">
               <Button
                 variant="outline"
-                className="text-cyan-400 border-cyan-400/50 hover:bg-cyan-400/10 text-xs sm:text-sm h-8 sm:h-9"
+                className="text-cyan-400 border-cyan-400/50 hover:bg-cyan-400/10 text-sm h-9"
                 onClick={() => setIsProjectModalOpen(false)}
               >
                 Cancel
               </Button>
               <Button
-                className="bg-gradient-to-r from-cyan-600 to-purple-600 hover:from-cyan-700 hover:to-purple-700 text-white text-xs sm:text-sm h-8 sm:h-9"
+                className="bg-gradient-to-r from-cyan-600 to-purple-600 hover:from-cyan-700 hover:to-purple-700 text-white text-sm h-9"
                 onClick={handleCreateProject}
                 disabled={!newProject.title || !newProject.technology}
               >
