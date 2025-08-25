@@ -9,6 +9,7 @@ import { useToast } from '@/hooks/use-toast';
 import { Toaster } from '@/components/ui/toaster'; // Updated to import from toaster
 import { Code, Plus, User } from 'lucide-react';
 import SmallLoader from "@/components/ui/SmallLoader";
+import OGLoader from "@/components/ui/OGLoader";
 
 const CLUB_API_BASE_URL = import.meta.env.VITE_CLUB_API_BASE_URL || 'https://og-backend-mwwi.onrender.com/api';
 const CERTIFICATE_API_BASE_URL = import.meta.env.VITE_CERTIFICATE_API_BASE_URL || 'https://certi-og-backend.onrender.com';
@@ -185,7 +186,7 @@ const Issuer: React.FC = () => {
   if (loading) {
     return (
       <div className="min-h-screen bg-gradient-to-br from-emerald-600 via-green-600 to-emerald-800 flex justify-center items-center">
-        <SmallLoader />
+        <OGLoader />
       </div>
     );
   }
