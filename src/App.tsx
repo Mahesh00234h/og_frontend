@@ -30,6 +30,7 @@ import AboutUs from "./pages/AboutUs";
 import AchievementsAndBadges from "./pages/AchievementsAndBadges";
 import AdminAnalytics from "./pages/AdminAnalytics";
 import AlumniNetwork from "./pages/AlumniNetwork";
+import BulkCertificate from "./pages/BulkCertificate";
 
 
 
@@ -109,6 +110,7 @@ const App = () => (
           <Route path="/achievements" element={<AchievementsAndBadges />} />
           <Route path="/admin-analytics" element={<AdminAnalytics />} />
           <Route path="/alumni" element={<AlumniNetwork />} />
+          <Route path="/bulk-certificate" element={<BulkCertificate />} />
 
 
           
