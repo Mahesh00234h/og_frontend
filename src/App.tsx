@@ -25,6 +25,23 @@ import ContactUs from "./pages/ContactUs";
 import Issuer from "./pages/Issuer";
 import VerifyCertificate from "./pages/VerifyCertificate";
 
+import AboutUs from "./pages/AboutUs";
+import AchievementsAndBadges from "./pages/AchievementsAndBadges";
+import AdminAnalytics from "./pages/AdminAnalytics";
+import AlumniNetwork from "./pages/AlumniNetwork";
+import BulkCertificate from "./pages/BulkCertificate";
+import Challenge from "./pages/Challenge";
+import CollaborationHub from "./pages/CollaborationHub";
+import EventAndGallery from "./pages/EventAndGallery";
+import HackathonWallOfFame from "./pages/HackathonWallOfFame";
+import MyDashboard from "./pages/MyDashboard";
+import ProfilePage from "./pages/ProfilePage";
+import ProjectShowcase from "./pages/ProjectShowcase";
+import SearchPage from "./pages/SearchPage";
+
+
+
+
 const queryClient = new QueryClient();
 const API_BASE_URL = 'https://og-backend-mwwi.onrender.com/api';
 
@@ -94,6 +111,24 @@ const App = () => (
           <Route path="/contactus" element={<ContactUs />} />
           <Route path="/about" element={<About />} />
           <Route path="/verify-certificate" element={<VerifyCertificate />} />
+
+          
+          
+          <Route path="/mydashboard" element={<MyDashboard />} /> {/* default landing */}
+          <Route path="/aboutus" element={<AboutUs />} />
+          <Route path="/achievements" element={<AchievementsAndBadges />} />
+          <Route path="/admin-analytics" element={<AdminAnalytics />} />
+          <Route path="/alumni" element={<AlumniNetwork />} />
+          <Route path="/bulk-certificate" element={<BulkCertificate />} />
+          <Route path="/challenge" element={<Challenge />} />
+          <Route path="/collaboration" element={<CollaborationHub />} />
+          <Route path="/eventsandgallery" element={<EventAndGallery />} />
+          <Route path="/hackathon-wall" element={<HackathonWallOfFame />} />
+         
+          <Route path="/profilepage" element={<ProfilePage />} />
+          <Route path="/projectsshowcase" element={<ProjectShowcase />} />
+          <Route path="/search" element={<SearchPage />} />
+          
           <Route
             path="/dashboard"
             element={
