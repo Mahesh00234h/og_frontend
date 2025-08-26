@@ -34,6 +34,7 @@ import BulkCertificate from "./pages/BulkCertificate";
 import Challenge from "./pages/Challenge";
 import CollaborationHub from "./pages/CollaborationHub";
 import EventsAndGallery from "./pages/EventsAndGallery";
+import HackathonWallOfFame from "./pages/HackathonWallOfFame";
 
 
 const queryClient = new QueryClient();
@@ -116,6 +117,7 @@ const App = () => (
           <Route path="/challenge" element={<Challenge />} />
           <Route path="/collaboration" element={<CollaborationHub />} />
           <Route path="/eventsandgallery" element={<EventsAndGallery />} />
+          <Route path="/hackathon-wall" element={<HackathonWallOfFame />} />
 
 
           
