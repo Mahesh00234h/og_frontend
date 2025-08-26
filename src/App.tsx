@@ -36,6 +36,7 @@ import CollaborationHub from "./pages/CollaborationHub";
 import EventsAndGallery from "./pages/EventsAndGallery";
 import HackathonWallOfFame from "./pages/HackathonWallOfFame";
 import MyDashboard from "./pages/MyDashboard";
+import ProfilePage from "./pages/ProfilePage";
 
 
 const queryClient = new QueryClient();
@@ -120,6 +121,7 @@ const App = () => (
           <Route path="/eventsandgallery" element={<EventsAndGallery />} />
           <Route path="/hackathon-wall" element={<HackathonWallOfFame />} />
           <Route path="/mydashboard" element={<MyDashboard />} /> 
+          <Route path="/profilepage" element={<ProfilePage />} />
 
 
           
