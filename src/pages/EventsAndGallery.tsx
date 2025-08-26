@@ -397,7 +397,7 @@ const EventsAndGallery: React.FC = () => {
                       </div>
                       <div className="flex items-center space-x-2">
                         <Users
-                          className=`{h-4 w-4 ${
+                          className={`h-4 w-4 ${
                             isDarkMode ? 'text-cyan-400' : 'text-blue-500'
                           }`}
                         />
