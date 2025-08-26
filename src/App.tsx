@@ -37,6 +37,7 @@ import EventsAndGallery from "./pages/EventsAndGallery";
 import HackathonWallOfFame from "./pages/HackathonWallOfFame";
 import MyDashboard from "./pages/MyDashboard";
 import ProfilePage from "./pages/ProfilePage";
+import ProjectsShowcase from "./pages/ProjectsShowcase";
 
 
 const queryClient = new QueryClient();
@@ -122,6 +123,7 @@ const App = () => (
           <Route path="/hackathon-wall" element={<HackathonWallOfFame />} />
           <Route path="/mydashboard" element={<MyDashboard />} /> 
           <Route path="/profilepage" element={<ProfilePage />} />
+          <Route path="/projectsshowcase" element={<ProjectsShowcase />} />
 
 
           
