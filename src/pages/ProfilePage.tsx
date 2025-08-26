@@ -5,7 +5,7 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import { Badge } from '@/components/ui/badge';
-import { Users, Sun, Moon, Settings, Bell, Edit, Github, LinkedIn, Globe } from 'lucide-react';
+import { Users, Sun, Moon, Settings, Bell, Edit, Github, Linkedin, Globe } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 import OGLoader from '@/components/ui/OGLoader';
 
@@ -19,7 +19,7 @@ interface Profile {
   badges: { id: string; name: string; icon: string; earnedAt: string }[];
   certificates: { id: string; title: string; issuer: string; date: string }[];
   github?: string;
-  linkedIn?: string;
+  linkedin?: string;
   portfolio?: string;
   contributions: { id: string; description: string; date: string }[];
   activity: { id: string; event: string; date: string }[];
@@ -191,7 +191,7 @@ const ProfilePage: React.FC = () => {
                 size="sm"
                 className={`${
                   isDarkMode
-                    ? 'text-cyan-400 border-cyan-400/50 hover:bg-cyan-400/10'
+                    ? 'text-cyan-400 border-cyan-500/50 hover:bg-cyan-400/10'
                     : 'text-blue-600 border-blue-300 hover:bg-blue-100'
                 } backdrop-blur-sm h-9 w-9 p-0`}
                 onClick={() => navigate('/notifications')}
@@ -204,7 +204,7 @@ const ProfilePage: React.FC = () => {
                 size="sm"
                 className={`${
                   isDarkMode
-                    ? 'text-cyan-400 border-cyan-400/50 hover:bg-cyan-400/10'
+                    ? 'text-cyan-400 border-cyan-500/50 hover:bg-cyan-400/10'
                     : 'text-blue-600 border-blue-300 hover:bg-blue-100'
                 } backdrop-blur-sm h-9 w-9 p-0`}
                 onClick={() => navigate('/members')}
@@ -217,7 +217,7 @@ const ProfilePage: React.FC = () => {
                 size="sm"
                 className={`${
                   isDarkMode
-                    ? 'text-cyan-400 border-cyan-400/50 hover:bg-cyan-400/10'
+                    ? 'text-cyan-400 border-cyan-500/50 hover:bg-cyan-400/10'
                     : 'text-blue-600 border-blue-300 hover:bg-blue-100'
                 } backdrop-blur-sm h-9 w-9 p-0`}
                 onClick={() => navigate('/settings')}
@@ -315,13 +315,15 @@ const ProfilePage: React.FC = () => {
                 </div>
                 <div>
                   <label
-                    className={`${isDarkMode ? 'text-white' : 'text-gray-900'} text-sm font-semibold`} // Fixed: Added closing backtick
+                    className={`${
+                      isDarkMode ? 'text-white' : 'text-gray-900'
+                    } text-sm font-semibold`}
                   >
                     LinkedIn
                   </label>
                   <Input
-                    name="linkedIn"
-                    value={formData.linkedIn || ''}
+                    name="linkedin"
+                    value={formData.linkedin || ''}
                     onChange={handleInputChange}
                     className={`${
                       isDarkMode
@@ -439,7 +441,7 @@ const ProfilePage: React.FC = () => {
                         GitHub
                       </Button>
                     )}
-                    {profile.linkedIn && (
+                    {profile.linkedin && (
                       <Button
                         variant="outline"
                         size="sm"
@@ -448,9 +450,9 @@ const ProfilePage: React.FC = () => {
                             ? 'text-cyan-400 border-cyan-400/50 hover:bg-cyan-400/10'
                             : 'text-blue-600 border-blue-300 hover:bg-blue-100'
                         }`}
-                        onClick={() => window.open(profile.linkedIn, '_blank')}
+                        onClick={() => window.open(profile.linkedin, '_blank')}
                       >
-                        <LinkedIn className="h-4 w-4 mr-2" />
+                        <Linkedin className="h-4 w-4 mr-2" />
                         LinkedIn
                       </Button>
                     )}
