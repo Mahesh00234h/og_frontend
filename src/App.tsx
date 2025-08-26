@@ -33,6 +33,7 @@ import AlumniNetwork from "./pages/AlumniNetwork";
 import BulkCertificate from "./pages/BulkCertificate";
 import Challenge from "./pages/Challenge";
 import CollaborationHub from "./pages/CollaborationHub";
+import EventsAndGallery from "./pages/EventsAndGallery";
 
 
 const queryClient = new QueryClient();
@@ -114,6 +115,7 @@ const App = () => (
           <Route path="/bulk-certificate" element={<BulkCertificate />} />
           <Route path="/challenge" element={<Challenge />} />
           <Route path="/collaboration" element={<CollaborationHub />} />
+          <Route path="/eventsandgallery" element={<EventsAndGallery />} />
 
 
           
