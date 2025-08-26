@@ -315,7 +315,7 @@ const ProfilePage: React.FC = () => {
                 </div>
                 <div>
                   <label
-                    className=`${isDarkMode ? 'text-white' : 'text-gray-900'} text-sm font-semibold`
+                    className={`${isDarkMode ? 'text-white' : 'text-gray-900'} text-sm font-semibold`} // Fixed: Added closing backtick
                   >
                     LinkedIn
                   </label>
