@@ -4,11 +4,23 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Badge } from '@/components/ui/badge';
-import { Users, Sun, Moon, Settings, Bell, MapPin, LinkedIn } from 'lucide-react';
+import { Users, Sun, Moon, Settings, Bell, MapPin, Linkedin } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 import OGLoader from '@/components/ui/OGLoader';
 import { MapContainer, TileLayer, Marker, Popup } from 'react-leaflet';
 import 'leaflet/dist/leaflet.css';
+import L from 'leaflet';
+
+// Configure default Leaflet icon
+const defaultIcon = L.icon({
+  iconUrl: '/leaflet/marker-icon.png',
+  iconRetinaUrl: '/leaflet/marker-icon-2x.png',
+  shadowUrl: '/leaflet/marker-shadow.png',
+  iconSize: [25, 41],
+  iconAnchor: [12, 41],
+  popupAnchor: [1, -34],
+  shadowSize: [41, 41],
+});
 
 const API_BASE_URL = 'https://og-backend-mwwi.onrender.com/api';
 
@@ -135,7 +147,7 @@ const AlumniNetwork: React.FC = () => {
                 size="sm"
                 className={`${
                   isDarkMode
-                    ? 'text-cyan-400 border-cyan-400/50 hover:bg-cyan-400/10'
+                    ? 'text-cyan-400 border-cyan-500/50 hover:bg-cyan-400/10'
                     : 'text-blue-600 border-blue-300 hover:bg-blue-100'
                 } backdrop-blur-sm h-9 w-9 p-0`}
                 onClick={toggleTheme}
@@ -148,7 +160,7 @@ const AlumniNetwork: React.FC = () => {
                 size="sm"
                 className={`${
                   isDarkMode
-                    ? 'text-cyan-400 border-cyan-400/50 hover:bg-cyan-400/10'
+                    ? 'text-cyan-400 border-cyan-500/50 hover:bg-cyan-400/10'
                     : 'text-blue-600 border-blue-300 hover:bg-blue-100'
                 } backdrop-blur-sm h-9 w-9 p-0`}
                 onClick={() => navigate('/notifications')}
@@ -161,7 +173,7 @@ const AlumniNetwork: React.FC = () => {
                 size="sm"
                 className={`${
                   isDarkMode
-                    ? 'text-cyan-400 border-cyan-400/50 hover:bg-cyan-400/10'
+                    ? 'text-cyan-400 border-cyan-500/50 hover:bg-cyan-400/10'
                     : 'text-blue-600 border-blue-300 hover:bg-blue-100'
                 } backdrop-blur-sm h-9 w-9 p-0`}
                 onClick={() => navigate('/members')}
@@ -174,7 +186,7 @@ const AlumniNetwork: React.FC = () => {
                 size="sm"
                 className={`${
                   isDarkMode
-                    ? 'text-cyan-400 border-cyan-400/50 hover:bg-cyan-400/10'
+                    ? 'text-cyan-400 border-cyan-500/50 hover:bg-cyan-400/10'
                     : 'text-blue-600 border-blue-300 hover:bg-blue-100'
                 } backdrop-blur-sm h-9 w-9 p-0`}
                 onClick={() => navigate('/settings')}
@@ -259,7 +271,7 @@ const AlumniNetwork: React.FC = () => {
                         } w-fit mx-auto`}
                         onClick={() => window.open(alum.linkedIn, '_blank')}
                       >
-                        <LinkedIn className="h-4 w-4 mr-2" />
+                        <Linkedin className="h-4 w-4 mr-2" />
                         LinkedIn
                       </Button>
                       {alum.mentorshipAvailable && (
@@ -344,7 +356,11 @@ const AlumniNetwork: React.FC = () => {
               {filteredAlumni.map(
                 (alum) =>
                   alum.location.lat && alum.location.lng && (
-                    <Marker key={alum.id} position={[alum.location.lat, alum.location.lng]}>
+                    <Marker
+                      key={alum.id}
+                      position={[alum.location.lat, alum.location.lng]}
+                      icon={defaultIcon}
+                    >
                       <Popup>
                         <div>
                           <h3 className="font-semibold">{alum.fullName}</h3>
