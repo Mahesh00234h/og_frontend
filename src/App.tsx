@@ -28,11 +28,13 @@ import VerifyCertificate from "./pages/VerifyCertificate";
 
 import AboutUs from "./pages/AboutUs";
 import AchievementsAndBadges from "./pages/AchievementsAndBadges";
+import AdminAnalytics from "./pages/AdminAnalytics";
 
 
 
 const queryClient = new QueryClient();
 const API_BASE_URL = 'https://og-backend-mwwi.onrender.com/api';
+
 
 interface SessionData {
   message: string;
@@ -104,6 +106,8 @@ const App = () => (
 
           <Route path="/aboutus" element={<AboutUs />} />
           <Route path="/achievements" element={<AchievementsAndBadges />} />
+          <Route path="/admin-analytics" element={<AdminAnalytics />} />
+
 
           
           <Route
