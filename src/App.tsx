@@ -36,7 +36,7 @@ import EventsAndGallery from "./pages/EventsAndGallery";
 import HackathonWallOfFame from "./pages/HackathonWallOfFame";
 import MyDashboard from "./pages/MyDashboard";
 import ProfilePage from "./pages/ProfilePage";
-import ProjectShowcase from "./pages/ProjectShowcase";
+import ProjectsShowcase from "./pages/ProjectsShowcase";
 import SearchPage from "./pages/SearchPage";
 
 
