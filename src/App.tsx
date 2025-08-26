@@ -31,7 +31,7 @@ import AchievementsAndBadges from "./pages/AchievementsAndBadges";
 import AdminAnalytics from "./pages/AdminAnalytics";
 import AlumniNetwork from "./pages/AlumniNetwork";
 import BulkCertificate from "./pages/BulkCertificate";
-
+import Challenge from "./pages/Challenge";
 
 
 const queryClient = new QueryClient();
@@ -111,6 +111,7 @@ const App = () => (
           <Route path="/admin-analytics" element={<AdminAnalytics />} />
           <Route path="/alumni" element={<AlumniNetwork />} />
           <Route path="/bulk-certificate" element={<BulkCertificate />} />
+          <Route path="/challenge" element={<Challenge />} />
 
 
           
