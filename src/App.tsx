@@ -25,6 +25,10 @@ import ContactUs from "./pages/ContactUs";
 import Issuer from "./pages/Issuer";
 import VerifyCertificate from "./pages/VerifyCertificate";
 
+
+import AboutUs from "./pages/AboutUs";
+
+
 const queryClient = new QueryClient();
 const API_BASE_URL = 'https://og-backend-mwwi.onrender.com/api';
 
@@ -94,6 +98,10 @@ const App = () => (
           <Route path="/contactus" element={<ContactUs />} />
           <Route path="/about" element={<About />} />
           <Route path="/verify-certificate" element={<VerifyCertificate />} />
+
+
+          <Route path="/aboutus" element={<AboutUs />} />
+          
           <Route
             path="/dashboard"
             element={
