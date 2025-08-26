@@ -11,6 +11,7 @@ import { useToast } from '@/hooks/use-toast';
 import OGLoader from '@/components/ui/OGLoader';
 
 const API_BASE_URL = 'https://og-backend-mwwi.onrender.com/api';
+const PROJECTS_PER_PAGE = 9;
 
 interface User {
   id: string;
@@ -34,6 +35,7 @@ interface Project {
 const ProjectsShowcase: React.FC = () => {
   const [projects, setProjects] = useState<Project[]>([]);
   const [filteredProjects, setFilteredProjects] = useState<Project[]>([]);
+  const [currentPage, setCurrentPage] = useState<number>(1);
   const [loading, setLoading] = useState<boolean>(true);
   const [searchQuery, setSearchQuery] = useState<string>('');
   const [filterDomain, setFilterDomain] = useState<string>('all');
@@ -73,7 +75,6 @@ const ProjectsShowcase: React.FC = () => {
   useEffect(() => {
     let result = [...projects];
 
-    // Apply search
     if (searchQuery) {
       result = result.filter(
         (project) =>
@@ -83,17 +84,14 @@ const ProjectsShowcase: React.FC = () => {
       );
     }
 
-    // Apply domain filter
     if (filterDomain !== 'all') {
       result = result.filter((project) => project.domain.toLowerCase() === filterDomain.toLowerCase());
     }
 
-    // Apply event filter
     if (filterEvent !== 'all') {
       result = result.filter((project) => project.event?.toLowerCase() === filterEvent.toLowerCase());
     }
 
-    // Apply sorting
     result.sort((a, b) => {
       if (sortBy === 'stars') return b.stars - a.stars;
       if (sortBy === 'name') return a.title.localeCompare(b.title);
@@ -101,6 +99,7 @@ const ProjectsShowcase: React.FC = () => {
     });
 
     setFilteredProjects(result);
+    setCurrentPage(1); // Reset to first page on filter/sort change
   }, [searchQuery, filterDomain, filterEvent, sortBy, projects]);
 
   const getUniqueDomains = () => {
@@ -116,6 +115,12 @@ const ProjectsShowcase: React.FC = () => {
   const toggleTheme = () => {
     setIsDarkMode(!isDarkMode);
   };
+
+  const totalPages = Math.ceil(filteredProjects.length / PROJECTS_PER_PAGE);
+  const paginatedProjects = filteredProjects.slice(
+    (currentPage - 1) * PROJECTS_PER_PAGE,
+    currentPage * PROJECTS_PER_PAGE
+  );
 
   if (loading) {
     return (
@@ -242,11 +247,11 @@ const ProjectsShowcase: React.FC = () => {
             <CardDescription className={`${isDarkMode ? 'text-gray-300' : 'text-gray-600'} text-sm`}>Explore all approved projects</CardDescription>
           </CardHeader>
           <CardContent>
-            {filteredProjects.length === 0 ? (
+            {paginatedProjects.length === 0 ? (
               <p className={`${isDarkMode ? 'text-gray-400' : 'text-gray-500'} text-sm`}>No projects found</p>
             ) : (
               <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-                {filteredProjects.map((project) => (
+                {paginatedProjects.map((project) => (
                   <Card key={project.id} className={`${isDarkMode ? 'bg-cyan-900/30' : 'bg-blue-50'} p-4`}>
                     <div className="flex flex-col space-y-3">
                       <div className="flex items-center space-x-2">
@@ -294,6 +299,29 @@ const ProjectsShowcase: React.FC = () => {
                     </div>
                   </Card>
                 ))}
+              </div>
+            )}
+            {totalPages > 1 && (
+              <div className="flex justify-center space-x-2 mt-6">
+                <Button
+                  variant="outline"
+                  size="sm"
+                  className={`${isDarkMode ? 'text-cyan-400 border-cyan-400/50 hover:bg-cyan-400/10' : 'text-blue-600 border-blue-300 hover:bg-blue-100'} h-9`}
+                  onClick={() => setCurrentPage((prev) => Math.max(prev - 1, 1))}
+                  disabled={currentPage === 1}
+                >
+                  Previous
+                </Button>
+                <span className={`${isDarkMode ? 'text-white' : 'text-gray-900'} text-sm`}>Page {currentPage} of {totalPages}</span>
+                <Button
+                  variant="outline"
+                  size="sm"
+                  className={`${isDarkMode ? 'text-cyan-400 border-cyan-400/50 hover:bg-cyan-400/10' : 'text-blue-600 border-blue-300 hover:bg-blue-100'} h-9`}
+                  onClick={() => setCurrentPage((prev) => Math.min(prev + 1, totalPages))}
+                  disabled={currentPage === totalPages}
+                >
+                  Next
+                </Button>
               </div>
             )}
           </CardContent>
