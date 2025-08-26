@@ -27,6 +27,8 @@ import VerifyCertificate from "./pages/VerifyCertificate";
 
 
 import AboutUs from "./pages/AboutUs";
+import AchievementsAndBadges from "./pages/AchievementsAndBadges";
+
 
 
 const queryClient = new QueryClient();
@@ -101,6 +103,8 @@ const App = () => (
 
 
           <Route path="/aboutus" element={<AboutUs />} />
+          <Route path="/achievements" element={<AchievementsAndBadges />} />
+
           
           <Route
             path="/dashboard"
