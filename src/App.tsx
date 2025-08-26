@@ -29,6 +29,7 @@ import VerifyCertificate from "./pages/VerifyCertificate";
 import AboutUs from "./pages/AboutUs";
 import AchievementsAndBadges from "./pages/AchievementsAndBadges";
 import AdminAnalytics from "./pages/AdminAnalytics";
+import AlumniNetwork from "./pages/AlumniNetwork";
 
 
 
@@ -107,6 +108,7 @@ const App = () => (
           <Route path="/aboutus" element={<AboutUs />} />
           <Route path="/achievements" element={<AchievementsAndBadges />} />
           <Route path="/admin-analytics" element={<AdminAnalytics />} />
+          <Route path="/alumni" element={<AlumniNetwork />} />
 
 
           
