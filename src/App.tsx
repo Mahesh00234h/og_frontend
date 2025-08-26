@@ -32,7 +32,7 @@ import AlumniNetwork from "./pages/AlumniNetwork";
 import BulkCertificate from "./pages/BulkCertificate";
 import Challenge from "./pages/Challenge";
 import CollaborationHub from "./pages/CollaborationHub";
-import EventAndGallery from "./pages/EventAndGallery";
+import EventsAndGallery from "./pages/EventsAndGallery";
 import HackathonWallOfFame from "./pages/HackathonWallOfFame";
 import MyDashboard from "./pages/MyDashboard";
 import ProfilePage from "./pages/ProfilePage";
