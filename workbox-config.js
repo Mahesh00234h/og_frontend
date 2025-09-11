@@ -4,3 +4,4 @@ module.exports = {
   swDest: "dist/sw.js",
   ignoreURLParametersMatching: [/^utm_/, /^fbclid$/],
 };
+

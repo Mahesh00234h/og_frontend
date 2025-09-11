@@ -8,6 +8,7 @@
   "description": "TechMinds - Smart tools for engineers, students, and professionals.",
   "icons": [
     {
+      
       "src": "/public/favicon.png",
       "sizes": "192x192",
       "type": "image/png"

@@ -45,4 +45,4 @@ export default defineConfig(({ mode }) => ({
       external: [], // Ensure @react-oauth/google is bundled
     },
   },
-}));
+})); 
