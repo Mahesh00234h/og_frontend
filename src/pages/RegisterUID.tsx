@@ -9,7 +9,7 @@ import { Toaster } from '@/components/ui/toaster';
 import { Code, User } from 'lucide-react';
 import SmallLoader from '@/components/ui/SmallLoader';
 import OGLoader from '@/components/ui/OGLoader';
-import QRCode from 'qrcode.react';
+import { QRCode } from 'qrcode.react';
 
 const CERTIFICATE_API_BASE_URL = import.meta.env.VITE_CERTIFICATE_API_BASE_URL || 'https://certi-og-backend.onrender.com';
 
