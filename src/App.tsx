@@ -41,7 +41,7 @@ import ProjectsShowcase from "./pages/ProjectsShowcase";
 import SearchPage from "./pages/SearchPage";
 
 
-import RegisterUID from "./pages/RegisterUID";
+
 
 
 const queryClient = new QueryClient();
@@ -129,7 +129,7 @@ const App = () => (
           <Route path="/profilepage" element={<ProfilePage />} />
           <Route path="/projectsshowcase" element={<ProjectsShowcase />} />
           <Route path="/search" element={<SearchPage />} />
-          <Route path="/registeruid" element={<RegisterUID />} />
+         
 
 
           
