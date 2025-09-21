@@ -39,7 +39,7 @@ import MyDashboard from "./pages/MyDashboard";
 import ProfilePage from "./pages/ProfilePage";
 import ProjectsShowcase from "./pages/ProjectsShowcase";
 import SearchPage from "./pages/SearchPage";
-
+import Gallery from "./pages/Gallery";
 
 
 
@@ -129,6 +129,7 @@ const App = () => (
           <Route path="/profilepage" element={<ProfilePage />} />
           <Route path="/projectsshowcase" element={<ProjectsShowcase />} />
           <Route path="/search" element={<SearchPage />} />
+          <Route path="/gallery" element={<Gallery />} />
          
 
 
