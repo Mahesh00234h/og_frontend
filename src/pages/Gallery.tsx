@@ -4,7 +4,7 @@ import { Button } from '@/components/ui/button';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { Input } from '@/components/ui/input';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { Sun, Moon, Heart, Share2, Plus } from 'lucide-react';
+import { Sun, Moon, Heart, Share2, Plus, Upload } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 import { TransformWrapper, TransformComponent } from 'react-zoom-pan-pinch';
 import debounce from 'lodash.debounce';
@@ -23,7 +23,6 @@ interface GalleryImage {
 
 const Gallery: React.FC = () => {
   const [images, setImages] = useState<GalleryImage[]>([]);
-  const [filteredImages, setFilteredImages] = useState<GalleryImage[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
   const [isDarkMode, setIsDarkMode] = useState<boolean>(true);
   const [selectedImage, setSelectedImage] = useState<GalleryImage | null>(null);
@@ -34,6 +33,12 @@ const Gallery: React.FC = () => {
   const [likedImages, setLikedImages] = useState<string[]>(() => {
     return JSON.parse(localStorage.getItem('likedImages') || '[]');
   });
+  const [isAdmin, setIsAdmin] = useState<boolean>(false);
+  const [uploadModalOpen, setUploadModalOpen] = useState<boolean>(false);
+  const [uploadTitle, setUploadTitle] = useState<string>('');
+  const [uploadDescription, setUploadDescription] = useState<string>('');
+  const [uploadCategory, setUploadCategory] = useState<string>('events');
+  const [uploadFile, setUploadFile] = useState<File | null>(null);
   const { toast } = useToast();
   const observer = useRef<IntersectionObserver | null>(null);
   const lastImageRef = useRef<HTMLDivElement | null>(null);
@@ -50,6 +55,23 @@ const Gallery: React.FC = () => {
     return `${diffInDays} days ago`;
   };
 
+  const checkAdminStatus = async () => {
+    try {
+      const res = await fetch(`${API_BASE_URL}/check-session-status`, {
+        method: 'GET',
+        credentials: 'include',
+      });
+      if (res.ok) {
+        const data = await res.json();
+        if (data.role === 'admin') {
+          setIsAdmin(true);
+        }
+      }
+    } catch (error) {
+      console.error('Error checking session:', error);
+    }
+  };
+
   const fetchImages = async (pageNum: number, reset: boolean = false) => {
     try {
       const params = new URLSearchParams({
@@ -61,6 +83,7 @@ const Gallery: React.FC = () => {
       const res = await fetch(`${API_BASE_URL}/gallery?${params}`, {
         method: 'GET',
         headers: { 'Accept': 'application/json' },
+        credentials: 'include',
       });
       const data = await res.json();
       if (!res.ok) throw new Error(data.error || 'Failed to fetch images');
@@ -79,6 +102,7 @@ const Gallery: React.FC = () => {
   };
 
   useEffect(() => {
+    checkAdminStatus();
     fetchImages(1, true);
   }, [category, searchQuery]);
 
@@ -129,6 +153,56 @@ const Gallery: React.FC = () => {
 
   const toggleTheme = () => {
     setIsDarkMode(!isDarkMode);
+  };
+
+  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    if (e.target.files && e.target.files[0]) {
+      setUploadFile(e.target.files[0]);
+    }
+  };
+
+  const handleUpload = async () => {
+    if (!uploadFile || !uploadTitle || !uploadDescription || !uploadCategory) {
+      toast({
+        title: 'Error',
+        description: 'All fields are required',
+        variant: 'destructive',
+      });
+      return;
+    }
+
+    const formData = new FormData();
+    formData.append('file', uploadFile);
+    formData.append('title', uploadTitle);
+    formData.append('description', uploadDescription);
+    formData.append('category', uploadCategory);
+
+    try {
+      const res = await fetch(`${API_BASE_URL}/gallery/upload`, {
+        method: 'POST',
+        body: formData,
+        credentials: 'include',
+      });
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.error || 'Upload failed');
+      toast({
+        title: 'Success',
+        description: 'Image uploaded successfully',
+      });
+      setUploadModalOpen(false);
+      setUploadTitle('');
+      setUploadDescription('');
+      setUploadCategory('events');
+      setUploadFile(null);
+      fetchImages(1, true); // Refresh images
+    } catch (error) {
+      console.error('Upload error:', error);
+      toast({
+        title: 'Error',
+        description: 'Failed to upload image',
+        variant: 'destructive',
+      });
+    }
   };
 
   if (loading && page === 1) {
@@ -189,6 +263,15 @@ const Gallery: React.FC = () => {
               className={`${isDarkMode ? 'bg-black/60 border-cyan-400/50 text-white' : 'bg-gray-100 border-blue-300 text-gray-900'} text-sm h-9`}
               onChange={(e) => handleSearch(e.target.value)}
             />
+            {isAdmin && (
+              <Button
+                className={`${isDarkMode ? 'bg-gradient-to-r from-cyan-600 to-purple-600 hover:from-cyan-700 hover:to-purple-700' : 'bg-gradient-to-r from-blue-500 to-purple-500 hover:from-blue-600 hover:to-purple-600'} text-white text-sm h-9`}
+                onClick={() => setUploadModalOpen(true)}
+              >
+                <Upload className="h-4 w-4 mr-1" />
+                Upload Image
+              </Button>
+            )}
           </CardContent>
         </Card>
 
@@ -202,13 +285,6 @@ const Gallery: React.FC = () => {
             {images.length === 0 && !loading ? (
               <div className="text-center py-8">
                 <p className={`${isDarkMode ? 'text-gray-400' : 'text-gray-500'} text-sm mb-4`}>No images available yet. Check back later!</p>
-                <Button
-                  className={`${isDarkMode ? 'bg-gradient-to-r from-cyan-600 to-purple-600 hover:from-cyan-700 hover:to-purple-700' : 'bg-gradient-to-r from-blue-500 to-purple-500 hover:from-blue-600 hover:to-purple-600'} text-white text-sm h-9`}
-                  onClick={() => window.location.href = '/admin/gallery/upload'}
-                >
-                  <Plus className="h-4 w-4 mr-1" />
-                  Admins: Upload Images
-                </Button>
               </div>
             ) : (
               <div className="columns-1 sm:columns-2 lg:columns-3 gap-4 sm:gap-6">
@@ -317,6 +393,52 @@ const Gallery: React.FC = () => {
                 <span className="ml-1">Share</span>
               </Button>
             </div>
+          </div>
+        </DialogContent>
+      </Dialog>
+
+      {/* Upload Modal */}
+      <Dialog open={uploadModalOpen} onOpenChange={setUploadModalOpen}>
+        <DialogContent className={`${isDarkMode ? 'bg-black/80 border-cyan-500/20' : 'bg-white border-blue-200'} backdrop-blur-sm ${isDarkMode ? 'text-white' : 'text-gray-900'}`}>
+          <DialogHeader>
+            <DialogTitle className="text-xl sm:text-2xl">Upload Image</DialogTitle>
+          </DialogHeader>
+          <div className="space-y-4">
+            <Input
+              placeholder="Title"
+              value={uploadTitle}
+              onChange={(e) => setUploadTitle(e.target.value)}
+              className={`${isDarkMode ? 'bg-black/60 border-cyan-400/50 text-white' : 'bg-gray-100 border-blue-300 text-gray-900'} text-sm h-9`}
+            />
+            <Input
+              placeholder="Description"
+              value={uploadDescription}
+              onChange={(e) => setUploadDescription(e.target.value)}
+              className={`${isDarkMode ? 'bg-black/60 border-cyan-400/50 text-white' : 'bg-gray-100 border-blue-300 text-gray-900'} text-sm h-9`}
+            />
+            <Select value={uploadCategory} onValueChange={setUploadCategory}>
+              <SelectTrigger className={`${isDarkMode ? 'bg-black/60 border-cyan-400/50 text-white' : 'bg-gray-100 border-blue-300 text-gray-900'} w-full text-sm h-9`}>
+                <SelectValue placeholder="Select Category" />
+              </SelectTrigger>
+              <SelectContent className={`${isDarkMode ? 'bg-black/80 border-cyan-500/20 text-white' : 'bg-white border-blue-200 text-gray-900'}`}>
+                <SelectItem value="events">Events</SelectItem>
+                <SelectItem value="projects">Projects</SelectItem>
+                <SelectItem value="team">Team</SelectItem>
+              </SelectContent>
+            </Select>
+            <Input
+              type="file"
+              accept="image/*"
+              onChange={handleFileChange}
+              className={`${isDarkMode ? 'bg-black/60 border-cyan-400/50 text-white' : 'bg-gray-100 border-blue-300 text-gray-900'} text-sm h-9`}
+            />
+            <Button
+              className={`${isDarkMode ? 'bg-gradient-to-r from-cyan-600 to-purple-600 hover:from-cyan-700 hover:to-purple-700' : 'bg-gradient-to-r from-blue-500 to-purple-500 hover:from-blue-600 hover:to-purple-600'} text-white text-sm h-9 w-full`}
+              onClick={handleUpload}
+            >
+              <Upload className="h-4 w-4 mr-1" />
+              Upload
+            </Button>
           </div>
         </DialogContent>
       </Dialog>
