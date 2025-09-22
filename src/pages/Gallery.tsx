@@ -194,7 +194,7 @@ const Gallery: React.FC = () => {
 
   const handleUploadClick = () => {
     if (!isAdmin) {
-      window.location.href = 'https://og-frontend-zeta.vercel.app/admin/login';
+      window.location.href = 'https://og-frontend-zeta.vercel.app/admin-login';
       return;
     }
     setUploadModalOpen(true);
