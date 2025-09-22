@@ -24,7 +24,9 @@ interface GalleryImage {
 const Gallery: React.FC = () => {
   const [images, setImages] = useState<GalleryImage[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
-  const [isDarkMode, setIsDarkMode] = useState<boolean>(true);
+  const [isDarkMode, setIsDarkMode] = useState<boolean>(() => {
+    return localStorage.getItem('theme') === 'dark' || !localStorage.getItem('theme');
+  });
   const [selectedImage, setSelectedImage] = useState<GalleryImage | null>(null);
   const [category, setCategory] = useState<string>('all');
   const [searchQuery, setSearchQuery] = useState<string>('');
@@ -63,12 +65,13 @@ const Gallery: React.FC = () => {
       });
       if (res.ok) {
         const data = await res.json();
-        if (data.role === 'admin') {
-          setIsAdmin(true);
-        }
+        setIsAdmin(data.role === 'admin');
+      } else {
+        setIsAdmin(false);
       }
     } catch (error) {
       console.error('Error checking session:', error);
+      setIsAdmin(false);
     }
   };
 
@@ -106,6 +109,10 @@ const Gallery: React.FC = () => {
     fetchImages(1, true);
   }, [category, searchQuery]);
 
+  useEffect(() => {
+    localStorage.setItem('theme', isDarkMode ? 'dark' : 'light');
+  }, [isDarkMode]);
+
   const handleInfiniteScroll = useCallback(
     (entries: IntersectionObserverEntry[]) => {
       if (entries[0].isIntersecting && hasMore && !loading) {
@@ -117,21 +124,25 @@ const Gallery: React.FC = () => {
   );
 
   useEffect(() => {
-    if (observer.current) observer.current.disconnect();
+    if (!lastImageRef.current || !hasMore || loading) return;
     observer.current = new IntersectionObserver(handleInfiniteScroll, { threshold: 0.1 });
-    if (lastImageRef.current) observer.current.observe(lastImageRef.current);
+    observer.current.observe(lastImageRef.current);
     return () => observer.current?.disconnect();
-  }, [images, handleInfiniteScroll]);
+  }, [handleInfiniteScroll, hasMore, loading]);
 
   useEffect(() => {
     localStorage.setItem('likedImages', JSON.stringify(likedImages));
   }, [likedImages]);
 
-  const handleSearch = debounce((value: string) => {
-    setSearchQuery(value);
-    setPage(1);
-    setImages([]);
-  }, 300);
+  const handleSearch = useCallback(
+    debounce((value: string) => {
+      if (value.length < 3 && value.length > 0) return;
+      setSearchQuery(value);
+      setPage(1);
+      setImages([]);
+    }, 300),
+    []
+  );
 
   const toggleLike = (imageId: string) => {
     setLikedImages((prev) =>
@@ -161,6 +172,14 @@ const Gallery: React.FC = () => {
     }
   };
 
+  const handleUploadClick = () => {
+    if (!isAdmin) {
+      window.location.href = 'https://og-frontend-zeta.vercel.app/admin/login';
+      return;
+    }
+    setUploadModalOpen(true);
+  };
+
   const handleUpload = async () => {
     if (!uploadFile || !uploadTitle || !uploadDescription || !uploadCategory) {
       toast({
@@ -184,7 +203,13 @@ const Gallery: React.FC = () => {
         credentials: 'include',
       });
       const data = await res.json();
-      if (!res.ok) throw new Error(data.error || 'Upload failed');
+      if (!res.ok) {
+        if (res.status === 403) {
+          window.location.href = 'https://og-frontend-zeta.vercel.app/admin/login';
+          return;
+        }
+        throw new Error(data.error || 'Upload failed');
+      }
       toast({
         title: 'Success',
         description: 'Image uploaded successfully',
@@ -194,7 +219,7 @@ const Gallery: React.FC = () => {
       setUploadDescription('');
       setUploadCategory('events');
       setUploadFile(null);
-      fetchImages(1, true); // Refresh images
+      fetchImages(1, true);
     } catch (error) {
       console.error('Upload error:', error);
       toast({
@@ -220,15 +245,17 @@ const Gallery: React.FC = () => {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex justify-between items-center h-14">
             <h1 className={`text-xl sm:text-2xl font-bold ${isDarkMode ? 'text-white' : 'text-gray-900'}`}>TechMinds Gallery</h1>
-            <Button
-              variant="outline"
-              size="sm"
-              className={`${isDarkMode ? 'text-cyan-400 border-cyan-400/50 hover:bg-cyan-400/10' : 'text-blue-600 border-blue-300 hover:bg-blue-100'} backdrop-blur-sm h-9 w-9 p-0`}
-              onClick={toggleTheme}
-              aria-label={isDarkMode ? 'Switch to light mode' : 'Switch to dark mode'}
-            >
-              {isDarkMode ? <Sun className="h-5 w-5" /> : <Moon className="h-5 w-5" />}
-            </Button>
+            <div className="flex items-center space-x-2">
+              <Button
+                variant="outline"
+                size="sm"
+                className={`${isDarkMode ? 'text-cyan-400 border-cyan-400/50 hover:bg-cyan-400/10' : 'text-blue-600 border-blue-300 hover:bg-blue-100'} backdrop-blur-sm h-9 w-9 p-0`}
+                onClick={toggleTheme}
+                aria-label={isDarkMode ? 'Switch to light mode' : 'Switch to dark mode'}
+              >
+                {isDarkMode ? <Sun className="h-5 w-5" /> : <Moon className="h-5 w-5" />}
+              </Button>
+            </div>
           </div>
         </div>
       </header>
@@ -263,15 +290,13 @@ const Gallery: React.FC = () => {
               className={`${isDarkMode ? 'bg-black/60 border-cyan-400/50 text-white' : 'bg-gray-100 border-blue-300 text-gray-900'} text-sm h-9`}
               onChange={(e) => handleSearch(e.target.value)}
             />
-            {isAdmin && (
-              <Button
-                className={`${isDarkMode ? 'bg-gradient-to-r from-cyan-600 to-purple-600 hover:from-cyan-700 hover:to-purple-700' : 'bg-gradient-to-r from-blue-500 to-purple-500 hover:from-blue-600 hover:to-purple-600'} text-white text-sm h-9`}
-                onClick={() => setUploadModalOpen(true)}
-              >
-                <Upload className="h-4 w-4 mr-1" />
-                Upload Image
-              </Button>
-            )}
+            <Button
+              className={`${isDarkMode ? 'bg-gradient-to-r from-cyan-600 to-purple-600 hover:from-cyan-700 hover:to-purple-700' : 'bg-gradient-to-r from-blue-500 to-purple-500 hover:from-blue-600 hover:to-purple-600'} text-white text-sm h-9`}
+              onClick={handleUploadClick}
+            >
+              <Upload className="h-4 w-4 mr-1" />
+              Upload Image
+            </Button>
           </CardContent>
         </Card>
 
@@ -297,7 +322,7 @@ const Gallery: React.FC = () => {
                   >
                     <img
                       src={image.url}
-                      alt={image.title}
+                      alt={image.title || 'Gallery image'}
                       className="w-full h-auto object-cover transition-transform duration-300 group-hover:scale-105"
                       loading="lazy"
                     />
@@ -359,11 +384,11 @@ const Gallery: React.FC = () => {
           <DialogHeader>
             <DialogTitle className="text-xl sm:text-2xl">{selectedImage?.title}</DialogTitle>
           </DialogHeader>
-          <TransformWrapper>
+          <TransformWrapper initialScale={1} minScale={0.5} maxScale={3} wheel={{ step: 0.1 }} panning={{ disabled: false }}>
             <TransformComponent>
               <img
                 src={selectedImage?.url}
-                alt={selectedImage?.title}
+                alt={selectedImage?.title || 'Selected image'}
                 className="w-full h-auto max-h-[60vh] object-contain rounded-md"
               />
             </TransformComponent>
