@@ -35,11 +35,11 @@ To get a local copy up and running, follow these simple steps.
 1.  **Fork the repository**
 2.  **Clone the repository:**
     ```sh
-    git clone https://github.com/YOUR_USERNAME/og-community-platform.git
+    git clone https://github.com/Mahesh00234h/og_frontend.git
     ```
 3.  **Navigate to the project directory:**
     ```sh
-    cd og-community-platform
+    cd og_techmind
     ```
 4.  **Install dependencies:**
     ```sh
