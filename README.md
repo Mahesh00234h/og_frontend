@@ -11,7 +11,7 @@ This is the official web application for the OG Tech Minds community. This platf
 *   **Alumni Network:** Keep in touch with past members and see what they're up to.
 *   **Certificate Verification:** Verify the authenticity of certificates issued by OG Tech Minds.
 
-## 💻 Tech Stack
+## 💻 Tech Stack 
 
 This project is built with the following technologies:
 
