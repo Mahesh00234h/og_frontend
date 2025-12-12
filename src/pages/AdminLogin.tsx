@@ -1,5 +1,5 @@
-import { useState } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
+import { useState, useEffect } from 'react';
+import { Link, useNavigate, useSearchParams } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
@@ -16,6 +16,8 @@ const AdminLogin = () => {
   const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
   const { toast } = useToast();
+  const [searchParams] = useSearchParams();
+  const returnUrl = searchParams.get('returnUrl');
 
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -50,7 +52,8 @@ const AdminLogin = () => {
         title: 'Admin Login Successful',
         description: 'Welcome to the admin panel',
       });
-      navigate('/admin-dashboard');
+      // Redirect to returnUrl if present, otherwise to default admin dashboard
+      navigate(returnUrl || '/admin-dashboard');
     } catch (error: any) {
       console.error('AdminLogin: Login error:', error);
       toast({

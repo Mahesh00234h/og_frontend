@@ -223,11 +223,6 @@ const Index = () => {
                   Resources
                 </Button>
               </Link>
-              <Link to="/gallery">
-                <Button variant="outline" className="text-cyan-400 border-cyan-400/50 hover:bg-cyan-400/10 backdrop-blur-sm text-xs px-3 py-1">
-                  Gallery
-                </Button>
-              </Link>
               <Link to="/login">
                 <Button variant="outline" className="text-cyan-400 border-cyan-400/50 hover:bg-cyan-400/10 backdrop-blur-sm text-xs px-3 py-1">
                   Login
@@ -257,11 +252,6 @@ const Index = () => {
               <Link to="/edu-resources" className="block">
                 <Button variant="outline" className="w-full text-cyan-400 border-cyan-400/50 hover:bg-cyan-400/10 backdrop-blur-sm text-xs py-1">
                   Resources
-                </Button>
-              </Link>
-              <Link to="/gallery" className="block">
-                <Button variant="outline" className="w-full text-cyan-400 border-cyan-400/50 hover:bg-cyan-400/10 backdrop-blur-sm text-xs py-1">
-                  Gallery
                 </Button>
               </Link>
               <Link to="/login" className="block">

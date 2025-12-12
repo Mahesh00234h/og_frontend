@@ -25,6 +25,8 @@ import ContactUs from "./pages/ContactUs";
 import Issuer from "./pages/Issuer";
 import VerifyCertificate from "./pages/VerifyCertificate";
 import PrivacyPolicy from "./pages/PrivacyPolicy";
+import EduResources from "./pages/EduResources";
+import AdminResources from "./pages/AdminResources";
 
 
 import AboutUs from "./pages/AboutUs";
@@ -116,6 +118,7 @@ const App = () => (
           <Route path="/about" element={<About />} />
           <Route path="/privacy-policy" element={<PrivacyPolicy />} />
           <Route path="/verify-certificate" element={<VerifyCertificate />} />
+          <Route path="/edu-resources" element={<EduResources />} />
 
 
           <Route path="/aboutus" element={<AboutUs />} />
@@ -229,6 +232,14 @@ const App = () => (
             element={
               <ProtectedRoute requireAdmin={true}>
                 <Issuer />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/admin-resources"
+            element={
+              <ProtectedRoute requireAdmin={true}>
+                <AdminResources />
               </ProtectedRoute>
             }
           />

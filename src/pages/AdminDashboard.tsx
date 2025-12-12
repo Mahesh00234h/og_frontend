@@ -3,7 +3,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { Users, Calendar, Code, Settings, Shield, UserCheck, UserX, Mail, FileText, Search, Filter, FileCheck,LogOut } from 'lucide-react';
+import { Users, Calendar, Code, Settings, Shield, UserCheck, UserX, Mail, FileText, Search, Filter, FileCheck, LogOut, Upload } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 import { useNavigate } from 'react-router-dom';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
@@ -440,6 +440,13 @@ const AdminDashboard = () => {
               <h1 className="text-lg font-bold text-white">Admin Dashboard</h1>
             </div>
             <div className="flex items-center space-x-1">
+              <Button 
+                onClick={() => navigate('/admin-resources')}
+                className="bg-purple-600 hover:bg-purple-700 text-xs py-1 px-2"
+              >
+                <Upload className="h-3 w-3 mr-1" />
+                Resources
+              </Button>
               <Dialog open={isAnnouncementModalOpen} onOpenChange={setIsAnnouncementModalOpen}>
                 <DialogTrigger asChild>
                   <Button className="bg-red-600 hover:bg-red-700 text-xs py-1 px-2">
