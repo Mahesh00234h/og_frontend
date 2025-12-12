@@ -10,7 +10,7 @@ import { Badge } from '@/components/ui/badge';
 import { Upload, FileText, Trash2, Shield, ArrowLeft, Download } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 
-const API_BASE_URL = 'http://localhost:5001/api';
+const API_BASE_URL = 'https://og-edu-resources.onrender.com/api';
 
 interface Resource {
   _id: string;

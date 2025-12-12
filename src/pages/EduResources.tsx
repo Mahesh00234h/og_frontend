@@ -8,7 +8,7 @@ import { Badge } from '@/components/ui/badge';
 import { BookOpen, Download, FileText, Search, Filter, Calendar, Shield } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 
-const API_BASE_URL = 'http://localhost:5001/api';
+const API_BASE_URL = 'https://og-edu-resources.onrender.com/api';
 const MAIN_API_URL = 'https://og-backend-mwwi.onrender.com/api';
 
 interface Resource {
