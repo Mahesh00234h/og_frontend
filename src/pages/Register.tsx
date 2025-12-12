@@ -504,6 +504,12 @@ const Register = () => {
                 Sign in
               </Link>
             </p>
+            <p className="text-gray-400 text-xs mt-3">
+              By registering, you agree to our{' '}
+              <Link to="/privacy-policy" className="text-cyan-300 hover:text-cyan-200 underline">
+                Privacy Policy
+              </Link>.
+            </p>
           </div>
         </CardContent>
       </Card>

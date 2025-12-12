@@ -1,4 +1,5 @@
 import { useState, useEffect, memo } from 'react';
+import type { ComponentType } from 'react';
 import { Link } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
@@ -7,7 +8,8 @@ import { Users, Calendar, Code, Brain, Atom, Zap, Database, Terminal, Rocket, Ci
 import { useToast } from '@/hooks/use-toast';
 import SmallLoader from "@/components/ui/SmallLoader";
 
-const API_BASE_URL = process.env.REACT_APP_API_URL || 'https://og-backend-mwwi.onrender.com/api';
+// In Vite, environment variables are accessed via import.meta.env
+const API_BASE_URL = (import.meta as any).env?.VITE_API_URL || 'https://og-backend-mwwi.onrender.com/api';
 
 const Index = () => {
   const { toast } = useToast();
@@ -83,7 +85,12 @@ const Index = () => {
     console.log('State after fetch:', { activeMembers, activeProjects, upcomingEvents });
   }, [activeMembers, activeProjects, upcomingEvents]);
 
-  const features = [
+  interface Feature {
+    icon: ComponentType<{ className?: string }>;
+    title: string;
+    description: string;
+  }
+  const features: Feature[] = [
     { icon: Brain, title: "AI & ML", description: "Explore cutting-edge AI algorithms and neural networks" },
     { icon: Code, title: "Development", description: "Build innovative applications and open-source projects" },
     { icon: CircuitBoard, title: "Hardware", description: "Design electronic systems and IoT solutions" },
@@ -92,14 +99,20 @@ const Index = () => {
     { icon: Rocket, title: "Innovation", description: "Work on cutting-edge tech and startup ideas" }
   ];
 
-  const researchAreas = [
+  interface ResearchArea {
+    icon: ComponentType<{ className?: string }>;
+    title: string;
+    projects: number;
+    members: number;
+  }
+  const researchAreas: ResearchArea[] = [
     { icon: Zap, title: "Neural Networks", projects: 12, members: 24 },
     { icon: Atom, title: "Quantum Computing", projects: 8, members: 16 },
     { icon: Monitor, title: "Computer Vision", projects: 15, members: 32 },
     { icon: Database, title: "Big Data", projects: 20, members: 28 }
   ];
 
-  const FeatureCard = memo(({ feature }) => (
+  const FeatureCard = memo(({ feature }: { feature: Feature }) => (
     <Card className="bg-black/40 border-cyan-500/20 backdrop-blur-sm hover:border-cyan-400/40 transition-all duration-300 group h-full">
       <CardHeader className="pb-2">
         <div className="mb-2 relative">
@@ -118,7 +131,7 @@ const Index = () => {
     </Card>
   ));
 
-  const ResearchCard = memo(({ area }) => (
+  const ResearchCard = memo(({ area }: { area: ResearchArea }) => (
     <Card className="bg-gradient-to-br from-black/60 to-black/40 border-purple-500/20 backdrop-blur-sm hover:border-purple-400/40 transition-all h-full">
       <CardHeader className="text-center pb-2">
         <area.icon className="h-5 w-5 text-purple-400 mx-auto mb-1" />
@@ -133,7 +146,15 @@ const Index = () => {
     </Card>
   ));
 
-  const EventCard = memo(({ event }) => (
+  interface EventItem {
+    _id?: string;
+    image?: string;
+    title: string;
+    type?: string;
+    date: string | number | Date;
+    attendees?: number;
+  }
+  const EventCard = memo(({ event }: { event: EventItem }) => (
     <Card className="bg-black/40 border-cyan-500/20 backdrop-blur-sm hover:border-cyan-400/40 transition-all h-full">
       <CardHeader className="pb-2">
         {event.image && (
@@ -231,6 +252,11 @@ const Index = () => {
               <Link to="/register" className="block">
                 <Button className="w-full bg-gradient-to-r from-cyan-600 to-purple-600 hover:from-cyan-700 hover:to-purple-700 text-white shadow-lg shadow-cyan-500/25 text-xs py-1">
                   Join Now
+                </Button>
+              </Link>
+              <Link to="/privacy-policy" className="block">
+                <Button variant="outline" className="w-full text-cyan-400 border-cyan-400/50 hover:bg-cyan-400/10 backdrop-blur-sm text-xs py-1">
+                  Privacy Policy
                 </Button>
               </Link>
             </div>
@@ -394,6 +420,13 @@ const Index = () => {
             <p className="text-gray-400 text-xs">
               © 2025 OG Techminds. Building tomorrow's technology today.
             </p>
+            <div className="mt-2 flex justify-center">
+              <Link to="/privacy-policy">
+                <Button variant="outline" className="text-cyan-400 border-cyan-400/50 hover:bg-cyan-400/10 backdrop-blur-sm text-xs px-3 py-1">
+                  Privacy Policy
+                </Button>
+              </Link>
+            </div>
           </div>
         </div>
       </footer>

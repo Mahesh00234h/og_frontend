@@ -24,6 +24,7 @@ import Announcements from "./pages/Announcements";
 import ContactUs from "./pages/ContactUs";
 import Issuer from "./pages/Issuer";
 import VerifyCertificate from "./pages/VerifyCertificate";
+import PrivacyPolicy from "./pages/PrivacyPolicy";
 
 
 import AboutUs from "./pages/AboutUs";
@@ -113,6 +114,7 @@ const App = () => (
           <Route path="/announcements" element={<Announcements />} />
           <Route path="/contactus" element={<ContactUs />} />
           <Route path="/about" element={<About />} />
+          <Route path="/privacy-policy" element={<PrivacyPolicy />} />
           <Route path="/verify-certificate" element={<VerifyCertificate />} />
 
 
