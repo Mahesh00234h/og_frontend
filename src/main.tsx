@@ -1,7 +1,11 @@
 import { createRoot } from 'react-dom/client'
+import { inject } from '@vercel/analytics'
 import { GoogleOAuthProvider } from '@react-oauth/google'
 import App from './App'
 import './index.css'
+
+// Initialize Vercel Web Analytics
+inject()
 
 const root = createRoot(document.getElementById('root')!)
 
