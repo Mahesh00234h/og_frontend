@@ -218,7 +218,7 @@ const Index = () => {
               </span>
             </div>
             <div className="hidden sm:flex space-x-2">
-              <Link to="/edu-resources">
+              <Link to="oghub.tech">
                 <Button variant="outline" className="text-cyan-400 border-cyan-400/50 hover:bg-cyan-400/10 backdrop-blur-sm text-xs px-3 py-1">
                   Resources
                 </Button>
